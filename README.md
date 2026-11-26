@@ -44,14 +44,6 @@ python build.py                   # rebuild ../CCAR-P Study Aid.html from all se
 
 The validator checks structure (option and answer counts, "Select TWO/THREE" wording for multi-answer questions), balance (correct and wrong options of similar length, and how often the correct option is the longest), per-subject minimums (questions, multi-answer questions, repeated concepts) and style (no letter prefixes, no "all/none of the above", short mnemonics).
 
-## Course materials are not included
-
-Every question is written from the official exam guide and education notes. Those documents are third-party material and are not part of this repository; `.gitignore` excludes them. Building and validating work without them, but writing or fact-checking questions needs your own copies placed at the repo root. To extract their text:
-
-```bash
-python source/extract_notes.py source/notes_txt   # run from the repo root
-```
-
 ## Authoring rules
 
 See [`CLAUDE.md`](CLAUDE.md) for the full rules. In short:
