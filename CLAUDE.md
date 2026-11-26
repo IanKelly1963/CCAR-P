@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Not an application. It is a study-aid generator for the **Claude Certified Architect – Professional (CCAR-P)** exam. The deliverable is one standalone file, `CCAR-P Study Aid.html` (dark-theme quiz app, no dependencies, no network). It is **generated**; never hand-edit it.
 
-Inputs at the repo root (read-only reference): `Exam Guide.pdf` (blueprint, 7 domains, 85% per-domain pass target used by the aid) and five `.docx` education notes. The notes cover 5 topics but the exam has 7 domains, so notes are mapped onto domains:
+Inputs at the repo root (read-only reference, **local only**): `Exam Guide.pdf` (blueprint, 7 domains, 85% per-domain pass target used by the aid) and five `.docx` education notes. The notes cover 5 topics but the exam has 7 domains, so notes are mapped onto domains:
 
 | Domain (weight) | Drawn from |
 |---|---|
@@ -19,6 +19,11 @@ Inputs at the repo root (read-only reference): `Exam Guide.pdf` (blueprint, 7 do
 | 7 Dev Productivity (7%) | `05` |
 
 `04` contains a `<NOT TESTED>` block (demo design, joint scoping, objection categories) and a "Reuse potential" field marked Partner Track. **No questions may be written about these.**
+
+## Repository and course materials
+Git repo, pushed to the **public** GitHub repo `IanKelly1963/CCAR-P` (branch `main`). The course materials are third-party content and are deliberately not published: `.gitignore` excludes `Exam Guide.pdf`, `*.docx` and `source/notes_txt/`. Never commit them or paste long passages from them into tracked files. A fresh clone can build and validate, but writing or checking questions needs the local originals; regenerate the text with `python source/extract_notes.py source/notes_txt` from the repo root.
+
+Commits and PR descriptions carry no Claude / AI co-author or "Generated with" attribution.
 
 ## Commands
 
@@ -47,7 +52,8 @@ The edit loop is always: change `template.html` (behaviour/design) or `data/dN.j
 
 ### Data model (`data/dN.json`)
 `{domain, subjects:[{id "d<D>s<N>", title, learn[4-6], traps[3-5], questions[]}]}`; a question is `{id, concept, type single|multi, stem, options[], correct[0-based], explanation, mnemonic}`.
-- `concept` ties rephrased variants of the same fact together; the runtime uses it to keep variants apart in a session, and `validate.py` requires ≥4 repeated concepts per subject.
+- `concept` ties rephrased variants of the same fact together; the runtime uses it to keep variants apart in a session, and `validate.py` requires ≥4 repeated concepts per subject. Two near-identical questions with different concepts can be served back to back, so give deliberate variants the same concept.
+- Other per-subject validator floors: ≥11 questions and ≥ max(2, n//6) multi questions. Removing or retyping a question can break these, so replace within the same subject and keep the single/multi mix.
 - Multi-answer stems must say "Select TWO/THREE" matching `correct.length`.
 - Domain titles, weights and colours are hardcoded in `template.html` (`DOMAINS`, `--d1..--d7`), not in the JSON.
 
@@ -62,7 +68,7 @@ The edit loop is always: change `template.html` (behaviour/design) or `data/dN.j
 - Correct and incorrect options must be of similar word length (validator flags ratio outside 0.75–1.3, and correct-is-longest above 55%).
 - No letter prefixes in options, no "all/none of the above", mnemonic ≤ ~18 words and encoding the actual fact.
 - **No worked-example questions.** The notes illustrate points with scenarios (the five-clean-demo reconciliation pipeline, the GBP 5,000 / 41-of-14,000 claims misroute, the 50-section contract fan-out, the order-status RAG trace, the 50-session A/B test, the hospital dictation call, the CTO invoice, etc.). Questions and learn/trap cards must test the general rule the notes state *outside* the example, not the example's particulars or setup; a short newly invented scenario is fine. 102 such questions were replaced on 2026-10-04 (`source/review/WORKED_EXAMPLE_REVIEW.md`, `APPLIED_CHANGES.md`).
-- **Takeaway coverage is an invariant.** Every claim in each notes file's closing takeaways section has a learn/trap card that states it and at least one question that tests it (`source/review/TAKEAWAY_COVERAGE.md` holds the claim → card → question map). Keep it true when removing or rewording questions/cards.
+- **Takeaway coverage is an invariant.** Every claim in each notes file's closing takeaways section has a learn/trap card that states it and at least one question that tests it (`source/review/TAKEAWAY_COVERAGE.md` holds the claim → card → question map). Keep it true when removing or rewording questions/cards. The sections are headed differently in each file: "Key takeaways" (01, 04), "Five takeaways" (02), "Five things that hold across everything here" (03), "Recap: four things…" (05).
 - **Question ids are never reused.** Replaced questions get a new id; removed ids are retired (current subjects jump numbers, e.g. there is no d1s1q03). Saved progress is keyed by id.
 - Always re-run `validate.py` on the edited bank, then `build.py`.
 - The notes flag several time-sensitive facts ("verify at publish time": model support, Foundry EU residency, `inference_geo` values, FedRAMP routes). Questions phrase these as "verify" rather than asserting them as permanent.
