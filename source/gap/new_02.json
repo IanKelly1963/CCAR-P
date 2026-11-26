@@ -1,0 +1,338 @@
+{
+  "gaps": [
+    {"subject": "d4s1", "area": "Judge reasoning and judge-prompt engineering", "source": "02.txt L48-52", "summary": "A judge must return reasoning with its score or its borderline inconsistency is hard to detect, and the judge prompt itself must be engineered and tested; the bank tests calibration and rigor but not these.", "question_count": 2},
+    {"subject": "d4s1", "area": "Volume over perfection in eval sets", "source": "02.txt L65", "summary": "Many automatically gradable cases beat a few hand-graded ones because broad cheap coverage catches more regressions and runs on every change.", "question_count": 2},
+    {"subject": "d4s1", "area": "Eval cost is a secondary constraint", "source": "02.txt L78", "summary": "Do not shrink the eval set to save judge API calls; under-evaluating is the bigger risk, so size for confidence and treat cost as secondary.", "question_count": 2},
+    {"subject": "d4s1", "area": "Manual spot-checks are not evals", "source": "02.txt L83, L93", "summary": "The third postmortem decision (spot-checks used as an eval substitute) is untested: spot-checks confirm known inputs but say nothing about unknown ones.", "question_count": 1},
+    {"subject": "d4s1", "area": "Five-stage eval workflow order", "source": "02.txt L13-31", "summary": "The sequential eval workflow (define task, golden dataset, automated checks, judge, interpret and act) is not tested as an ordering.", "question_count": 1},
+    {"subject": "d4s2", "area": "Why backoff, caps, and where retries sit", "source": "02.txt L123, L126, L445", "summary": "Backoff exists to stop a retry flood turning a hiccup into an outage, with capped attempts and total wait, and retries belong close to the API call; the bank tests only which errors to retry and the breaker/fallback placements.", "question_count": 2},
+    {"subject": "d1s6", "area": "Feasible-as-scoped rests on stated assumptions", "source": "02.txt L201-203", "summary": "A feasible-as-scoped verdict must state its assumptions because it becomes feasible-with-constraints when they change; only the other two verdicts are tested.", "question_count": 2},
+    {"subject": "d1s6", "area": "Working memory is the most overlooked property", "source": "02.txt L231, L190-192", "summary": "Working memory is the property feasibility assessments most often miss because small clean dev inputs never hit it, compensated by chunking, progressive loading or pipelines.", "question_count": 2},
+    {"subject": "d1s6", "area": "Call-volume source and sensitivity analysis", "source": "02.txt L172, L175", "summary": "Call volume must come from the business owner (including multi-turn continuations), not a sample dataset, and step four tests volume doubling and tail shift.", "question_count": 2},
+    {"subject": "d1s6", "area": "Payback period: build vs run cost and sensitivity", "source": "02.txt L217-218", "summary": "ROI step three subtracts only recurring run cost while build cost enters the payback period, which must be quoted with sensitivity; the bank tests only the step sequence.", "question_count": 2},
+    {"subject": "d1s6", "area": "Context window capacity is part of the tier decision", "source": "02.txt L246", "summary": "Whether a 300-page document fits depends on the tier's window (1M vs 200k), so context capacity is a model-tier decision rather than a settled assumption.", "question_count": 1},
+    {"subject": "d3s1", "area": "Entry-point trade-offs (raw loop vs Agent SDK, API/SDK/MCP costs)", "source": "02.txt L257-274", "summary": "The trade-off column is untested: custom logic between turns needs a raw API loop, the direct API owns retries/streaming/orchestration, SDK upgrades need code review, MCP complicates debugging.", "question_count": 2},
+    {"subject": "d3s4", "area": "GDPR does not itself require EU residency", "source": "02.txt L299, L302", "summary": "GDPR compliance does not require EU residency (transfers with a valid mechanism are lawful), and moving data out of the pinned region needs a documented legal basis.", "question_count": 2},
+    {"subject": "d3s4", "area": "Observability column of the constraint matrix", "source": "02.txt L291-315", "summary": "The per-constraint logging requirements (GDPR legal basis and deletion, internal policy feeding existing infrastructure, firm-owned gateway logs) are not tested.", "question_count": 1}
+  ],
+  "questions": [
+    {
+      "subject": "d4s1", "concept": "judge-reasoning-and-prompt", "type": "single",
+      "stem": "A team's LLM judge returns only a numeric score for each item. Reviewers suspect it grades borderline cases inconsistently but cannot confirm it. Which change most directly helps?",
+      "options": [
+        "Switch the judge to free-form scores on a wider numeric scale",
+        "Replace the judge with code-based checks for every behavior",
+        "Require the judge to return its reasoning alongside each score",
+        "Run the same judge twice and average the two scores"
+      ],
+      "correct": [2],
+      "explanation": "Judge models can be inconsistent on borderline cases, and without reasoning produced alongside the score that inconsistency is hard to detect. Free-form scores move away from constrained verdicts, and code-based checks cannot assess behaviors that need interpretation.",
+      "mnemonic": "No 'why', no spy: the judge's reasoning exposes its wobble on borderline cases."
+    },
+    {
+      "subject": "d4s1", "concept": "judge-reasoning-and-prompt", "type": "multi",
+      "stem": "Which TWO statements about model-based (LLM judge) evals are accurate? Select TWO.",
+      "options": [
+        "A judge costs nothing extra because it reuses the production model call",
+        "The judge prompt is itself a prompt that must be engineered and tested",
+        "A judge is best reserved for format and schema compliance checks",
+        "A judge receives the original prompt, the system output and a scoring rubric",
+        "A judge never drifts, so it can replace human calibration entirely"
+      ],
+      "correct": [1, 3],
+      "explanation": "A judge is given the original prompt, the output and a rubric, and its own prompt needs engineering and testing like any other. Each judged item is an extra API call, schema checks belong in code, and it is code-based checks (not judges) that never drift.",
+      "mnemonic": "Prompt, output, rubric in; the judge's own prompt needs testing too."
+    },
+    {
+      "subject": "d4s1", "concept": "volume-over-perfection", "type": "single",
+      "stem": "A team can afford either 40 cases graded carefully by hand or 2,000 automatically gradable cases that run on every change. Which choice reflects sound eval practice?",
+      "options": [
+        "The 2,000 automated cases, since broad cheap coverage catches more regressions",
+        "The 40 hand-graded cases, since human grading is the most trustworthy",
+        "The 40 hand-graded cases, run only before each major release",
+        "Neither, until a judge model is fine-tuned on the domain"
+      ],
+      "correct": [0],
+      "explanation": "Favor volume over perfection: many automatically gradable cases catch more regressions than a small painstaking set and can run on every change. Human grading is the last rung of the ladder, reserved for high-stakes or novel behaviors, not the default.",
+      "mnemonic": "Many cheap checks beat a few perfect ones: volume catches regressions."
+    },
+    {
+      "subject": "d4s1", "concept": "volume-over-perfection", "type": "multi",
+      "stem": "Why is a large set of automatically gradable eval cases preferred over a handful of manually graded ones? Select TWO.",
+      "options": [
+        "Hand grading is prohibited for high-stakes or novel behaviors",
+        "Broad, cheap coverage catches more regressions than a small set",
+        "Automated grading removes the need to calibrate any judge",
+        "Automatically gradable cases can run on every change",
+        "Small hand-graded sets cannot capture a schema check"
+      ],
+      "correct": [1, 3],
+      "explanation": "Broad automated coverage catches more regressions and is cheap enough to run on every change. Human grading is still the right tool for high-stakes or novel cases, and any LLM judge still needs calibration against human labels.",
+      "mnemonic": "Wide and cheap, run every change: breadth beats a boutique hand-graded set."
+    },
+    {
+      "subject": "d4s1", "concept": "eval-cost-secondary", "type": "single",
+      "stem": "A finance sponsor asks the team to cut its model-graded eval set from 1,500 items to 100 to save on judge API calls. What is the best architect response?",
+      "options": [
+        "Agree, since judge API calls are the dominant cost of an eval program",
+        "Size the set for confidence; an escaped regression costs far more than calls",
+        "Agree, but compensate by raising the pass threshold on the 100 items",
+        "Replace the judge with manual spot-checks on a handful of outputs"
+      ],
+      "correct": [1],
+      "explanation": "Cost is worth watching but should not drive the eval set below what the use case warrants; a production-breaking change slipping through an undersized suite costs far more than extra API calls. A higher threshold on a tiny set does not restore coverage, and spot-checks are not evals.",
+      "mnemonic": "Skimp on evals, pay in incidents: confidence sizes the set, cost comes second."
+    },
+    {
+      "subject": "d4s1", "concept": "eval-cost-secondary", "type": "single",
+      "stem": "When sizing a golden dataset for a production Claude system, how should the cost of model-based evals be treated?",
+      "options": [
+        "As the primary constraint that caps the number of eval items",
+        "As irrelevant, because eval calls are billed at a discounted rate",
+        "As a reason to grade only items that failed in production",
+        "As a secondary constraint behind confidence in the results"
+      ],
+      "correct": [3],
+      "explanation": "Size the dataset against what gives you confidence in the results and treat cost as secondary, because under-evaluating is the bigger risk. Cost is not irrelevant, since every model-based eval is an API call, but it should not be the primary cap.",
+      "mnemonic": "Confidence first, cost second: an undersized suite is the expensive one."
+    },
+    {
+      "subject": "d4s1", "concept": "spot-checks-not-evals", "type": "single",
+      "stem": "A team declares its assistant ready because it answered every input they tried correctly during the demo. Why are these manual spot-checks not a substitute for an eval suite?",
+      "options": [
+        "They are slower than a judge model and cost more per item",
+        "They cannot check format compliance or schema validity",
+        "They confirm specific known inputs but say nothing about unknown inputs",
+        "They must be repeated by a different person to avoid self-preference"
+      ],
+      "correct": [2],
+      "explanation": "Spot-checks show that a particular input yields a particular output, but cannot show correct behavior on inputs nobody thought of, and production surfaces exactly those. Speed and format checking are not the core problem; coverage of the real input distribution is.",
+      "mnemonic": "Spot-checks prove the inputs you thought of; production brings the rest."
+    },
+    {
+      "subject": "d4s1", "concept": "eval-workflow-sequence", "type": "single",
+      "stem": "Which sequence matches the eval workflow, in which each stage's output feeds the next?",
+      "options": [
+        "Build the golden dataset, define the task, score with a judge, run automated checks, interpret and act",
+        "Define the task, run automated checks, build the golden dataset, interpret and act, score with a judge",
+        "Score with a judge, define the task, build the golden dataset, run automated checks, interpret and act",
+        "Define the task, build the golden dataset, run automated checks, score with a judge, interpret and act"
+      ],
+      "correct": [3],
+      "explanation": "The task specification and pass criteria come first, then the labeled golden dataset, then cheap automated checks for unambiguous behavior, then a judge for behaviors needing interpretation, and finally aggregate interpretation with a per-category breakdown. Building data before defining the task produces a vague eval.",
+      "mnemonic": "Define, Data, Deterministic checks, Judge, Decide: spec to dataset to scores to action."
+    },
+    {
+      "subject": "d4s2", "concept": "backoff-purpose-and-placement", "type": "single",
+      "stem": "A service retries every failed model call immediately and without limit. During a brief rate-limit episode the retries keep the endpoint saturated far longer than the original hiccup. What is the correct design?",
+      "options": [
+        "Exponential backoff with growing waits, capped attempts and a capped total wait",
+        "A fallback chain that sends every failed request straight to a cached response",
+        "Immediate retries spread across several API keys to raise the rate limit",
+        "A circuit breaker placed close to the API call that never retries"
+      ],
+      "correct": [0],
+      "explanation": "Exponential backoff lengthens the delay between attempts so a flood of retries does not turn a brief hiccup into a prolonged outage, with maximum attempts and total wait set by the use case's delay tolerance. Circuit breakers belong at the service boundary, not beside the API call.",
+      "mnemonic": "Back off, don't pile on: doubling waits and capped tries keep a hiccup a hiccup."
+    },
+    {
+      "subject": "d4s2", "concept": "backoff-purpose-and-placement", "type": "multi",
+      "stem": "Which TWO pairings of reliability control and placement in the call stack are correct? Select TWO.",
+      "options": [
+        "Circuit breakers: close to the API call",
+        "Fallback chains: at the service boundary",
+        "Retries with exponential backoff: close to the API call",
+        "Retries with exponential backoff: in the orchestration layer",
+        "Fallback chains: in the orchestration layer"
+      ],
+      "correct": [2, 4],
+      "explanation": "Retries sit close to the API call, circuit breakers at the service boundary, and fallback chains in the orchestration layer. Putting a control in the wrong layer protects the wrong part of the system and leaves the right part exposed.",
+      "mnemonic": "Retry at the call, break at the boundary, fall back in orchestration."
+    },
+    {
+      "subject": "d1s6", "concept": "feasible-as-scoped-assumptions", "type": "single",
+      "stem": "A use case is judged feasible as scoped: every capability favors Claude, cost is under the ceiling and p95 is inside the SLA. What must the verdict document?",
+      "options": [
+        "Nothing further, since no compensating control changes the architecture",
+        "Each failure mode for every constraint the design could violate",
+        "Its assumptions, since changed assumptions can make it feasible with constraints",
+        "The scope reduction that would make the verdict not feasible"
+      ],
+      "correct": [2],
+      "explanation": "A feasible-as-scoped verdict should state its assumptions clearly, because it becomes feasible with constraints when those assumptions change. Documenting each constraint's failure mode belongs to the feasible-with-constraints verdict, and naming a scope reduction belongs to not feasible.",
+      "mnemonic": "Feasible as scoped stands on assumptions: write them down before they shift."
+    },
+    {
+      "subject": "d1s6", "concept": "feasible-as-scoped-assumptions", "type": "single",
+      "stem": "A design was declared feasible as scoped on the stated assumption that documents stay under 20 pages. Months later the business starts sending 150-page documents. How should the verdict be viewed?",
+      "options": [
+        "It still holds, because feasibility was approved at project sign-off",
+        "It becomes not feasible automatically, so the project must stop",
+        "It is unaffected, because document length is an implementation detail",
+        "It moves to feasible with constraints, since its assumption changed"
+      ],
+      "correct": [3],
+      "explanation": "Feasible-as-scoped verdicts become feasible with constraints when their assumptions change, so the new length becomes a documented constraint with its failure mode. A changed assumption does not automatically mean not feasible, and an approval at sign-off does not freeze the verdict.",
+      "mnemonic": "Assumption breaks, verdict shifts: scoped becomes constrained, not cancelled."
+    },
+    {
+      "subject": "d1s6", "concept": "working-memory-overlooked", "type": "single",
+      "stem": "Which of the four AI properties is most often overlooked in a feasibility assessment, and why?",
+      "options": [
+        "Working memory, since small, clean development inputs rarely hit the window",
+        "Knowledge, since domain gaps only appear after the model is updated",
+        "Steerability, since instructions always look concrete during scoping",
+        "Next token prediction, since extraction errors are visible in demos"
+      ],
+      "correct": [0],
+      "explanation": "Working memory is the most overlooked property because it rarely shows up during development on small, clean inputs, yet it surfaces in production. Skipping any property risks missing a constraint that changes the design.",
+      "mnemonic": "Memory hides in small demos: working memory bites only at production size."
+    },
+    {
+      "subject": "d1s6", "concept": "working-memory-overlooked", "type": "single",
+      "stem": "A multi-document review tool passed every development test on short sample files. In production, requests combining dozens of long documents begin to fail. Which feasibility check was most likely skipped, and what compensates?",
+      "options": [
+        "The knowledge check; fine-tune the model on the document corpus",
+        "The steerability check; add more few-shot examples to the prompt",
+        "The next token check; raise the sampling temperature for variety",
+        "The working memory check; chunking, progressive loading or a pipeline"
+      ],
+      "correct": [3],
+      "explanation": "When inputs in aggregate exceed the context window, the working memory property applies, compensated by chunking, progressive context loading, summarization across turns or a pipeline architecture. Knowledge and steerability address different limits and would not fix an input that does not fit.",
+      "mnemonic": "Too much to hold? Chunk it, stage it, pipeline it."
+    },
+    {
+      "subject": "d1s6", "concept": "sizing-volume-and-sensitivity", "type": "single",
+      "stem": "When building a sizing model for a customer service agent, where should the call volume figure come from?",
+      "options": [
+        "The request count observed in the POC sample dataset",
+        "The business owner, including multi-turn continuation calls per conversation",
+        "The developer's estimate based on similar past projects",
+        "The documented rate limit per minute for the model tier"
+      ],
+      "correct": [1],
+      "explanation": "Call volume comes from the business requirement and the business owner, not from developer intuition or a sample dataset, and a conversation can generate continuation calls beyond the first. A POC sample does not give an accurate production figure.",
+      "mnemonic": "Volume comes from the owner, not the sample: count the follow-up turns too."
+    },
+    {
+      "subject": "d1s6", "concept": "sizing-volume-and-sensitivity", "type": "multi",
+      "stem": "A sizing model is complete except for step four, the sensitivity analysis. Which TWO questions does that step ask? Select TWO.",
+      "options": [
+        "Which model tier did the POC happen to use?",
+        "What happens to cost if call volume doubles?",
+        "How many engineers are needed to build the system?",
+        "What happens if the token distribution shifts toward the tail?",
+        "Which vendor has the lowest list price this quarter?"
+      ],
+      "correct": [1, 3],
+      "explanation": "Sensitivity analysis asks how cost moves if volume doubles or the token distribution shifts toward the tail, revealing how fragile the model is and which assumptions to verify with the business owner. The POC's tier and staffing do not test the model's fragility.",
+      "mnemonic": "Double the volume, fatten the tail: sensitivity shows where the cost model snaps."
+    },
+    {
+      "subject": "d1s6", "concept": "roi-payback-period", "type": "single",
+      "stem": "In the four-step ROI mapping, where should the one-off build cost be accounted for?",
+      "options": [
+        "Subtracted with run cost from the monthly operational gain",
+        "Folded into the baseline state as a cost of today's process",
+        "In the payback period, alongside accumulated gain and run cost",
+        "Excluded, since only recurring run cost affects the value case"
+      ],
+      "correct": [2],
+      "explanation": "Step three subtracts only the recurring run cost taken from the sizing model; build cost is handled separately in step four, where payback is the time for accumulated gain to cover build and run cost. Excluding build cost entirely would overstate the case.",
+      "mnemonic": "Run cost in step three, build cost in the payback: keep the bills apart."
+    },
+    {
+      "subject": "d1s6", "concept": "roi-payback-period", "type": "single",
+      "stem": "A value statement reports a net monthly gain and a single payback period of seven months, with nothing further. What is the main weakness?",
+      "options": [
+        "It should report the payback period in tokens rather than months",
+        "It omits the latency p95, which belongs in the payback figure",
+        "It should use the POC bill as the run cost for accuracy",
+        "It lacks sensitivity on how payback shifts if volume or gain assumptions fail"
+      ],
+      "correct": [3],
+      "explanation": "A payback period should come with sensitivity showing how it moves if volume or gain-per-task assumptions are wrong; a single figure invites decisions on one optimistic scenario. Using the POC bill as run cost would repeat the demo-cost mistake.",
+      "mnemonic": "One payback number is a wish; payback plus sensitivity is a plan."
+    },
+    {
+      "subject": "d1s6", "concept": "context-window-tier", "type": "single",
+      "stem": "A partner must process framework agreements of up to 300 pages. Which statement best reflects how this affects the design?",
+      "options": [
+        "All current tiers share one window, so chunking is never required",
+        "Long documents are a latency problem, solved by parallel requests",
+        "Window capacity is a tier decision; a 1M-token window may avoid chunking",
+        "Page count only affects cost, so the tier choice is unchanged"
+      ],
+      "correct": [2],
+      "explanation": "Whether a long contract fits depends on the tier: a 1 million token window can take a 300-page contract without chunking, while a 200k window may need a chunking strategy. Context capacity is therefore part of the model tier decision, not a settled assumption.",
+      "mnemonic": "Window size rides with the tier: 1M swallows the contract, 200k may need chunks."
+    },
+    {
+      "subject": "d3s1", "concept": "entry-point-tradeoffs", "type": "single",
+      "stem": "A team needs Claude to work across many tool-using turns inside its product, but must run custom validation logic between every turn. Which approach fits?",
+      "options": [
+        "The Agent SDK, since its managed loop exposes every iteration step",
+        "A raw API loop, accepting the cost of building and maintaining it",
+        "Claude Code, since it already handles multi-turn tool execution",
+        "An MCP server, which adds control between turns of the loop"
+      ],
+      "correct": [1],
+      "explanation": "The Agent SDK's managed loop gives up fine-grained control over each iteration, so custom logic between turns calls for a raw API loop, at the cost of building and maintaining it. Claude Code is not a product backend, and MCP standardizes tool connections rather than loop control.",
+      "mnemonic": "Need hands between turns? Write the loop yourself; the Agent SDK drives its own."
+    },
+    {
+      "subject": "d3s1", "concept": "entry-point-tradeoffs", "type": "multi",
+      "stem": "Which TWO trade-offs of build-time entry points are stated correctly? Select TWO.",
+      "options": [
+        "Agent SDK: the managed loop gives the finest control over each iteration",
+        "Direct API: you build and maintain retries, streaming, tool orchestration and errors",
+        "MCP: it removes a protocol layer, so tool calls are easier to debug",
+        "SDK: version upgrades can change behavior, so review code before deploying",
+        "SDK: it handles orchestration for you, leaving only HTTP to your code"
+      ],
+      "correct": [1, 3],
+      "explanation": "The direct API gives full control but leaves retries, streaming, tool orchestration and error handling to you, and SDK upgrades can occasionally change behavior, needing code review. The SDK handles the HTTP layer and leaves orchestration to your code, and MCP adds a protocol layer that makes debugging harder.",
+      "mnemonic": "API: you own it all. SDK: owns HTTP, review upgrades. MCP: extra layer, harder debug."
+    },
+    {
+      "subject": "d3s4", "concept": "gdpr-not-residency", "type": "single",
+      "stem": "A partner with no separate residency policy says 'GDPR means every request must run in an EU region.' Which response is accurate?",
+      "options": [
+        "GDPR does not require EU residency; transfers with a valid mechanism are lawful",
+        "Correct; GDPR compliance requires EU-pinned model execution",
+        "Correct; set inference_geo to an EU value on the direct API",
+        "GDPR applies only to cloud routes, not to the direct Claude API"
+      ],
+      "correct": [0],
+      "explanation": "GDPR compliance does not itself require EU residency, because cross-border transfers are lawful with a valid transfer mechanism; a cloud route is needed only where a deployment has an EU residency requirement. inference_geo supports only 'us' and 'global', so it cannot pin EU in any case.",
+      "mnemonic": "GDPR is not geography: a valid transfer mechanism, not blanket EU pinning."
+    },
+    {
+      "subject": "d3s4", "concept": "gdpr-not-residency", "type": "single",
+      "stem": "In a GDPR deployment pinned to an approved region, when may personal data be moved outside that region?",
+      "options": [
+        "Whenever the cloud route's default global endpoint is selected",
+        "Never, since GDPR forbids all transfers outside the EU",
+        "Whenever the DPA is signed directly with Anthropic",
+        "Only with a documented legal basis, built in when explicitly justified"
+      ],
+      "correct": [3],
+      "explanation": "Personal data is processed within the pinned region, and moving it across borders requires a documented legal basis and is built in only when explicitly justified. GDPR does not forbid all transfers, and neither a global endpoint default nor the DPA counterparty creates a legal basis.",
+      "mnemonic": "Crossing the border needs a passport: a documented legal basis."
+    },
+    {
+      "subject": "d3s4", "concept": "matrix-observability", "type": "multi",
+      "stem": "Which TWO pairings of governing constraint and logging requirement match the constraint-to-integration matrix? Select TWO.",
+      "options": [
+        "GDPR: logs record who accessed data, the legal basis and deletion timing",
+        "HIPAA: logs exclude user identity to keep PHI out of the record",
+        "FedRAMP: logs go to a separate system outside the authorized boundary",
+        "Internal residency policy: logs feed the partner's existing logging infrastructure",
+        "Attorney-client privilege: logs are kept by Anthropic rather than the firm"
+      ],
+      "correct": [0, 3],
+      "explanation": "GDPR logs record who accessed what, the legal basis and when it will be deleted, and an internal residency policy feeds logs into the partner's existing infrastructure rather than a new system. HIPAA logs do capture user identity, FedRAMP logs meet agency continuous monitoring, and privilege logs live at the firm's own gateway.",
+      "mnemonic": "GDPR logs the why and the when-deleted; internal policy logs into what exists."
+    }
+  ]
+}

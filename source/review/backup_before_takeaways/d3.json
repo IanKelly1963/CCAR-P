@@ -1,0 +1,1767 @@
+{
+ "domain": 3,
+ "subjects": [
+  {
+   "id": "d3s1",
+   "title": "Build-time interfaces, entry points and delivery routes",
+   "learn": [
+    "Claude Team adds admin controls, SSO/SAML, domain capture and a no-training commitment; Enterprise adds SCIM, configurable retention, audit logs, Compliance API and a HIPAA-ready option with a BAA.",
+    "API and SDK are the same entry point with different ergonomics; the Anthropic SDK does not run an agent loop. The Agent SDK is the managed loop that powers Claude Code, embedded in your own product.",
+    "MCP is a sharing convention across clients, not an alternative to API tool use; with only one client it adds overhead without payback.",
+    "Claude Code is built for developer workflows and is not a backend for multi-tenant or customer-facing products; use the API, client SDK or Agent SDK.",
+    "Four delivery routes (first-party, Bedrock, Vertex, Foundry) are chosen by cloud commitments, procurement and identity, not capability. CSP routes lag on new features; model IDs differ.",
+    "Skills attach through container.skills and /v1/skills and need the Code Execution Tool. The entry point should follow the work, not precede it."
+   ],
+   "traps": [
+    "SDK equals agent loop: the Anthropic SDK is only a typed wrapper over the API; the loop is still your code. The Agent SDK is the one that runs it.",
+    "MCP as default: treating MCP as the integration layer for everything, or as a rival to API tool use, when only one client needs the tools.",
+    "Claude Code everywhere: reaching for it on non-engineering work or as the engine of a customer-facing product.",
+    "Capability-based route choice: picking Bedrock, Vertex or Foundry for model quality, when the model is the same and commitments decide.",
+    "Feature parity assumption: assuming CSP routes ship new features the day first-party does, or share model identifiers."
+   ],
+   "questions": [
+    {
+     "id": "d3s1q01",
+     "concept": "sdk-vs-agent-sdk",
+     "type": "single",
+     "stem": "An engineer proposes adopting the Anthropic Python SDK 'so we do not have to write the agent loop'. Which statement about the SDK is accurate?",
+     "options": [
+      "It wraps the API with typed helpers, but any agent loop is still the partner's own code",
+      "It is a separate entry point whose model behaviour differs from the direct API",
+      "It runs a managed loop that iterates tool calls and handles termination until completion",
+      "It supplies the same iteration and stop logic that powers Claude Code in partner apps"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "The SDK is a convenience wrapper over the same API entry point; it handles authentication, retries, streaming and tool-use boilerplate but runs no agent loop. The managed loop belongs to the Agent SDK.",
+     "mnemonic": "SDK wraps, Agent SDK loops."
+    },
+    {
+     "id": "d3s1q02",
+     "concept": "sdk-vs-agent-sdk",
+     "type": "single",
+     "stem": "A team wants Claude to work across many turns inside their own web application, with iteration, tool execution and termination handled for them. Which build-time interface fits best?",
+     "options": [
+      "An MCP server, since it manages the agent loop for every connected client",
+      "The Agent SDK, which runs the managed loop used by Claude Code from your own code",
+      "The Anthropic Python SDK, which handles tool use and keeps iterating until the task is done",
+      "The direct API, since it already includes iteration and termination handling for you"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "The Agent SDK is the managed runtime for multi-turn tool use embedded in your own product. The Anthropic SDK only reduces boilerplate, and MCP shares tools across clients rather than running a loop.",
+     "mnemonic": "Many turns in my app? Agent SDK."
+    },
+    {
+     "id": "d3s1q03",
+     "concept": "mcp-vs-api-tool-use",
+     "type": "single",
+     "stem": "One internal support app is the only client that will ever use three custom tools. A colleague insists on building an MCP server for them. What is the best response?",
+     "options": [
+      "Build the MCP server, because MCP replaces API tool use as the standard calling convention",
+      "Use API tool use directly, because MCP's reuse benefit is absent and adds overhead",
+      "Build the MCP server, because MCP is the default integration layer for any tool",
+      "Move the tools to the Agent SDK, because MCP cannot run inside a single product"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "MCP is a sharing convention across clients. When tools live inside one product only, raw API tool use is the better choice and MCP adds protocol overhead and harder debugging.",
+     "mnemonic": "One client, no MCP."
+    },
+    {
+     "id": "d3s1q04",
+     "concept": "mcp-vs-api-tool-use",
+     "type": "multi",
+     "stem": "Which TWO statements about MCP and API tool use are accurate? Select TWO.",
+     "options": [
+      "MCP is an alternative that replaces API tool use in a single product",
+      "MCP is required whenever Claude calls any tool",
+      "MCP removes debugging complexity compared with direct function calls",
+      "An MCP server exposes tools that clients then call using API tool use",
+      "MCP is a convention for sharing tools across multiple Claude clients"
+     ],
+     "correct": [
+      3,
+      4
+     ],
+     "explanation": "MCP and API tool use operate at different layers: MCP exposes and discovers tools across clients, and the calls themselves still use API tool use. MCP actually makes tool-call debugging more complex, not simpler.",
+     "mnemonic": "MCP shares; API tool use calls."
+    },
+    {
+     "id": "d3s1q05",
+     "concept": "claude-code-not-backend",
+     "type": "single",
+     "stem": "A startup plans to run Claude Code behind its customer-facing, multi-tenant support portal because it already works well for their developers. What should the architect recommend?",
+     "options": [
+      "Keep Claude Code but assign each tenant a separate permission mode to provide proper isolation",
+      "Build on the Claude API, client SDK or Agent SDK, since Claude Code targets developer workflows",
+      "Switch to Claude Cowork, which is the supported backend for customer-facing products",
+      "Keep Claude Code and add hooks, since the governing layers make it multi-tenant safe"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Claude Code is not designed as a backend for multi-user or customer-facing products. Product integrations should use the API, SDK or Agent SDK. Hooks and permission modes do not change its intended use.",
+     "mnemonic": "Devs use Claude Code; customers get the API."
+    },
+    {
+     "id": "d3s1q06",
+     "concept": "claude-code-not-backend",
+     "type": "single",
+     "stem": "What is the strongest reason not to choose Claude Code as the engine of a customer-facing product?",
+     "options": [
+      "It is only available through the Bedrock and Vertex delivery routes, not first-party",
+      "It targets developer workflows rather than serving as a multi-tenant or customer-facing backend",
+      "It offers no permission boundaries or sandboxing options for production use at all",
+      "It cannot read or edit any files outside a single repository directory on the machine"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Claude Code targets developer workflows and is not meant for multi-tenant products. It does have permission boundaries and hooks, and it is not route-restricted.",
+     "mnemonic": "Claude Code: developer desk, not customer door."
+    },
+    {
+     "id": "d3s1q07",
+     "concept": "route-by-commitment",
+     "type": "single",
+     "stem": "A partner has a committed AWS enterprise agreement, uses IAM everywhere and wants AI spend to draw down against that commitment. Which delivery route is usually easiest, and why?",
+     "options": [
+      "Foundry, because Entra ID federates with IAM at no extra effort or cost",
+      "The first-party API, because it always offers the strongest model capability on any route",
+      "Bedrock, because spend, identity and audit inherit from the existing AWS agreement",
+      "Vertex AI, because it provides the broadest regional availability of any delivery route"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Routes are chosen by what the partner has already committed to, not by capability: the model behaves the same on each. AWS contract plus IAM points to Bedrock.",
+     "mnemonic": "Where you've signed, there you route."
+    },
+    {
+     "id": "d3s1q08",
+     "concept": "route-by-commitment",
+     "type": "single",
+     "stem": "What should primarily decide among the Anthropic first-party, Bedrock, Vertex and Foundry delivery routes?",
+     "options": [
+      "Differences in reasoning quality between the model versions on each route",
+      "Which route supports the largest context-window behaviour for long documents",
+      "Whether prompting and evaluation strategy can transfer between the routes",
+      "Existing cloud commitments, procurement contracts and the partner's identity system"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "The model, prompting, evaluation strategy, tool use and context behaviour are the same across routes. What differs is the wrapper: billing, identity, region and procurement.",
+     "mnemonic": "Same model, different paperwork."
+    },
+    {
+     "id": "d3s1q09",
+     "concept": "csp-route-lag",
+     "type": "single",
+     "stem": "A partner on Vertex AI asks why a feature announced by Anthropic last week is not yet available to them. What is the most consistent explanation?",
+     "options": [
+      "Cloud routes tend to lag the first-party API on new features by weeks",
+      "The partner's prompts must be rewritten for Vertex before features unlock",
+      "The feature needs a Claude Enterprise plan before it works on Vertex",
+      "Vertex serves a weaker model variant that has different tool-use behaviour"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Bedrock, Vertex and Foundry typically trail the first-party API on new features. Prompting and tool use transfer unchanged, so the lag is a delivery matter, not a model difference.",
+     "mnemonic": "Cloud routes trail the launch day."
+    },
+    {
+     "id": "d3s1q10",
+     "concept": "route-differences",
+     "type": "multi",
+     "stem": "When the same Claude model is reached through a different delivery route, which TWO things change? Select TWO.",
+     "options": [
+      "Context-window behaviour of the model",
+      "Model identifiers and version strings",
+      "Regional availability and CSP-side wrapper features",
+      "The prompting strategy needed for equivalent results",
+      "Tool-use semantics inside a single request"
+     ],
+     "correct": [
+      1,
+      2
+     ],
+     "explanation": "Identifiers, regional availability and wrapper concepts (inference profiles, model deployments, Model Garden controls) differ. Prompting, evaluation, tool use and context behaviour all transfer.",
+     "mnemonic": "New wrapper, same brain."
+    },
+    {
+     "id": "d3s1q11",
+     "concept": "foundry-hosting",
+     "type": "single",
+     "stem": "A GDPR-sensitive partner wants to deploy Claude on Microsoft Foundry. Foundry offers Hosted on Azure and Hosted on Anthropic infrastructure forms. What should the architect do?",
+     "options": [
+      "Assume all Foundry models run inside the partner's Azure environment by default",
+      "Assume Entra ID authentication guarantees EU residency for every deployed model",
+      "Choose the Anthropic-infrastructure hosting form because it is generally available",
+      "Verify the hosting form and compliance posture of each specific model first"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Only the Hosted on Azure form runs inference in the partner's Azure environment; other models route to Anthropic-managed infrastructure. Residency claims must be checked per model.",
+     "mnemonic": "Foundry: check where inference actually runs."
+    },
+    {
+     "id": "d3s1q12",
+     "concept": "skills-integration",
+     "type": "single",
+     "stem": "A team attaches a versioned Skill to requests via container.skills and publishes it through /v1/skills. What dependency does this integration carry?",
+     "options": [
+      "The Code Execution Tool, which provides a sandboxed execution environment",
+      "An MCP server hosting the Skill for every connected client",
+      "A Bedrock inference profile used to version the Skill",
+      "The Agent SDK, which must run the Skill's managed loop"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Skills are an integration mechanism that require the Code Execution Tool to run, adding a sandboxed execution dependency to the pattern.",
+     "mnemonic": "Skills ride on code execution."
+    },
+    {
+     "id": "d3s1q13",
+     "concept": "claude-ai-tiers",
+     "type": "single",
+     "stem": "A firm already has SSO and now needs SCIM provisioning, configurable retention, audit logs and a Compliance API on Claude.ai. Which tier provides these?",
+     "options": [
+      "Team, which adds SCIM and the Compliance API on top of its existing admin controls",
+      "Pro, which adds audit logs for individual users and for small teams as well",
+      "Max, which adds configurable retention for shared Projects and uploaded files",
+      "Enterprise, adding SCIM, configurable retention, audit logs, Compliance API and a BAA option"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Team adds admin controls, SSO/SAML, domain capture and a no-training commitment. SCIM, retention settings, audit logs, Compliance API and the HIPAA-ready BAA option are Enterprise.",
+     "mnemonic": "Team has SSO; Enterprise has SCIM and audit."
+    },
+    {
+     "id": "d3s1q14",
+     "concept": "entry-point-follows-work",
+     "type": "multi",
+     "stem": "Which TWO are described as the most common entry point mistakes? Select TWO.",
+     "options": [
+      "Using the SDK instead of raw HTTP for typed helpers",
+      "Choosing the Agent SDK when a managed loop is needed",
+      "Treating MCP as the default integration layer regardless of reuse needs",
+      "Reaching for Claude Code on non-engineering work",
+      "Picking a delivery route by existing cloud commitment"
+     ],
+     "correct": [
+      2,
+      3
+     ],
+     "explanation": "The entry point should follow the work. Claude Code suits engineering, and MCP only pays back when tools are shared across clients. The other options are sound choices.",
+     "mnemonic": "Work first, entry point second."
+    },
+    {
+     "id": "d3s1q15",
+     "concept": "entry-point-follows-work",
+     "type": "single",
+     "stem": "Operations staff who are not developers need Claude to manage files and tasks directly on their own computers. Which entry point is the best fit?",
+     "options": [
+      "Claude in Chrome, since it automates file management across the desktop",
+      "Claude for Excel, since spreadsheets hold most operations task data",
+      "Claude Code, since it is the only entry point that can act on local files",
+      "Claude Cowork, the desktop agent for non-developers working with local files and applications"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Cowork targets non-engineering roles needing real system actions on the machine, with permission scoping and human review mattering more. Chrome fits web apps and Excel fits spreadsheets.",
+     "mnemonic": "Non-devs on their desktop: Cowork."
+    },
+    {
+     "id": "d3s1q16",
+     "concept": "sdk-default-raw-http",
+     "type": "single",
+     "stem": "A product team is embedding Claude in its TypeScript service and asks whether to call the HTTP API directly or use the official SDK. What is the recommended default, and what is the main exception?",
+     "options": [
+      "Use raw HTTP by default, since the SDK changes model behaviour relative to the direct API",
+      "Use the Agent SDK by default, since the client SDK cannot handle streaming or tool use",
+      "Use raw HTTP by default; switch to the SDK only once traffic justifies the wrapper overhead",
+      "Use the SDK by default; drop to raw HTTP only for a freshly shipped feature it lacks"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "The SDK is the same entry point as the API with language-native types, streaming and tool-use helpers, and it is the default for most teams. The only reason to drop to raw HTTP is an API feature the SDK has not exposed yet. Model behaviour does not differ between the two.",
+     "mnemonic": "SDK by default; HTTP only for the brand-new."
+    },
+    {
+     "id": "d3s1q17",
+     "concept": "sdk-default-raw-http",
+     "type": "single",
+     "stem": "A team on the Python SDK needs a capability Anthropic shipped on the API yesterday, but the SDK has not exposed it yet. What is the appropriate move?",
+     "options": [
+      "Call that feature over raw HTTP until the SDK catches up, keeping the SDK elsewhere",
+      "Move the whole integration to the Agent SDK, which exposes new API features first",
+      "Wait for a CSP route such as Bedrock, which ships new features before the SDK does",
+      "Build an MCP server around the feature so every client can reach it on day one"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "SDK abstractions move at Anthropic's release cadence, so a raw API feature the SDK lacks means dropping back to HTTP for that feature. CSP routes tend to lag the first-party API, so waiting on Bedrock delays the feature further.",
+     "mnemonic": "SDK lags the API? Bridge the gap with HTTP."
+    },
+    {
+     "id": "d3s1q18",
+     "concept": "claude-ai-zero-integration",
+     "type": "single",
+     "stem": "A software vendor wants Claude's chat experience inside its own customer portal, under its own branding and with control over which features users see. The sponsor proposes buying Claude.ai Enterprise seats. What is the core problem?",
+     "options": [
+      "Claude.ai Enterprise lacks SSO, so portal users could not sign in with their identity",
+      "Claude.ai runs a different model from the API, so answer quality would not match",
+      "Claude.ai cannot be embedded in another product or customized in what it exposes",
+      "Claude.ai requires a Bedrock or Vertex route before it can serve external customers"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Claude.ai has zero build cost but also zero integration: you get the product Anthropic ships, and you cannot embed it or change what it exposes. Embedding Claude in a product calls for the API or SDK. Enterprise does include SSO, and the model is the same.",
+     "mnemonic": "Claude.ai: zero build, zero embed."
+    },
+    {
+     "id": "d3s1q19",
+     "concept": "claude-ai-zero-integration",
+     "type": "single",
+     "stem": "Which statement captures the core tradeoff of Claude.ai as an entry point?",
+     "options": [
+      "Maximum control, but the partner's team owns retries, streaming and the UI",
+      "Reuse across clients, but added architectural complexity for a single client",
+      "A managed agent loop, but less fine-grained control over the orchestration",
+      "Zero build cost, but zero integration: you get the shipped product as it is"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Claude.ai trades zero build cost for zero integration, because the product cannot be embedded or customized. Maximum control with full ownership describes the direct API, reuse versus complexity describes MCP, and the managed loop describes the Agent SDK.",
+     "mnemonic": "Nothing to build, nothing to bend."
+    },
+    {
+     "id": "d3s1q20",
+     "concept": "claude-for-work-team-tier",
+     "type": "single",
+     "stem": "A 40-person consultancy wants staff on Claude.ai with SSO via SAML, domain capture, admin controls and a contractual commitment not to train on customer content. It has no need for SCIM, audit logs or a BAA. Which tier fits best?",
+     "options": [
+      "Max, the top consumer tier",
+      "Claude for Work, Team tier",
+      "Claude for Work, Enterprise tier",
+      "Pro, a consumer tier for individuals"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "The Team tier of Claude for Work adds admin controls, SSO and SAML, domain capture and a no-training commitment. Enterprise adds SCIM, configurable retention, audit logs, a Compliance API and a BAA option, none of which are needed here. Consumer tiers suit low-sensitivity work without governance controls.",
+     "mnemonic": "SSO plus no-training is Team; SCIM and audit is Enterprise."
+    },
+    {
+     "id": "d3s1q21",
+     "concept": "cowork-supervision",
+     "type": "single",
+     "stem": "An operations team adopts Claude Cowork to reorganize shared files and automate routine tasks on their desktops. Compared with a chat-only entry point, what deserves more design attention?",
+     "options": [
+      "Prompt caching configuration, because Cowork resends every local file on each turn",
+      "Permission scoping and human review, because Cowork acts directly on the user's machine",
+      "MCP server design, because Cowork can reach local files only through a custom server",
+      "Agent SDK orchestration, because Cowork needs partner code to run its action loop"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Cowork's tradeoff is real system actions versus supervision overhead. Because it works on the user's machine directly, permission scoping and human review matter more than they do in a chat-only entry point. It needs no custom MCP server or partner-written loop to reach local files.",
+     "mnemonic": "Cowork touches your machine: scope it, review it."
+    },
+    {
+     "id": "d3s1q22",
+     "concept": "bedrock-inference-profiles",
+     "type": "single",
+     "stem": "A partner on AWS Bedrock finds that the Claude model it needs is not available in every region its traffic comes from, and asks how Bedrock handles routing requests across regions. Which Bedrock concept addresses this?",
+     "options": [
+      "Model Garden access controls, which enable the model per project and region",
+      "Inference profiles, which solve the cross-region routing problem on Bedrock",
+      "Model deployments, which pin the model into the partner's own Azure region",
+      "The legacy InvokeModel path, which bypasses regional availability entirely"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "On Bedrock, regional availability matters and inference profiles solve cross-region routing. Model Garden access controls belong to Vertex and model deployments to Foundry. The architect needs to know these wrapper concepts exist even when the partner's engineers own the implementation.",
+     "mnemonic": "Bedrock crosses regions by profile."
+    },
+    {
+     "id": "d3s1q23",
+     "concept": "entry-point-cost-risk",
+     "type": "multi",
+     "stem": "A partner's use case is an internal drafting assistant for analysts. The proposal adds Claude.ai, Claude Code and a custom API app 'to keep options open'. Which TWO statements reflect sound entry-point guidance? Select TWO.",
+     "options": [
+      "Several entry points up front keep options open at little added integration cost",
+      "Add another entry point only when the use case genuinely spans it",
+      "Migration cost is mostly rewritten code, since user habits transfer between entry points",
+      "Starting on the right entry point is cheaper than migrating off the wrong one later",
+      "MCP should be the default integration layer so entry points can be swapped freely"
+     ],
+     "correct": [
+      1,
+      3
+     ],
+     "explanation": "Each entry point carries real integration cost, so pick more than one only when the use case spans them. Outgrowing the wrong entry point is expensive because of rewritten code and also the conventions and habits built around it, so starting on the right one is cheapest. Treating MCP as the default layer is a named mistake.",
+     "mnemonic": "One entry point per real need; start right, avoid the move."
+    },
+    {
+     "id": "d3s1q24",
+     "concept": "entry-point-cost-risk",
+     "type": "single",
+     "stem": "A team built on an entry point that no longer fits its work and now plans to migrate. Beyond rewriting code, what makes outgrowing the wrong entry point expensive?",
+     "options": [
+      "Model behaviour differs between entry points, so every prompt must be retrained",
+      "Anthropic charges a migration fee when a workload moves between entry points",
+      "Delivery routes are fixed per entry point, so the cloud contract must be renegotiated",
+      "The conventions and user habits that have built up around the original entry point"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Outgrowing the wrong entry point costs more than code: conventions and user habits form around it and have to be unwound. The same model sits under every entry point, so prompts are not retrained, and the layers are largely independent.",
+     "mnemonic": "Habits are the hidden migration bill."
+    },
+    {
+     "id": "d3s1q25",
+     "concept": "entry-point-tradeoffs",
+     "type": "single",
+     "stem": "A team needs Claude to work across many tool-using turns inside its product, but must run custom validation logic between every turn. Which approach fits?",
+     "options": [
+      "The Agent SDK, since its managed loop exposes every iteration step",
+      "A raw API loop, accepting the cost of building and maintaining it",
+      "Claude Code, since it already handles multi-turn tool execution",
+      "An MCP server, which adds control between turns of the loop"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "The Agent SDK's managed loop gives up fine-grained control over each iteration, so custom logic between turns calls for a raw API loop, at the cost of building and maintaining it. Claude Code is not a product backend, and MCP standardizes tool connections rather than loop control.",
+     "mnemonic": "Need hands between turns? Write the loop yourself; the Agent SDK drives its own."
+    },
+    {
+     "id": "d3s1q26",
+     "concept": "entry-point-tradeoffs",
+     "type": "multi",
+     "stem": "Which TWO trade-offs of build-time entry points are stated correctly? Select TWO.",
+     "options": [
+      "Agent SDK: the managed loop gives the finest control over each iteration",
+      "Direct API: you build and maintain retries, streaming, tool orchestration and errors",
+      "MCP: it removes a protocol layer, so tool calls are easier to debug",
+      "SDK: version upgrades can change behavior, so review code before deploying",
+      "SDK: it handles orchestration for you, leaving only HTTP to your code"
+     ],
+     "correct": [
+      1,
+      3
+     ],
+     "explanation": "The direct API gives full control but leaves retries, streaming, tool orchestration and error handling to you, and SDK upgrades can occasionally change behavior, needing code review. The SDK handles the HTTP layer and leaves orchestration to your code, and MCP adds a protocol layer that makes debugging harder.",
+     "mnemonic": "API: you own it all. SDK: owns HTTP, review upgrades. MCP: extra layer, harder debug."
+    }
+   ]
+  },
+  {
+   "id": "d3s2",
+   "title": "RAG: chunking, indexing and retrieval strategy",
+   "learn": [
+    "Chunking follows document structure: fixed-size for homogeneous unstructured text, semantic for self-contained prose, hierarchical for contracts, manuals and policies where section context carries meaning.",
+    "Indexing follows query pattern: dense for paraphrase and intent, sparse (BM25) for exact tokens such as part numbers, statute citations and error codes, hybrid for mixed patterns; reciprocal rank fusion merges the lists.",
+    "Retrieval trades quality, latency and maintenance; quality is measured against a labelled set because it is invisible in fluent output.",
+    "Retrieval is for stable reference material such as docs, policies and manuals; live state needs a tool call to the system that owns it. A better embedding model or shorter refresh interval will not fix it.",
+    "Confident wrong answers after a document refresh with unchanged latency and model point first to retrieval or indexing.",
+    "Progressive, just-in-time context is the default for production; monolithic suits bounded tasks and stable cacheable prefixes. RAG fails on split tables or code, top-k recall misses and multi-document synthesis."
+   ],
+   "traps": [
+    "Chunk-size default: picking a size rather than matching chunking to document structure.",
+    "Dense-only for everything: missing exact identifiers like part numbers or citations that need a sparse or hybrid index.",
+    "RAG for live state: stale chunks look fluent and error-free; a better embedding model or faster refresh will not cure it.",
+    "Blaming the model: after a refresh, confident wrong answers with unchanged latency and model version point to retrieval first, not temperature or weights.",
+    "Monolithic by habit: loading everything works until context accumulates and the working-memory cliff arrives silently."
+   ],
+   "questions": [
+    {
+     "id": "d3s2q01",
+     "concept": "chunking-match-structure",
+     "type": "single",
+     "stem": "A legal-tech team indexes contracts and policy manuals where the meaning of a clause depends on its section and subsection. Which chunking approach fits best?",
+     "options": [
+      "One chunk per entire document, so that no section is ever split apart by the chunker",
+      "Fixed-size chunking with overlap, because it is the simplest approach to operate and tune",
+      "Hierarchical chunking that preserves sections and subsections and retrieves at the fitting level",
+      "Semantic chunking only, splitting on topic shifts while ignoring document headings"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Hierarchical chunking suits structured documents where section context carries meaning. Fixed-size ignores structure and cuts across clauses.",
+     "mnemonic": "Structured docs, hierarchical chunks."
+    },
+    {
+     "id": "d3s2q02",
+     "concept": "chunking-match-structure",
+     "type": "multi",
+     "stem": "Which TWO pairings of chunking approach and corpus are well matched? Select TWO.",
+     "options": [
+      "Fixed-size chunking for structured policies where section hierarchy carries the meaning",
+      "Hierarchical chunking for flat unstructured chat transcripts",
+      "Hierarchical chunking for contracts and manuals where section context carries meaning",
+      "Fixed-size chunking with overlap for homogeneous unstructured text with weak natural boundaries",
+      "Semantic chunking for tabular price lists with rigid column layouts"
+     ],
+     "correct": [
+      2,
+      3
+     ],
+     "explanation": "Chunking is chosen by the structure of the source, not a default size. Fixed-size is the simple choice for homogeneous text; hierarchical keeps structure for sectioned documents.",
+     "mnemonic": "Match chunker to document shape."
+    },
+    {
+     "id": "d3s2q03",
+     "concept": "sparse-exact-tokens",
+     "type": "single",
+     "stem": "Users search a parts catalogue with queries like 'KX-4410-B gasket' and a dense-only index keeps returning semantically similar but wrong parts. What change best addresses this?",
+     "options": [
+      "Shorten the index refresh interval so new part numbers appear sooner",
+      "Add a sparse BM25 index beside the dense one as a hybrid",
+      "Raise the embedding model's dimensionality while keeping a dense-only index",
+      "Switch to larger fixed-size chunks so each result carries more context"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Queries hinging on exact tokens such as part numbers need keyword matching. Hybrid recovers the exact-match results dense retrieval misses while keeping semantic recall.",
+     "mnemonic": "Exact codes want keywords."
+    },
+    {
+     "id": "d3s2q04",
+     "concept": "sparse-exact-tokens",
+     "type": "single",
+     "stem": "Which query pattern most clearly justifies adding sparse (keyword) retrieval to a dense index?",
+     "options": [
+      "Lookups of statute citations and error codes that depend on specific tokens",
+      "Questions paraphrased very differently from the wording of the source text",
+      "Broad conceptual questions about user intent and general themes",
+      "Requests about the current status of a customer's order"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Sparse methods such as BM25 match exact terms and identifiers. Paraphrase and concept matching is the dense index's strength, and live order status is not a retrieval problem at all.",
+     "mnemonic": "BM25 for IDs, dense for ideas."
+    },
+    {
+     "id": "d3s2q05",
+     "concept": "dense-paraphrase",
+     "type": "single",
+     "stem": "Employees ask HR questions in casual wording that rarely matches the formal policy text. Which indexing strategy handles this pattern best on its own?",
+     "options": [
+      "Fixed-size chunking with no embedding index of any kind",
+      "Dense embeddings, which match meaning rather than exact words",
+      "Sparse keyword search combined with a much larger top-k setting",
+      "Sparse BM25, which matches paraphrased intent instead of shared terms"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Dense indexes capture semantic similarity, which suits queries phrased differently from the source. Sparse retrieval depends on shared terms.",
+     "mnemonic": "Paraphrase? Dense."
+    },
+    {
+     "id": "d3s2q06",
+     "concept": "rrf",
+     "type": "single",
+     "stem": "A hybrid index returns one dense ranked list and one sparse ranked list. Which approach is the standard low-tuning way to merge them?",
+     "options": [
+      "Retraining the embedding model on the sparse list's top-ranked results",
+      "Averaging the raw similarity scores from both lists into one number",
+      "Reciprocal rank fusion, which scores by rank so items strong in both lists rise",
+      "Keeping only the dense list whenever the two lists disagree on order"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Reciprocal rank fusion works on ranks, favoring items that rank well in both lists, and gives a defensible default for combining dense and sparse results.",
+     "mnemonic": "Rank in both lists wins."
+    },
+    {
+     "id": "d3s2q07",
+     "concept": "retrieval-tradeoff",
+     "type": "single",
+     "stem": "Which statement best describes the retrieval design trade-off?",
+     "options": [
+      "Hybrid indexing improves retrieval quality while also lowering both latency and ongoing maintenance effort",
+      "Smaller chunks and hybrid indexing raise quality and latency together; large dense-only designs trade quality for speed",
+      "Dense-only retrieval with large chunks maximises quality at essentially no added cost to the team",
+      "Smaller chunks lower latency and raise maintenance cost without any change in quality at all"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "The three-way trade-off among quality, latency and maintenance has no universal answer; choose the point that fits the corpus and queries, and be able to defend it.",
+     "mnemonic": "Quality, latency, upkeep: pick two to lean."
+    },
+    {
+     "id": "d3s2q08",
+     "concept": "retrieval-eval",
+     "type": "single",
+     "stem": "A RAG system produces fluent answers, but the team cannot tell whether the right chunks are being retrieved. How should retrieval quality be assessed?",
+     "options": [
+      "Increase top-k until the answers stop looking wrong to the human reviewers",
+      "Measure it against a labelled set, since poor retrieval is invisible in output",
+      "Read a sample of the final answers and check them carefully for fluency and tone",
+      "Track the latency and error-rate dashboards for retrieval calls over time"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "The failure mode is a confident answer built on the wrong chunk, which looks fine. Retrieval quality must be evaluated directly against labelled data.",
+     "mnemonic": "Fluent is not found: label and measure."
+    },
+    {
+     "id": "d3s2q18",
+     "concept": "retrieval-vs-live-state",
+     "type": "multi",
+     "stem": "Which TWO symptoms suggest that a system is using retrieval where a tool call belongs? Select TWO.",
+     "options": [
+      "Answers that contradict what the database currently holds",
+      "Chunks that split tables or code blocks across boundaries",
+      "p95 latency that climbs as top-k is increased",
+      "Results that shift each time the index is refreshed",
+      "Exact identifiers missed by a dense-only index"
+     ],
+     "correct": [
+      0,
+      3
+     ],
+     "explanation": "Stale chunks, results that shift with each index refresh and answers that contradict the database are the signs of retrieval applied to live state; the fix is calling the system that owns that state, not a better embedding model or shorter refresh interval. Split tables and missed identifiers are real RAG problems, but they point to chunking and indexing, not to a missing tool call.",
+     "mnemonic": "Shifts with each refresh, contradicts the database: live state, so call the owner."
+    },
+    {
+     "id": "d3s2q10",
+     "concept": "retrieval-vs-live-state",
+     "type": "multi",
+     "stem": "An assistant gives stale, confident answers about inventory levels pulled from a vector index. Which TWO changes are appropriate? Select TWO.",
+     "options": [
+      "Move to a more accurate embedding model for the vector index",
+      "Query the inventory system directly with a tool call",
+      "Shorten the index refresh interval so inventory updates arrive sooner",
+      "Raise the similarity threshold applied to retrieved chunks",
+      "Keep stable product manuals and FAQs in the retrieval index"
+     ],
+     "correct": [
+      1,
+      4
+     ],
+     "explanation": "Retrieval is for stable knowledge; tool use is for live state. Better embeddings, faster refresh or thresholds still leave the answer a snapshot of past text.",
+     "mnemonic": "Index the manual, query the stock."
+    },
+    {
+     "id": "d3s2q19",
+     "concept": "context-engineering",
+     "type": "single",
+     "stem": "A team that built a successful RAG assistant over internal documentation proposes reusing the same design for a new assistant. What should the architect check first?",
+     "options": [
+      "Whether the same embedding model and chunk size can be carried over unchanged",
+      "Whether top-k can be raised to cover the larger range of new questions",
+      "Whether the new answers live in reference material that stays stable between refreshes",
+      "Whether the existing index can be refreshed more often to keep it current"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Context engineering means deciding which mechanism gets each kind of data in front of the model. RAG works when answers live in reference material that stays stable between index refreshes, such as documentation, policy text or manuals; reaching for it because it worked on a previous use case, without checking that property, is a common mistake. Tuning embeddings, top-k or refresh frequency does not help if the new use case is really about live state.",
+     "mnemonic": "Reuse RAG only if the answers sit still between refreshes."
+    },
+    {
+     "id": "d3s2q12",
+     "concept": "rag-drift",
+     "type": "single",
+     "stem": "After a document refresh, a RAG assistant gives confident but incorrect answers while latency and model version are unchanged. What is the most likely first place to investigate?",
+     "options": [
+      "A temperature setting that has been configured too low for the task",
+      "A context window that has shrunk since the document refresh",
+      "The model weights having silently changed overnight without any announcement",
+      "Retrieval and indexing returning irrelevant or stale chunks, such as a broken re-index"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "A document refresh specifically touches retrieval and indexing. With model and latency unchanged, poor or stale context is the likeliest cause; the other options would not be triggered by a refresh.",
+     "mnemonic": "Refresh broke it? Check the index."
+    },
+    {
+     "id": "d3s2q13",
+     "concept": "rag-failure-modes",
+     "type": "multi",
+     "stem": "Which TWO are documented ways that retrieval-based context fails? Select TWO.",
+     "options": [
+      "Chunking splits semantic units such as tables or code blocks",
+      "The correct document never enters the top-k results",
+      "Citations can never be produced from retrieved source documents",
+      "Retrieval removes the need to evaluate or maintain the pipeline",
+      "Queries needing synthesis across many documents are its strongest use case"
+     ],
+     "correct": [
+      0,
+      1
+     ],
+     "explanation": "RAG breaks on split units, recall misses and cross-document synthesis because chunks are scored independently. It also creates a retrieval system that must be evaluated and maintained.",
+     "mnemonic": "Split tables, missed top-k, lonely chunks."
+    },
+    {
+     "id": "d3s2q14",
+     "concept": "progressive-vs-monolithic",
+     "type": "single",
+     "stem": "A long-running agent loop accumulates tool output and history every turn, and the window fills silently. Which context strategy is the better default?",
+     "options": [
+      "Retrieval alone, with no summarising or compaction of any of the earlier steps",
+      "Monolithic context that reloads the entire history and the full corpus on every call",
+      "A larger monolithic prompt sized to fill the maximum context window available",
+      "Progressive context: retrieve just in time and carry forward only what the next step needs"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Monolithic context hits the working-memory cliff as context accumulates. Progressive staging is the default for most production workloads, often layered with retrieval and compaction.",
+     "mnemonic": "Stage the context; don't dump it."
+    },
+    {
+     "id": "d3s2q15",
+     "concept": "progressive-vs-monolithic",
+     "type": "single",
+     "stem": "For which situation is a monolithic context strategy a reasonable choice?",
+     "options": [
+      "A tool loop where each step depends mainly on the most recent state",
+      "A multi-turn conversation whose history keeps growing with every additional turn",
+      "A knowledge base far too large to fit inside the context window",
+      "A bounded task with predictable input size and a stable, cacheable prefix"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Monolithic loading suits bounded tasks with predictable inputs and cacheable prefixes. It breaks when context accumulates or when the corpus exceeds the window.",
+     "mnemonic": "Bounded and cacheable: dump is fine."
+    },
+    {
+     "id": "d3s2q16",
+     "concept": "semantic-chunking",
+     "type": "single",
+     "stem": "A knowledge base of long explanatory articles keeps returning chunks that stop mid-argument, so answers miss the rest of the idea. Which chunking approach fits best?",
+     "options": [
+      "Fixed-size spans with overlap, since the text has weak natural boundaries",
+      "Hierarchical chunking that retrieves whole sections of contracts and manuals",
+      "Sparse BM25 indexing, so exact terms pull back the missing part",
+      "Semantic chunking on meaning boundaries so each chunk is self-contained"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Semantic chunking splits on meaning boundaries such as topic shifts, which suits prose where a retrieved chunk must be self-contained and reduces mid-idea cuts. Fixed-size spans cut regardless of structure, and BM25 is an indexing choice, not a chunking one.",
+     "mnemonic": "Semantic cuts follow the thought, not the ruler."
+    },
+    {
+     "id": "d3s2q17",
+     "concept": "retrieval-maintenance-sizing",
+     "type": "multi",
+     "stem": "Which TWO statements about the retrieval design trade-off are correct? Select TWO.",
+     "options": [
+      "Smaller chunks and hybrid indexing lower both latency and maintenance cost together",
+      "Maintenance as the corpus changes is an axis beside quality and latency",
+      "A pipeline that was correct at launch stays correct as new documents are added",
+      "Size the pipeline to your actual query patterns, not the most thorough one",
+      "Large chunks with dense-only indexing reliably handle exact-match identifier queries"
+     ],
+     "correct": [
+      1,
+      3
+     ],
+     "explanation": "Retrieval trades off quality, latency and maintenance, and the pipeline should be sized to the query patterns you actually have. Smaller chunks and hybrid indexing raise latency, a pipeline correct at launch can degrade silently as documents are added, and dense-only designs miss exact-match queries.",
+     "mnemonic": "Quality, latency, upkeep: size to the queries you have."
+    }
+   ]
+  },
+  {
+   "id": "d3s3",
+   "title": "Identity, authorization, least privilege and data handling",
+   "learn": [
+    "Identity comes from your authentication layer and is injected server-side into the system prompt with the user's role and authorised data; a role asserted in the user message can be faked.",
+    "Add extra context (department, permission level, account identifiers) only when needed to shape the response, not by default.",
+    "The authorization model of the underlying systems must govern the Claude layer; an integration that bypasses it exposes data through a path never built to enforce policy.",
+    "Least privilege means removing unneeded tools (attack surface and cost), recording justification, and scoping each subagent's tools to its task; logging and confirmation are compensating controls only.",
+    "Data minimisation uses a necessity filter: strip or redact before the call and pass reference IDs instead of full fields. The context window is not a data-governance boundary.",
+    "Use separate API keys per tenant so rate-limit breaches can be attributed and tenants isolated."
+   ],
+   "traps": [
+    "User-asserted role: trusting a role the user claims in their message, or a role field they control, instead of verifying identity on the server and injecting it.",
+    "Monitor instead of remove: logging or confirmation prompts on an unneeded tool are detective controls; the tool is still reachable.",
+    "Convenience data: passing a sensitive field because it was available, when the language task never needed it; it lands in plaintext request logs.",
+    "Retention comfort: reasoning that no default retention makes PII in the prompt safe, ignoring application logs and carve-outs.",
+    "Shared key: one API key across tenants hides which tenant tripped the org-level rate limit."
+   ],
+   "questions": [
+    {
+     "id": "d3s3q15",
+     "concept": "server-side-identity",
+     "type": "single",
+     "stem": "In a Claude integration that scopes answers to each user's permissions, where and when should the user's identity be verified?",
+     "options": [
+      "On the server before the call, injecting role and data scope into the system prompt",
+      "After the response is generated, in an output filter that strips data beyond the user's role",
+      "By Claude itself, which infers the user's role from cues across the conversation history",
+      "In a follow-up message where the user confirms the role they stated earlier"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Identity verification belongs on the server, before the Claude call: the server takes identity from the authentication layer and injects the user's role and authorised data into the system prompt. Anything inside the conversation is under the user's control, so inferring or confirming the role there leaves it unverified, and an output filter acts too late to scope the answer.",
+     "mnemonic": "Verify on the server, before the call; inject the role, never ask for it."
+    },
+    {
+     "id": "d3s3q02",
+     "concept": "server-side-identity",
+     "type": "single",
+     "stem": "Which design weakness makes an integration's per-user scoping unreliable?",
+     "options": [
+      "The server injects the role into the system prompt before each call",
+      "Roles are assigned through the firm's SSO login and directory process",
+      "Role and identity are passed as a field the user types in their message",
+      "The system prompt lists the data the user is authorised to access"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "A raw identity field in the user message is manipulable, so Claude cannot scope responses to what that user is truly authorised to see. Server-side injection removes the risk.",
+     "mnemonic": "If they can type it, they can fake it."
+    },
+    {
+     "id": "d3s3q03",
+     "concept": "extra-context-when-needed",
+     "type": "single",
+     "stem": "When building the identity block for the system prompt, what is the right approach to extra attributes such as department, permission level and account identifiers?",
+     "options": [
+      "Include them only when needed to shape Claude's response, not by default",
+      "Include them only in the user message, where they are easier to audit",
+      "Always include every available attribute so Claude can personalise its answers",
+      "Include them by default, then redact the account identifiers afterwards"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "The role and authorised data scope belong in the prompt; additional context is added only when it is needed. Defaults widen exposure without adding capability.",
+     "mnemonic": "Role always; extras only on need."
+    },
+    {
+     "id": "d3s3q04",
+     "concept": "authz-model-governs",
+     "type": "single",
+     "stem": "A Claude assistant queries the claims database through a service account that can read every record, so users see cases they could not open in the normal application. What principle was violated?",
+     "options": [
+      "Claude's system prompt should repeat the full database schema for each user session",
+      "The claims database should be moved entirely into the retrieval index for speed",
+      "The authorization model of the underlying systems must also govern the Claude layer",
+      "Claude should be given a larger context window to handle access control decisions"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "An integration that bypasses the underlying authorization model gives users access through a path never designed to enforce policy. The existing roles and policies must carry through to Claude.",
+     "mnemonic": "Claude inherits the data's access rules."
+    },
+    {
+     "id": "d3s3q05",
+     "concept": "least-privilege-removal",
+     "type": "single",
+     "stem": "A customer-support agent has a delete-account tool its role does not require. Which change best applies least privilege?",
+     "options": [
+      "Switch the agent to a smaller and cheaper model tier instead",
+      "Log every call to the delete-account tool for later security review and follow-up",
+      "Remove the tool from the agent's configuration, eliminating that attack surface",
+      "Add a confirmation prompt before the tool is allowed to execute"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Least privilege removes capabilities the role does not need. Logging and confirmation are detective or compensating controls that leave the tool reachable, and model size is unrelated to authorization scope.",
+     "mnemonic": "Don't guard the door; remove it."
+    },
+    {
+     "id": "d3s3q06",
+     "concept": "least-privilege-removal",
+     "type": "single",
+     "stem": "Why are confirmation prompts an inadequate substitute for removing an unneeded tool?",
+     "options": [
+      "They make the tool slower to use but equally safe in effect",
+      "They compensate for the risk, but the tool stays reachable as attack surface",
+      "They apply only to subagents and never to top-level agents",
+      "They become redundant once detailed logging has been enabled"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Compensating controls manage the risk of a tool that stays connected. Removal eliminates the exposure entirely, which is the stronger control.",
+     "mnemonic": "Confirm, log, or cut: cutting wins."
+    },
+    {
+     "id": "d3s3q07",
+     "concept": "tool-audit-practice",
+     "type": "multi",
+     "stem": "Which TWO practices belong in a least-privilege tool audit for an orchestrator-worker system? Select TWO.",
+     "options": [
+      "Rely on the system prompt alone to tell subagents which tools to avoid",
+      "Scope each subagent's tools to the task it performs",
+      "Record the justification for every tool removed from the configuration",
+      "Give every subagent the orchestrator's full tool set for maximum flexibility",
+      "Keep convenient tools because they cost nothing when unused"
+     ],
+     "correct": [
+      1,
+      2
+     ],
+     "explanation": "Ask for each tool whether it is essential or merely convenient, remove the out-of-scope ones and document why, and set the trust hierarchy by limiting subagent access to what the job needs.",
+     "mnemonic": "Justify removals; scope each subagent."
+    },
+    {
+     "id": "d3s3q08",
+     "concept": "tool-bloat",
+     "type": "single",
+     "stem": "A team connects twenty tools to an agent that uses only five 'just in case'. What is the main problem with the extra fifteen?",
+     "options": [
+      "Unused tools cause the agent loop to keep running without ever terminating",
+      "Unused tools permanently reduce the usable size of the model's context window",
+      "Each connected tool is a cost and an attack surface, even if rarely called",
+      "Unused tools disable prompt caching across the entire system and every request"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Every tool connected to a Claude system adds cost and attack surface. Audit the set as you would permissions and drop what is merely convenient.",
+     "mnemonic": "Every extra tool: more cost, more surface."
+    },
+    {
+     "id": "d3s3q16",
+     "concept": "data-minimisation",
+     "type": "single",
+     "stem": "Which test should decide whether a particular data field is placed in the context window of a Claude call?",
+     "options": [
+      "Whether Claude needs that field to produce the intended output",
+      "Whether the calling service already holds the field in memory",
+      "Whether the system prompt tells Claude not to repeat it",
+      "Whether the provider retains conversation content by default"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Necessity is the filter: for each field, ask whether Claude needs it to produce the intended output, and pass a reference identifier when that is enough. A prompt instruction not to repeat a field does not keep it out of the request or the partner's request logs, and default non-retention does not make the context window a data-governance boundary.",
+     "mnemonic": "Not needed for the output? Not in the window."
+    },
+    {
+     "id": "d3s3q10",
+     "concept": "data-minimisation",
+     "type": "single",
+     "stem": "A claims workflow needs a claim number only to route a case to the right queue. How should it enter the Claude call?",
+     "options": [
+      "As a reference identifier, without attaching the full claimant data fields",
+      "As a retrieved document that is included in every single call by default",
+      "As the full claim record, so Claude has the maximum possible context for routing",
+      "As part of a user-typed message so that every value can be audited later"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Reference IDs are often enough for routing, and passing full fields exposes data to application-layer logging without adding capability.",
+     "mnemonic": "Pass the pointer, not the payload."
+    },
+    {
+     "id": "d3s3q11",
+     "concept": "context-window-not-boundary",
+     "type": "single",
+     "stem": "A designer argues that PII in prompts is acceptable because Anthropic does not retain conversation content by default. What is wrong with this argument?",
+     "options": [
+      "The window is no governance boundary: the request still crosses the wire and gets logged",
+      "Data in the system prompt is exempt from logging but data in user messages is not",
+      "Anthropic retains all conversation content indefinitely by default on the API, so exposure is certain",
+      "Retention only matters for non-API entry points such as the Claude.ai chat product"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Non-retention by default does not change that data is transmitted, may be logged by the partner's application layer, and that retention carve-outs exist for some model classes.",
+     "mnemonic": "Window is a pipe, not a vault."
+    },
+    {
+     "id": "d3s3q17",
+     "concept": "redact-before-call",
+     "type": "single",
+     "stem": "A team plans to launch its Claude integration without a PII redaction step and add one 'once usage settles'. What is the main problem with deferring it?",
+     "options": [
+      "Redaction can be configured only when the API account is first created, so it cannot be added later",
+      "Claude refuses to process unredacted input once the integration has moved into production use",
+      "Each request until then lands in application request logs, and redacting that history later is the costliest fix",
+      "Deferral only lowers summary quality, because unredacted fields distract the model from the task"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Without redaction before the API call, sensitive fields reach the partner's application-layer request logging on every request, and retroactive redaction across a log history never designed for it is the most expensive data-handling fix in a production Claude system. Redaction is a step the integration performs before each call, so nothing ties it to account creation, and the cost is exposure rather than output quality.",
+     "mnemonic": "Redact before the call, or scrub the logs forever after."
+    },
+    {
+     "id": "d3s3q13",
+     "concept": "separate-keys-per-tenant",
+     "type": "single",
+     "stem": "A multi-tenant product uses one shared API key. At peak the org rate limit trips and every tenant slows. What can the team not do?",
+     "options": [
+      "Measure the aggregate request volume at peak",
+      "Observe that a traffic spike occurred at all",
+      "Attribute the breach to the tenant that caused it",
+      "Retry throttled requests using exponential backoff"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "A shared key makes the spike visible but not its source. Separate keys per tenant give attribution and isolation.",
+     "mnemonic": "One key, no culprit."
+    },
+    {
+     "id": "d3s3q14",
+     "concept": "separate-keys-per-tenant",
+     "type": "multi",
+     "stem": "Which TWO outcomes justify separate API keys per tenant in production? Select TWO.",
+     "options": [
+      "Tenants are isolated from one another's usage problems",
+      "Rate limits are removed for every tenant on its own key",
+      "Rate-limit breaches can be attributed to the responsible tenant",
+      "Tenant data is encrypted in the context window automatically",
+      "Prompt caching is shared safely across all of the tenants"
+     ],
+     "correct": [
+      0,
+      2
+     ],
+     "explanation": "Per-tenant keys give attribution and isolation. They do not encrypt context, remove limits or provide shared caching.",
+     "mnemonic": "Key per tenant: blame and boundary."
+    }
+   ]
+  },
+  {
+   "id": "d3s4",
+   "title": "Regulated-industry constraints on integration",
+   "learn": [
+    "Compliance eliminates entry points and routes before preference. Work in order: governing regulation, surviving entry point and route, integration pattern, then identity, data handling and observability.",
+    "Attorney-client privilege: API behind the firm's gateway with SSO, server-assigned identity and a firm-owned audit log of every request.",
+    "HIPAA: the BAA must cover the specific configuration in use; beta features are generally excluded unless listed eligible; send only the minimum necessary, using reference IDs where possible.",
+    "GDPR and residency: inference_geo supports only 'us' and 'global', so EU pinning needs a cloud route (Bedrock or Vertex); DPA is direct with the API or inherited from the cloud contract; Foundry EU residency is listed as Coming 2026.",
+    "FedRAMP: Claude for Government, Bedrock GovCloud, Vertex Assured Workloads. Claude Enterprise on the direct API is not authorised; government environments lag on newest models.",
+    "Five integration layers: compliance, identity/SSO, authorization/policy, data handling/PII, observability/audit. This is not legal advice; verify scope with Anthropic."
+   ],
+   "traps": [
+    "Pattern before regulation: designing the integration first and discovering later that the route fails BAA, residency or FedRAMP review.",
+    "BAA by provider: assuming a BAA held for one configuration, or for beta features, covers the one actually deployed.",
+    "inference_geo for EU: assuming it can pin execution to the EU when it only offers 'us' and 'global'.",
+    "Enterprise equals FedRAMP: treating Claude Enterprise on the direct API as an authorised substitute for government paths.",
+    "Engineering override: replacing the CIO-cleared approved vendor with the technically nicer route; that is procurement, not engineering."
+   ],
+   "questions": [
+    {
+     "id": "d3s4q01",
+     "concept": "compliance-first",
+     "type": "single",
+     "stem": "A team is designing an enterprise Claude integration for a regulated client. In what order should decisions be worked through?",
+     "options": [
+      "Observability design, then data handling, then governing regulation, then the delivery route",
+      "Governing regulation, then surviving entry point and route, then pattern, then identity and data",
+      "Integration pattern, then entry point, then governing regulation, then observability and logging",
+      "Preferred model tier, then delivery route, then governing regulation, then identity controls"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Compliance constraints eliminate options before cost, ergonomics or preference enter. Skipping a step risks something that works technically but fails legal or security review.",
+     "mnemonic": "Law first, then layers."
+    },
+    {
+     "id": "d3s4q02",
+     "concept": "compliance-first",
+     "type": "single",
+     "stem": "A team built a working integration, then found during legal review that the chosen route has no BAA coverage for their configuration. Which step was skipped?",
+     "options": [
+      "Adding a second subagent to validate every output the model produces",
+      "Selecting a larger context window for the regulated workload before launch",
+      "Tuning prompts for the model identifier used on that particular route",
+      "Identifying the governing regulation and surviving routes before choosing the integration pattern"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Regulation eliminates entry points and routes first. Redesign after the fact costs the work already invested plus a new architecture.",
+     "mnemonic": "Constraint before construction."
+    },
+    {
+     "id": "d3s4q03",
+     "concept": "privilege-gateway",
+     "type": "single",
+     "stem": "A law firm wants Claude for privileged document review. Which design is most likely to survive a privilege review?",
+     "options": [
+      "The API called directly from the browser using one key shared across the firm",
+      "Claude Code run on each lawyer's laptop in the default permission mode",
+      "Consumer-tier Claude.ai accessed through shared team accounts across the whole practice group",
+      "The API behind the firm's own application, with SSO and a firm-approved logging gateway"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Privilege review turns on the firm owning the audit trail end to end. A gateway holding the key, enforcing access and logging every request provides that; consumer tiers cannot be audited by the firm.",
+     "mnemonic": "Firm gateway, firm log."
+    },
+    {
+     "id": "d3s4q04",
+     "concept": "privilege-gateway",
+     "type": "multi",
+     "stem": "Which TWO properties make the gateway pattern suitable for attorney-client privilege? Select TWO.",
+     "options": [
+      "The gateway produces an audit log the firm owns",
+      "Server-assigned identity and permissions, not claimed by users",
+      "Privileged content bypasses the gateway for speed",
+      "Anthropic holds the audit log on behalf of the firm",
+      "Users choose their own permission scope at login"
+     ],
+     "correct": [
+      0,
+      1
+     ],
+     "explanation": "The gateway holds the API key, enforces access, and records every request and response retained under firm policy. Identity is server-assigned via SSO.",
+     "mnemonic": "Own the log, assign the identity."
+    },
+    {
+     "id": "d3s4q05",
+     "concept": "hipaa-baa-scope",
+     "type": "single",
+     "stem": "A health startup signed a BAA covering one Claude configuration but wants to use another route for a new feature. What is the implication?",
+     "options": [
+      "The existing BAA automatically extends to every route from the same provider",
+      "A BAA is unnecessary whenever no patient names appear in the data",
+      "Only the model name needs to appear anywhere in the signed BAA",
+      "The BAA must cover the specific configuration; an uncovered route is ruled out"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "A BAA for one configuration does not extend to another. HIPAA-eligible paths include the Claude API with a signed BAA, Bedrock and Vertex, but only the covered configuration counts.",
+     "mnemonic": "BAA covers the config, not the brand."
+    },
+    {
+     "id": "d3s4q06",
+     "concept": "hipaa-baa-scope",
+     "type": "single",
+     "stem": "A hospital team on a BAA-covered configuration wants to enable a beta feature. What should the architect check first?",
+     "options": [
+      "Nothing, because beta features inherit the account's existing BAA coverage automatically and fully",
+      "Whether that beta feature is listed as eligible; betas are generally excluded",
+      "Whether the beta feature measurably improves response latency for the clinicians using it",
+      "Whether the beta feature is available on the Bedrock delivery route only"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "BAA existence is not enough; feature eligibility matters. Beta features are generally excluded unless explicitly listed.",
+     "mnemonic": "Beta isn't covered unless listed."
+    },
+    {
+     "id": "d3s4q07",
+     "concept": "hipaa-minimum-necessary",
+     "type": "single",
+     "stem": "For a PHI workflow, which data-handling approach is correct?",
+     "options": [
+      "Strip PHI to what the task requires before the call, using reference IDs",
+      "Redact PHI only in the model's response, after the output is generated",
+      "Send the full patient record so Claude has complete clinical context for every request",
+      "Send full records but disable all application request logging to limit exposure"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Access to PHI is limited to the minimum necessary, applied before the API call is made.",
+     "mnemonic": "Minimum necessary, before the call."
+    },
+    {
+     "id": "d3s4q08",
+     "concept": "gdpr-inference-geo",
+     "type": "single",
+     "stem": "A deployment has an EU data-residency requirement. Which option fits?",
+     "options": [
+      "Claude Code with a local region flag configured at startup of each session",
+      "The direct API with inference_geo set to the global value to cover all regions",
+      "A pinned-region cloud route such as Bedrock or Vertex, since inference_geo lacks EU",
+      "The direct API with inference_geo set to an EU region value for the deployment"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "inference_geo currently supports only 'us' and 'global', so EU pinning needs a cloud route. Global does not pin a region.",
+     "mnemonic": "EU pin? Bedrock or Vertex."
+    },
+    {
+     "id": "d3s4q09",
+     "concept": "gdpr-inference-geo",
+     "type": "single",
+     "stem": "A colleague says the team can satisfy EU pinning by setting inference_geo on the direct API. What is wrong with that plan?",
+     "options": [
+      "inference_geo pins data at rest but cannot pin inference",
+      "inference_geo is valid only on Foundry deployments of the model",
+      "inference_geo requires a signed FedRAMP authorisation before it will function",
+      "inference_geo accepts only 'us' and 'global', so it cannot pin EU execution"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "EU pinning is not available through inference_geo; where there is an EU residency requirement, use a cloud route instead.",
+     "mnemonic": "inference_geo: US or global, never EU."
+    },
+    {
+     "id": "d3s4q10",
+     "concept": "gdpr-dpa",
+     "type": "single",
+     "stem": "How does the data processing agreement differ between using the Claude API directly and using a cloud route?",
+     "options": [
+      "Direct API DPAs are issued by the cloud provider, not Anthropic",
+      "Direct API: DPA with Anthropic; cloud route: terms inherited from the cloud contract",
+      "Both routes always use the same Anthropic-issued DPA terms",
+      "Cloud routes require no DPA of any kind with the provider"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "With the Claude API the DPA is with Anthropic directly; with Bedrock or Vertex the terms are inherited from the existing cloud contract.",
+     "mnemonic": "Direct: Anthropic DPA. Cloud: inherited."
+    },
+    {
+     "id": "d3s4q11",
+     "concept": "foundry-eu",
+     "type": "single",
+     "stem": "A partner needs EU data pinning and proposes Microsoft Foundry. What is the right caution?",
+     "options": [
+      "Foundry is the only route that supports EU pinning at present",
+      "Foundry EU residency is listed as Coming 2026 with no timeline; verify first",
+      "Foundry EU residency is already fully available for every Claude model",
+      "Foundry inherits EU pinning from Entra ID without extra configuration"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Foundry EU residency is listed as Coming 2026 with no confirmed timeline, so availability must be verified before relying on it.",
+     "mnemonic": "Foundry EU: verify, don't assume."
+    },
+    {
+     "id": "d3s4q12",
+     "concept": "fedramp-paths",
+     "type": "single",
+     "stem": "An agency asks whether Claude Enterprise on the direct API can serve a FedRAMP workload. What is the correct answer?",
+     "options": [
+      "No; use Claude for Government, Bedrock GovCloud or Vertex Assured Workloads",
+      "Yes, provided a BAA has been signed with Anthropic first",
+      "Yes, because Enterprise includes audit logs, SSO and a Compliance API for agencies",
+      "Yes, but only for unclassified workloads on the direct API"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Claude Enterprise on the direct API is not FedRAMP authorised and cannot substitute for the authorised paths.",
+     "mnemonic": "Enterprise is not FedRAMP."
+    },
+    {
+     "id": "d3s4q13",
+     "concept": "fedramp-paths",
+     "type": "single",
+     "stem": "A government team chooses an authorised environment and then asks for the newest commercial model. What should the architect expect?",
+     "options": [
+      "Government routes use a different and older model family entirely",
+      "Government environments lag on models, so confirm the route's available model first",
+      "The newest model is always available there at the same time",
+      "The model lag only ever affects the Foundry route"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Authorised government environments receive the newest models after commercial release, so check availability on the specific route.",
+     "mnemonic": "Gov clouds get models last."
+    },
+    {
+     "id": "d3s4q14",
+     "concept": "internal-residency-procurement",
+     "type": "single",
+     "stem": "A company's internal policy limits Claude to its CIO-cleared cloud vendor, but engineering prefers the direct API for new features. What decides?",
+     "options": [
+      "The route that the engineering team benchmarks highest across all workloads",
+      "The route with the earliest availability of newly shipped features and models",
+      "Whichever route measures the best latency in the team's own benchmarks",
+      "The CIO-cleared approved vendor, because it is procurement rather than engineering"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Internal data-residency policy rules out routes outside the approved list regardless of convenience; the right route is the one the CIO has cleared.",
+     "mnemonic": "Procurement picks the pipe."
+    },
+    {
+     "id": "d3s4q15",
+     "concept": "five-layers",
+     "type": "multi",
+     "stem": "Which THREE are among the five layers of an enterprise Claude integration? Select THREE.",
+     "options": [
+      "Model tier selection",
+      "Prompt caching design",
+      "Identity and SSO",
+      "Compliance and regulated-industry constraints",
+      "Observability and audit logging"
+     ],
+     "correct": [
+      2,
+      3,
+      4
+     ],
+     "explanation": "The five layers are compliance, identity/SSO, authorization/policy, data handling/PII, and observability/audit. Model tier and caching are separate decisions.",
+     "mnemonic": "Comply, identify, authorise, minimise, observe."
+    },
+    {
+     "id": "d3s4q16",
+     "concept": "not-legal-advice",
+     "type": "single",
+     "stem": "How should an architect treat the constraint-to-integration matrix?",
+     "options": [
+      "A replacement for the firm's own privilege review process",
+      "A certification that every listed pattern is automatically compliant",
+      "Valid indefinitely, since authorisations never change over time",
+      "Guidance to verify with Anthropic and legal counsel, not legal advice"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "The matrix is not legal guidance, and authorisation scope must be verified with Anthropic before committing.",
+     "mnemonic": "Matrix informs; counsel decides."
+    },
+    {
+     "id": "d3s4q17",
+     "concept": "fedramp-impact-levels",
+     "type": "single",
+     "stem": "A defense workload must run at DoD Impact Level 4/5. Subject to verifying current authorization scope with Anthropic, which authorized path fits?",
+     "options": [
+      "Vertex Assured Workloads, covering FedRAMP High and DoD IL4/5",
+      "Claude for Government, covering DoD IL4/5 for defense workloads",
+      "Bedrock GovCloud, covering FedRAMP High and DoD IL4/5",
+      "Claude Enterprise on the direct API with audit logs enabled"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Bedrock GovCloud is the path listed for FedRAMP High and DoD IL4/5. Vertex Assured Workloads is listed for FedRAMP High and IL2, and Claude for Government for FedRAMP High civilian workloads. Authorization scope must be verified with Anthropic before committing.",
+     "mnemonic": "IL4/5 rides GovCloud; Vertex stops at IL2; C4G serves civilians."
+    },
+    {
+     "id": "d3s4q18",
+     "concept": "fedramp-impact-levels",
+     "type": "multi",
+     "stem": "Which TWO pairings of authorized government path and coverage are correct, pending verification of current authorization scope? Select TWO.",
+     "options": [
+      "Claude for Government: FedRAMP High for civilian workloads",
+      "Vertex Assured Workloads: DoD IL4/5 for defense workloads",
+      "Claude for Government: DoD IL4/5 for defense workloads",
+      "Vertex Assured Workloads: FedRAMP High and DoD IL2",
+      "Claude Enterprise direct API: FedRAMP High with audit logs"
+     ],
+     "correct": [
+      0,
+      3
+     ],
+     "explanation": "Claude for Government is listed for FedRAMP High civilian workloads, and Vertex Assured Workloads for FedRAMP High and IL2. IL4/5 belongs to Bedrock GovCloud, and Claude Enterprise on the direct API is not an authorized government path.",
+     "mnemonic": "C4G civilian, Vertex IL2, GovCloud IL4/5."
+    },
+    {
+     "id": "d3s4q19",
+     "concept": "gdpr-not-residency",
+     "type": "single",
+     "stem": "A partner with no separate residency policy says 'GDPR means every request must run in an EU region.' Which response is accurate?",
+     "options": [
+      "GDPR does not require EU residency; transfers with a valid mechanism are lawful",
+      "Correct; GDPR compliance requires EU-pinned model execution",
+      "Correct; set inference_geo to an EU value on the direct API",
+      "GDPR applies only to cloud routes, not to the direct Claude API"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "GDPR compliance does not itself require EU residency, because cross-border transfers are lawful with a valid transfer mechanism; a cloud route is needed only where a deployment has an EU residency requirement. inference_geo supports only 'us' and 'global', so it cannot pin EU in any case.",
+     "mnemonic": "GDPR is not geography: a valid transfer mechanism, not blanket EU pinning."
+    },
+    {
+     "id": "d3s4q20",
+     "concept": "gdpr-not-residency",
+     "type": "single",
+     "stem": "In a GDPR deployment pinned to an approved region, when may personal data be moved outside that region?",
+     "options": [
+      "Whenever the cloud route's default global endpoint is selected",
+      "Never, since GDPR forbids all transfers outside the EU",
+      "Whenever the DPA is signed directly with Anthropic",
+      "Only with a documented legal basis, built in when explicitly justified"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Personal data is processed within the pinned region, and moving it across borders requires a documented legal basis and is built in only when explicitly justified. GDPR does not forbid all transfers, and neither a global endpoint default nor the DPA counterparty creates a legal basis.",
+     "mnemonic": "Crossing the border needs a passport: a documented legal basis."
+    },
+    {
+     "id": "d3s4q21",
+     "concept": "matrix-observability",
+     "type": "multi",
+     "stem": "Which TWO pairings of governing constraint and logging requirement match the constraint-to-integration matrix? Select TWO.",
+     "options": [
+      "GDPR: logs record who accessed data, the legal basis and deletion timing",
+      "HIPAA: logs exclude user identity to keep PHI out of the record",
+      "FedRAMP: logs go to a separate system outside the authorized boundary",
+      "Internal residency policy: logs feed the partner's existing logging infrastructure",
+      "Attorney-client privilege: logs are kept by Anthropic rather than the firm"
+     ],
+     "correct": [
+      0,
+      3
+     ],
+     "explanation": "GDPR logs record who accessed what, the legal basis and when it will be deleted, and an internal residency policy feeds logs into the partner's existing infrastructure rather than a new system. HIPAA logs do capture user identity, FedRAMP logs meet agency continuous monitoring, and privilege logs live at the firm's own gateway.",
+     "mnemonic": "GDPR logs the why and the when-deleted; internal policy logs into what exists."
+    }
+   ]
+  },
+  {
+   "id": "d3s5",
+   "title": "Claude Code layers and observability for integrations",
+   "learn": [
+    "Shaping layers (CLAUDE.md, Skills, subagents, MCP servers) change what the agent knows and does; governing layers (hooks, permission boundaries and approval flows, sandboxing) limit what it may touch.",
+    "Hooks fire on lifecycle events as deterministic gates the model cannot skip; use them when the guarantee must come from code rather than prompting.",
+    "Six permission modes: default, acceptEdits, plan, auto, dontAsk, bypassPermissions. dontAsk suits locked-down CI; bypassPermissions is for containers or CI only.",
+    "Sandboxing enforces the boundary in the environment, so approval prompts are not the only backstop.",
+    "Log request, response, context and outcome fields; observability is the precondition for enabling agents, and an unlogged action cannot be allowed.",
+    "LLM systems fail quietly, so standard error logging misses wrong-but-fluent output; choose MCP over raw API tool use by reuse across clients."
+   ],
+   "traps": [
+    "CLAUDE.md as a gate: instructions in a shaping layer can be skipped; only hooks and permissions guarantee behaviour.",
+    "Mode mix-ups: bypassPermissions skips every check and belongs in containers or CI only; dontAsk is the locked-down CI mode.",
+    "Prompts as sandbox: relying on approval prompts or the agent's judgment when the environment itself should enforce the boundary.",
+    "Error-log confidence: dashboards showing no errors or crashes can still hide confident wrong answers.",
+    "Logging gaps: enabling an agent surface without checking which actions its audit logs record."
+   ],
+   "questions": [
+    {
+     "id": "d3s5q01",
+     "concept": "shaping-vs-governing",
+     "type": "multi",
+     "stem": "Which THREE belong to the governing group of Claude Code layers rather than the shaping group? Select THREE.",
+     "options": [
+      "Sandboxing and restricted execution",
+      "MCP servers for external tools",
+      "Permission boundaries and approval flows",
+      "CLAUDE.md standing instructions",
+      "Hooks on lifecycle events"
+     ],
+     "correct": [
+      0,
+      2,
+      4
+     ],
+     "explanation": "CLAUDE.md, Skills, subagents and MCP shape what the agent knows and does. Hooks, permissions and approval flows, and sandboxing govern what it is allowed to touch.",
+     "mnemonic": "Shape what it knows; govern what it touches."
+    },
+    {
+     "id": "d3s5q02",
+     "concept": "hooks-deterministic",
+     "type": "single",
+     "stem": "A team requires a lint and secrets scan before every file write. Their CLAUDE.md asks for it, but the agent occasionally skips the step. What is the best fix?",
+     "options": [
+      "Implement the check as a hook, a deterministic gate the agent cannot skip",
+      "Move the instruction into a Skill the agent may choose to invoke",
+      "Make the CLAUDE.md instruction longer and more emphatic in its tone and wording",
+      "Add the instruction to a subagent's system prompt text instead"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "When the guarantee has to come from code rather than prompting, use a hook. CLAUDE.md, Skills and subagents are shaping layers and can be skipped.",
+     "mnemonic": "Hooks are gates; prompts are hopes."
+    },
+    {
+     "id": "d3s5q03",
+     "concept": "hooks-deterministic",
+     "type": "single",
+     "stem": "Why can a hook enforce a rule that a CLAUDE.md instruction cannot?",
+     "options": [
+      "It runs as code on lifecycle events, independent of the model following instructions",
+      "It is chosen by the model whenever it seems relevant to the task",
+      "It is a procedure the agent invokes on demand when it decides to",
+      "It is loaded into context at session start like any other standing instructions"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Hooks fire on events such as before or after a tool runs as deterministic gates. CLAUDE.md loads into context and relies on the model complying.",
+     "mnemonic": "Code runs; prose gets read."
+    },
+    {
+     "id": "d3s5q04",
+     "concept": "permission-modes",
+     "type": "single",
+     "stem": "A team runs Claude Code in a locked-down CI pipeline and wants anything outside explicit allow rules to be refused without prompting. Which mode fits?",
+     "options": [
+      "bypassPermissions, which skips all checks so that nothing can block the pipeline run",
+      "plan, which locks the session to read-only until a plan is approved",
+      "dontAsk, which auto-denies anything that would prompt and runs only allow-listed actions",
+      "acceptEdits, which approves file edits and common filesystem commands automatically"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "dontAsk is the mode for locked-down CI. bypassPermissions skips all checks and is scoped to containers or CI, not a restriction mode.",
+     "mnemonic": "Locked-down CI: dontAsk."
+    },
+    {
+     "id": "d3s5q05",
+     "concept": "permission-modes",
+     "type": "single",
+     "stem": "Which statement about bypassPermissions is accurate?",
+     "options": [
+      "It uses a classifier to block risky actions before they run",
+      "It skips all permission checks and is scoped to containers or CI",
+      "It is the recommended default setting for developer laptops",
+      "It prompts only for file deletions and nothing else"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "bypassPermissions removes every check, so it belongs only where the environment itself contains the blast radius. The classifier belongs to auto mode.",
+     "mnemonic": "Bypass only inside a box."
+    },
+    {
+     "id": "d3s5q06",
+     "concept": "permission-modes",
+     "type": "multi",
+     "stem": "Which TWO descriptions of permission modes are accurate? Select TWO.",
+     "options": [
+      "dontAsk prompts the user once and then remembers the answer given",
+      "default mode auto-approves file edits and common filesystem commands",
+      "auto uses a classifier to approve safe actions and block risky ones",
+      "acceptEdits approves every Bash command without ever prompting the user",
+      "plan locks the session to read-only until the user approves a plan"
+     ],
+     "correct": [
+      2,
+      4
+     ],
+     "explanation": "acceptEdits covers file edits and common filesystem commands only, and other Bash commands still prompt. Default asks before each action, and dontAsk denies rather than prompts.",
+     "mnemonic": "Plan reads, auto classifies."
+    },
+    {
+     "id": "d3s5q07",
+     "concept": "sandboxing",
+     "type": "single",
+     "stem": "A deployment's wrong actions would have real consequences and the team relies on approval prompts. What is the better design?",
+     "options": [
+      "Add sandboxing so the environment itself enforces filesystem, network and command limits",
+      "Rely on logging to detect any misuse after it has occurred in production",
+      "Trust the agent's judgment more by writing a much longer CLAUDE.md file",
+      "Increase the number of approval prompts shown to the user during a session"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Approval prompts alone are not a sufficient backstop; the environment should enforce the boundary, not only the agent's judgment.",
+     "mnemonic": "Contain it in the environment."
+    },
+    {
+     "id": "d3s5q08",
+     "concept": "observability-precondition",
+     "type": "single",
+     "stem": "A security reviewer must decide whether to approve an autonomous agent that performs actions on several surfaces. Which standard should guide the decision?",
+     "options": [
+      "Audit logs become optional once deterministic hooks have been installed on the agent",
+      "Approval depends only on the model's published accuracy benchmarks and evaluation scores",
+      "An action not logged cannot be allowed, so per-surface audit coverage must be checked",
+      "Audit coverage is identical across every surface, interface and Anthropic product"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Observability is treated as the precondition for enabling agents. Coverage varies by surface, so verify which agentic actions are recorded.",
+     "mnemonic": "Unlogged means unallowed."
+    },
+    {
+     "id": "d3s5q09",
+     "concept": "observability-precondition",
+     "type": "single",
+     "stem": "Which review-checklist item reflects observability as a precondition for agents?",
+     "options": [
+      "Confirm the agent has access to every tool for flexibility",
+      "Confirm the system prompt exceeds a minimum required length",
+      "Verify which agentic actions the audit logs record on each chosen surface",
+      "Confirm the agent is using the largest available context window"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Without a trustworthy audit trail, an autonomous system is not approved to act; coverage differs between surfaces.",
+     "mnemonic": "Check the log before the launch."
+    },
+    {
+     "id": "d3s5q10",
+     "concept": "what-to-log",
+     "type": "single",
+     "stem": "A team wants to record whether the downstream system accepted Claude's output and any rejection signals. Which log category covers this?",
+     "options": [
+      "The outcome category",
+      "The response category",
+      "The context category",
+      "The request category"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "The four categories are request (model version, input tokens, prompt id), response (output tokens, latency, stop reason), context (user role, session ID, caching) and outcome (downstream acceptance or rejection).",
+     "mnemonic": "Request, response, context, outcome."
+    },
+    {
+     "id": "d3s5q11",
+     "concept": "what-to-log",
+     "type": "multi",
+     "stem": "Which TWO fields belong in the response log category? Select TWO.",
+     "options": [
+      "Session ID",
+      "Prompt identifier",
+      "Stop reason",
+      "Whether caching was applied",
+      "Output token count"
+     ],
+     "correct": [
+      2,
+      4
+     ],
+     "explanation": "Response fields are output token count, latency and stop reason. Prompt identifier belongs to the request; session ID and caching belong to context.",
+     "mnemonic": "Response: tokens out, time, stop."
+    },
+    {
+     "id": "d3s5q12",
+     "concept": "quiet-failure",
+     "type": "single",
+     "stem": "Dashboards show normal latency and no errors, yet customers report subtly wrong answers. What explains why monitoring stayed green?",
+     "options": [
+      "LLM systems fail quietly: wrong but fluent answers slip past error and timeout logging",
+      "Latency monitoring reliably detects hallucinated answers in real time, so none exist",
+      "The model crashes silently and then recovers before the next call arrives",
+      "The context window resets between calls and so hides every earlier error"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "An LLM system does not crash when something goes wrong; it returns a subtly incorrect response. Detecting that needs outcome signals and evaluation, not just error logs.",
+     "mnemonic": "No crash does not mean no wrong."
+    },
+    {
+     "id": "d3s5q13",
+     "concept": "quiet-failure",
+     "type": "single",
+     "stem": "Why is an LLM-based system harder to debug than a traditional service?",
+     "options": [
+      "Its latency cannot be measured by any of the standard monitoring tools",
+      "It always throws an exception whenever it receives unexpected or invalid input",
+      "It exposes no stop reason that engineers can inspect after the response",
+      "It can give a plausible wrong answer with no error that logging flags"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Standard logging captures errors and timeouts; it cannot see a quietly incorrect answer with real business consequences, hence the outcome field and evals.",
+     "mnemonic": "Wrong but fluent slips past logs."
+    },
+    {
+     "id": "d3s5q18",
+     "concept": "mcp-reuse",
+     "type": "single",
+     "stem": "An internal ticketing tool must be callable from Claude.ai, Claude Code and a partner-facing app. What is the right choice?",
+     "options": [
+      "Build one MCP server and connect it to each client",
+      "Run the Agent SDK separately in every client that needs the tools",
+      "Write separate raw API tool definitions inside each of the three clients",
+      "Embed the tool descriptions in a CLAUDE.md file shared across clients"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "MCP pays back when one tool entry point is needed from multiple Claude clients: build once, connect everywhere.",
+     "mnemonic": "Build once, connect everywhere."
+    },
+    {
+     "id": "d3s5q15",
+     "concept": "mcp-reuse",
+     "type": "single",
+     "stem": "What is the deciding factor between MCP and raw API tool use?",
+     "options": [
+      "Whether the partner has signed a BAA with Anthropic",
+      "Which delivery route the partner is already using",
+      "How often the tools will be reused across multiple Claude clients",
+      "The size of the output returned by the tool"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Choose MCP when tools must be reachable from several clients, and raw API tool use when they live inside one product.",
+     "mnemonic": "Reuse decides: many clients, MCP."
+    },
+    {
+     "id": "d3s5q19",
+     "concept": "shaping-layer-placement",
+     "type": "single",
+     "stem": "A team's CLAUDE.md now holds full step-by-step procedures for onboarding a new service, rotating test fixtures and preparing a hotfix, and every session starts with a bloated context. Where should those procedures live instead?",
+     "options": [
+      "In hooks, which fire on lifecycle events and load procedures into every session",
+      "In MCP servers, which make the procedures reusable from Claude.ai and other clients",
+      "In Skills, invoked on demand rather than loaded upfront, keeping the main context lean",
+      "In permission rules, which decide which procedure steps may run without prompting"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "CLAUDE.md loads at session start and suits persistent context every task needs. Repeatable workflows the team should not have to spell out each time belong in Skills, which load only when invoked and keep the main context lean. Hooks and permissions are governing layers, not places to store procedures.",
+     "mnemonic": "Always-needed in CLAUDE.md; sometimes-needed in a Skill."
+    },
+    {
+     "id": "d3s5q17",
+     "concept": "shaping-layer-placement",
+     "type": "multi",
+     "stem": "Which TWO pairings of content and Claude Code shaping layer are correct? Select TWO.",
+     "options": [
+      "Repo layout and coding standards every task needs: CLAUDE.md",
+      "A dependency-upgrade procedure used occasionally: CLAUDE.md, loaded at every start",
+      "A codebase exploration that would clutter the main thread: a subagent",
+      "A read-only code review with its own system prompt: a Skill in the main thread",
+      "Standing team conventions for every session: a subagent with restricted tools"
+     ],
+     "correct": [
+      0,
+      2
+     ],
+     "explanation": "CLAUDE.md carries persistent context such as repo layout and standards. Subagents are isolated context helpers for bounded tasks, or work needing read-only tools or a different system prompt, such as exploration or code review. Occasional procedures belong in Skills, not in CLAUDE.md.",
+     "mnemonic": "Standing facts: CLAUDE.md. Side quests: subagent. Procedures: Skill."
+    }
+   ]
+  }
+ ]
+}

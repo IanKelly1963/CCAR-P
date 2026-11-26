@@ -1,0 +1,1101 @@
+{
+ "domain": 4,
+ "subjects": [
+  {
+   "id": "d4s1",
+   "title": "Evals as acceptance criteria and the grading ladder",
+   "learn": [
+    "Evals are written before production code; this forces measurable success criteria, early exposure of design assumptions, and a gate for model swaps, prompt changes and retrieval changes.",
+    "Five-stage workflow: define the task, build a golden dataset, run automated checks, score with a judge, then interpret and act on per-category results.",
+    "Grading ladder: code-based checks first (cheap, never drift), LLM-as-judge for interpretation, human review as the last resort for high-stakes or novel behavior.",
+    "Judge rigor: detailed rubrics, constrained verdicts, calibration against human-labeled outputs, a different grader model than the one evaluated, and reasoning alongside the score.",
+    "Thresholds come from the business requirement, not the prototype; failure modes and adversarial inputs become dataset categories.",
+    "Every change needs an eval gate with a delta threshold set in advance; stale or unrepresentative suites give false confidence."
+   ],
+   "traps": [
+    "Build-then-test: treating evals as an end-of-project QA step, when they define success and gate every change from the start.",
+    "Calibration skipped: an uncalibrated judge looks trustworthy and is therefore worse than no automated grade at all.",
+    "Prototype-derived thresholds: setting pass marks at whatever the first prototype achieves instead of what the business requirement demands.",
+    "Stale suite: passing evals after a prompt change prove nothing if the dataset still reflects the old behavior.",
+    "Mean-score comfort: a higher average can hide a regression on edge cases or one document type."
+   ],
+   "questions": [
+    {
+     "id": "d4s1q01",
+     "concept": "evals-before-code",
+     "type": "multi",
+     "stem": "Writing the eval suite before any production code is the recommended approach. Which THREE outcomes does this ordering force? Select THREE.",
+     "options": [
+      "It requires success to be stated in measurable terms",
+      "It provides a gate for judging a model swap, prompt change or retrieval change",
+      "It guarantees the golden dataset will stay representative as traffic evolves",
+      "It removes the need to calibrate any judge model against human labels",
+      "It exposes design assumptions while they are still cheap to change"
+     ],
+     "correct": [
+      0,
+      1,
+      4
+     ],
+     "explanation": "Writing evals first forces measurable success criteria, early exposure of assumptions, and a ready-made gate for later changes. It does not remove judge calibration or keep the dataset current; those remain ongoing maintenance duties.",
+     "mnemonic": "Evals first: define success, expose assumptions, gate every change."
+    },
+    {
+     "id": "d4s1q02",
+     "concept": "evals-before-code",
+     "type": "single",
+     "stem": "A team plans to build the assistant, eyeball a few outputs, and add an eval suite as a QA step before launch. What is the core problem with this plan?",
+     "options": [
+      "Evals written afterwards cannot use a golden dataset, so they must rely solely on slow human reviewers",
+      "Eval suites cannot be written until production code exists, because they need real system outputs to compare against",
+      "Late evals are more expensive per item, because model-based graders cost more once the system is deployed",
+      "With no eval for a behavior there is no reliable way to measure it, so changes during the build go unverified"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "If you cannot write an eval for a behavior you have no reliable way to tell whether it is present, so changes during the build cannot be verified. Evals do not require finished code, and their per-item cost does not depend on timing.",
+     "mnemonic": "No eval, no proof: unmeasured behavior means unverifiable changes."
+    },
+    {
+     "id": "d4s1q03",
+     "concept": "grading-ladder",
+     "type": "single",
+     "stem": "A pipeline must verify that every output is valid JSON matching a schema, and also that each reply keeps an empathetic tone. Which grading design follows the ladder?",
+     "options": [
+      "Human reviewers for both checks, because people are the most reliable graders for anything involving a schema",
+      "A calibrated judge model for both checks, since one grader is simpler to maintain than a code check plus a judge",
+      "Schema check in code for validity, a calibrated judge model for tone, and human review only for high-stakes or novel cases",
+      "A code-based regex for both checks, since deterministic grading is cheapest and never drifts across runs"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Reach for the cheapest reliable method first: code for unambiguous checks like schema validity, a judge model for interpretation such as tone, and humans last. Code cannot judge tone, and humans for everything is the costliest option.",
+     "mnemonic": "Code first, judge second, human last."
+    },
+    {
+     "id": "d4s1q04",
+     "concept": "judge-calibration",
+     "type": "single",
+     "stem": "Why is an uncalibrated LLM judge considered worse than having no automated grade?",
+     "options": [
+      "It cannot return reasoning alongside its score, so every verdict is impossible to audit",
+      "It produces confident scores that look trustworthy even when they do not track human judgment",
+      "It is limited to deterministic checks, so it fails on tone, helpfulness and reasoning quality",
+      "It always costs more per item than a human reviewer, which wastes the evaluation budget"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "A judge can be wrong, and without calibration against human-labeled outputs its confident scores create false assurance. The judge can give reasoning, and interpreting tone is exactly what it is for, so those distractors misstate the problem.",
+     "mnemonic": "Uncalibrated judge: confident noise that looks like signal."
+    },
+    {
+     "id": "d4s1q05",
+     "concept": "judge-rigor",
+     "type": "multi",
+     "stem": "Which TWO practices make an LLM-as-judge grader more rigorous? Select TWO.",
+     "options": [
+      "Use constrained verdicts drawn from a small fixed set of labels",
+      "Use the same model as the generator so the judge understands the intended style",
+      "Grade with a different model than the one whose outputs are being evaluated",
+      "Keep the rubric brief so the judge is not anchored by too many criteria",
+      "Ask for a free-form score between 1 and 100 so small differences are captured"
+     ],
+     "correct": [
+      0,
+      2
+     ],
+     "explanation": "Rigorous judging uses detailed rubrics, constrained verdicts, calibration against human labels, and a different grader model to avoid self-preference. Free-form scores, a same-model judge and a thin rubric all weaken consistency.",
+     "mnemonic": "Few labels, fresh grader: constrain verdicts, never self-grade."
+    },
+    {
+     "id": "d4s1q06",
+     "concept": "judge-rigor",
+     "type": "single",
+     "stem": "A team uses the same model to generate answers and to grade them, and scores look suspiciously high. Which risk does this setup create, and what is the remedy?",
+     "options": [
+      "Schema drift; replace the judge with a regex that checks whether the answer matches an expected string",
+      "Context overflow; shorten the judge prompt until it no longer includes the original question or rubric",
+      "Token skew; route the longest outputs to humans because judges cannot handle above-average lengths",
+      "Self-preference; grade with a different model than the one being evaluated, calibrated against human labels"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Grading with the same model risks self-preference, so the judge should be a different model and its verdicts calibrated against human-labeled examples. Removing the question or rubric from the judge prompt would only make grading worse.",
+     "mnemonic": "Don't let the model mark its own homework."
+    },
+    {
+     "id": "d4s1q07",
+     "concept": "threshold-before-data",
+     "type": "single",
+     "stem": "A business requirement says the assistant must \"summarize claims accurately\". Where should pass thresholds such as a hallucination ceiling and schema-compliance rate come from?",
+     "options": [
+      "From the median score of a judge model on a handful of well-known development examples",
+      "From whatever the first working prototype happens to achieve, adopted as the baseline",
+      "From the business requirement, after the vague goal is turned into specific measurable behaviors",
+      "From a fixed industry standard percentage applied identically to every use case regardless of stakes"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Specify the behavior first (for example, extract filer name, claim number, date and amount), then set thresholds from the business requirement. Copying the prototype's performance writes acceptance criteria after the build.",
+     "mnemonic": "Thresholds come from the business, not from the prototype."
+    },
+    {
+     "id": "d4s1q08",
+     "concept": "adversarial-inputs",
+     "type": "single",
+     "stem": "A golden dataset for claim extraction contains only clean, well-formatted documents and scores 99%. Why will this score likely mislead the team?",
+     "options": [
+      "It lacks a judge model, and only judge-scored datasets can predict how the system behaves in production",
+      "It omits adversarial inputs such as missing fields, handwritten sections and non-standard layouts, so scores will not predict production",
+      "It uses too many documents, which dilutes the failure modes and makes per-category breakdowns meaningless",
+      "It is based on code-based checks, which cannot detect fabricated claim numbers or values from the wrong claim"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "A dataset of clean inputs measures a different system than the one that faces real traffic. Each failure mode and adversarial input should be a dataset category. Volume is a strength, and code checks can catch wrong values against authoritative data.",
+     "mnemonic": "Clean data, clean scores, dirty production."
+    },
+    {
+     "id": "d4s1q09",
+     "concept": "stale-eval",
+     "type": "multi",
+     "stem": "A contract-review assistant passed its eval suite for two weeks, then failed on contracts with non-standard obligation structures. Which TWO root causes does this pattern point to? Select TWO.",
+     "options": [
+      "The golden dataset was not updated after the prompt changed",
+      "The dataset came from ten convenient contracts rather than a representative sample",
+      "The judge model was too strict, so passing scores were artificially suppressed",
+      "Code-based checks were used instead of human reviewers for every single output",
+      "Manual spot-checks were replaced by too many automated cases covering rare edge conditions"
+     ],
+     "correct": [
+      0,
+      1
+     ],
+     "explanation": "The suite was built from convenient inputs and never refreshed after the prompt changed, so it measured behavior the system no longer produced. Spot-checks are not evals; the problem was too little coverage, not too much.",
+     "mnemonic": "Convenient and stale: the two sins of a false-green suite."
+    },
+    {
+     "id": "d4s1q10",
+     "concept": "stale-eval",
+     "type": "single",
+     "stem": "A summarization prompt was revised but the eval suite was left untouched and still passed. Two days after release, multi-clause legal sentences were being truncated. What is the lesson?",
+     "options": [
+      "Increase the judge model's temperature so borderline truncations are scored more strictly",
+      "Trust the passing suite and add a manual spot-check of ten summaries after each release",
+      "Replace the golden dataset with a smaller one so maintenance cost stays below the API cost",
+      "Update the eval set to match the changed behavior and run evals before every change"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "The eval set predated the prompt change and no longer matched the behavior that changed, which created false confidence. Spot-checks only confirm known inputs, and shrinking the dataset worsens under-evaluation risk.",
+     "mnemonic": "Change the prompt, change the eval; stale suites lie."
+    },
+    {
+     "id": "d4s1q11",
+     "concept": "mean-hides-regression",
+     "type": "single",
+     "stem": "A prompt change raises the overall mean eval score from 0.88 to 0.91. Which step best checks whether the change is really an improvement?",
+     "options": [
+      "Lower the pass threshold so the new version comfortably clears it on every individual category",
+      "Re-run the same eval with a larger judge model until the mean rises further above the threshold",
+      "Review the per-category breakdown and edge-case or adversarial results for any quiet regression",
+      "Approve it because the mean exceeds the old score, and monitor user complaints for a week"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Interpreting results means looking beyond the aggregate: a rising mean can hide degraded edge-case, adversarial or single-category performance. Moving the threshold afterwards just rewrites the acceptance criteria.",
+     "mnemonic": "Mean up, tail down: always read the per-category breakdown."
+    },
+    {
+     "id": "d4s1q12",
+     "concept": "multi-turn-evals",
+     "type": "single",
+     "stem": "A single-turn eval suite passes, but the assistant forgets earlier details and invents facts in long conversations. What addition does this require?",
+     "options": [
+      "More single-turn prompts with longer inputs, since the conversation behavior is just a long prompt",
+      "A multi-turn eval with a golden dataset of full conversation transcripts and known-good responses at each turn",
+      "A judge prompt that scores each reply in isolation, without access to any earlier turns",
+      "A larger set of schema-validation checks on the final turn of each conversation only"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Multi-turn evals score a whole conversation (context retention, no invented details, quality over length) and need conversation-level golden data covering follow-ups, topic shifts and lengths. Isolated replies cannot reveal context failures.",
+     "mnemonic": "Conversations need transcripts: the unit scored is the whole dialogue."
+    },
+    {
+     "id": "d4s1q13",
+     "concept": "threshold-before-data",
+     "type": "single",
+     "stem": "A team evaluates a Sonnet to Haiku downgrade on 250 stratified documents. When should the rollback criterion (for example, no document type below 0.85) be set?",
+     "options": [
+      "Before running the eval, so the result is judged against a standard rather than negotiated afterwards",
+      "Only on the overall average, so individual document types do not trigger needless rejections",
+      "Once production traffic is live, since a real-user baseline is more reliable than a test set",
+      "After reviewing results, so the criterion reflects what Haiku can realistically achieve"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "A delta threshold set in advance is a standard; set afterwards it is acceptance criteria written after the build. Per-type criteria also surfaced a partial-migration option (route the weak types to Sonnet) that an overall mean would hide.",
+     "mnemonic": "Draw the line before the data arrives."
+    }
+   ]
+  },
+  {
+   "id": "d4s2",
+   "title": "POC to production: cost, latency and reliability",
+   "learn": [
+    "Cost, latency, reliability and failure modes are invisible in a demo; capture the business-metric signal during the POC as well.",
+    "Cost model inputs: call volume from the business, token budget per request (input plus output), and model tier; token distributions are skewed, so averages underestimate.",
+    "Design to p95 latency; prompt caching helps with long stable prompts but creates a consistency window for live state.",
+    "Backoff sits close to the API call, circuit breakers at the service boundary, fallback chains in the orchestration layer.",
+    "Failure modes by architecture: agent (unbounded tool use), RAG (retrieval drift), document pipeline (no exception path), orchestrator-workers (blurred boundaries).",
+    "Pin model versions, watch the deprecation page, keep a runbook; consider Batch API (50% example) when asynchronous is acceptable, verifying BAA coverage for regulated data."
+   ],
+   "traps": [
+    "Demo-as-model: treating a low-volume POC bill as a production cost estimate, when it answers only whether the system can do the task.",
+    "Average thinking: sizing on mean tokens or median latency when a small tail drives most of the spend and SLA breaches.",
+    "Wrong layer: putting retries, circuit breakers or fallbacks at the wrong layer protects the wrong part of the system.",
+    "Untested failure: a 529 at peak takes the whole workflow down if the fallback was never built and tested.",
+    "Batch assumption: sending regulated data through Batch without verifying BAA coverage for that configuration."
+   ],
+   "questions": [
+    {
+     "id": "d4s2q01",
+     "concept": "poc-four-dimensions",
+     "type": "single",
+     "stem": "Which four dimensions of production readiness does a demo or POC typically fail to reveal?",
+     "options": [
+      "Model tier, context window, tokenizer and temperature",
+      "Cost, latency, reliability and failure modes",
+      "Throughput, storage, networking and licensing",
+      "Accuracy, tone, brand safety and prompt length"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "A POC runs low volume, with clean inputs and a patient user, so it hides cost, latency (p95 under load), reliability (no retries or fallback) and architecture-specific failure modes. The others are not the four named gaps.",
+     "mnemonic": "Demo hides four: cost, latency, reliability, failure modes."
+    },
+    {
+     "id": "d4s2q02",
+     "concept": "poc-business-metric",
+     "type": "single",
+     "stem": "A POC's projected monthly cost fits the budget, but nobody measured whether it improves the metric the partner cares about. How should this be judged?",
+     "options": [
+      "A cost profile that fits on a system with no measurable improvement in the business metric is still a failed deployment",
+      "Business-metric measurement belongs to the partner and has no place in the architect's POC scope",
+      "The deployment is sound, because meeting the cost ceiling is the only requirement a POC must demonstrate",
+      "The metric can be measured after launch once volume is high enough to produce stable and reliable results"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "The POC should deliberately capture the outcome signal the partner cares about on its sample. Cost alone does not prove value; a budget-fitting system that does not move the metric still fails.",
+     "mnemonic": "Cheap but useless is still failure: measure the metric in the POC."
+    },
+    {
+     "id": "d4s2q03",
+     "concept": "cost-model-inputs",
+     "type": "single",
+     "stem": "Which three inputs let you estimate monthly cost against a budget ceiling before writing code?",
+     "options": [
+      "Prompt length, golden dataset size, and judge model choice",
+      "Latency target, retry count, and number of fallback models",
+      "Region, authentication method, and number of connected tools",
+      "Call volume, token budget per request, and model tier"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Monthly cost comes from call volume (from the business owner), the token budget per request (input plus expected output) and the model tier. The distractors are valid design concerns but not the cost-model inputs.",
+     "mnemonic": "Volume times tokens times tier gives the bill."
+    },
+    {
+     "id": "d4s2q04",
+     "concept": "token-skew",
+     "type": "single",
+     "stem": "A cost model used the average token count of sample inputs. After launch, long documents in the tail consumed 80% of spend. What should the model have done?",
+     "options": [
+      "Wait for the first billing cycle before estimating, since distributions cannot be known in advance",
+      "Assume a uniform distribution and multiply the average by a fixed safety margin of ten percent",
+      "Model the token distribution, including the long tail, rather than assuming the average represents all requests",
+      "Use the median token count, which ignores outliers and therefore reflects typical request behavior better"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Token distributions are often skewed: most requests are short but a tail consumes a disproportionate share, so average-based models can underestimate cost by two or three times. The median hides the tail even more than the mean.",
+     "mnemonic": "Averages hide the tail; the tail eats the budget."
+    },
+    {
+     "id": "d4s2q05",
+     "concept": "token-skew",
+     "type": "single",
+     "stem": "An ROI model takes the run cost from the average token cost per request instead of the sizing distribution, on a workflow with heavy-tailed inputs. What is the effect?",
+     "options": [
+      "Recurring cost is overstated, so the payback period looks longer than it is",
+      "Recurring cost is understated, so the net value and apparent payback are overstated",
+      "Cost is accurate, because averages and distributions give the same total over many requests",
+      "Latency is understated, so the SLA appears to be met when it is not"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Using an average understates recurring cost where a small fraction of large requests drives most spend, which in turn inflates net value. The error shows up as a budget surprise after launch.",
+     "mnemonic": "Average cost in, inflated ROI out."
+    },
+    {
+     "id": "d4s2q06",
+     "concept": "p95-design-target",
+     "type": "single",
+     "stem": "Why is p95 latency a better design target than median latency for a user-facing workflow?",
+     "options": [
+      "The slow tail drives SLA breaches, and p95 is the value below which 95% of requests complete",
+      "The median is distorted by caching, whereas p95 measures only requests that bypass the prompt cache entirely",
+      "p95 measures cost per request, which is the main cause of slow responses at production volume",
+      "p95 is always lower than the median, which gives the team a more comfortable and achievable target"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "The median describes the middle request, while the slowest 5% above p95 are what breach SLAs. A demo's single-request latency says little about p95 under concurrent load.",
+     "mnemonic": "Median flatters; p95 tells the truth about the slow 5%."
+    },
+    {
+     "id": "d4s2q07",
+     "concept": "p95-design-target",
+     "type": "single",
+     "stem": "A POC measured 600 ms median latency with one request at a time, against an 800 ms SLA. What is the main risk in concluding the SLA is met?",
+     "options": [
+      "Single-request tests overstate latency because the prompt cache is cold during every demo run",
+      "Median latency is always higher than p95, so the real figure is probably worse than 600 ms",
+      "Latency only matters for batch workloads, so the SLA applies to throughput rather than response time",
+      "The slowest 5% under concurrent load can exceed the SLA, so p95 under load is the number to check"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "A demo runs one request at a time, and p95 under concurrent load is a different number than median latency. SLA breaches come from the slow tail, so p95 is the design target.",
+     "mnemonic": "One demo request proves nothing about the slow 5%."
+    },
+    {
+     "id": "d4s2q08",
+     "concept": "caching-lever",
+     "type": "multi",
+     "stem": "Which TWO statements about prompt caching as a cost and latency lever are correct? Select TWO.",
+     "options": [
+      "It is most effective when the system prompt is long and stable and reused frequently",
+      "It is most effective for short, frequently changing prompts that are rarely reused",
+      "It can create a consistency window if cached content must reflect live state",
+      "Cached responses may differ from uncached ones, so quality must be re-evaluated after enabling it",
+      "It works automatically with no request markers, and cache writes cost the same as standard input"
+     ],
+     "correct": [
+      0,
+      2
+     ],
+     "explanation": "Caching stores the reusable prompt prefix, giving the largest savings for long stable prompts, but live-state requirements may clash with the consistency window. The response is identical with or without caching, and writes cost more.",
+     "mnemonic": "Long, stable prefix pays; live state breaks the window."
+    },
+    {
+     "id": "d4s2q09",
+     "concept": "reliability-placement",
+     "type": "single",
+     "stem": "A downstream dependency is degrading and slow timeouts are consuming the calling service's capacity. Which control fits, and where should it sit?",
+     "options": [
+      "A fallback chain placed next to the API call that retries the same endpoint with doubled delays",
+      "A circuit breaker at the service boundary that trips on error rate and fails requests immediately",
+      "Exponential backoff in the orchestration layer so each workflow retries the dependency until it recovers",
+      "Retry logic at the service boundary that holds requests until the dependency's error rate drops"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Circuit breakers measure error rate on a dependency and fail fast once tripped, sitting at the service boundary. Retries belong close to the API call and fallbacks in orchestration; misplacing them protects the wrong part of the system.",
+     "mnemonic": "Backoff near the call, breaker at the border, fallback upstairs."
+    },
+    {
+     "id": "d4s2q10",
+     "concept": "backoff-transient",
+     "type": "multi",
+     "stem": "Which TWO errors are the best candidates for retry with exponential backoff? Select TWO.",
+     "options": [
+      "A schema mismatch in the model's output format",
+      "An authorization failure caused by a missing credential",
+      "A 429 rate-limit response signalling temporary throttling",
+      "A 4xx response caused by a malformed request body",
+      "A 503 response from a briefly overloaded server"
+     ],
+     "correct": [
+      2,
+      4
+     ],
+     "explanation": "Rate limits (429), timeouts and 5xx server errors are transient and usually resolve on retry with growing delays. Client-side 4xx problems such as malformed requests will not be fixed by waiting.",
+     "mnemonic": "Retry the transient 429 and 5xx, never the client's own mistake."
+    },
+    {
+     "id": "d4s2q11",
+     "concept": "reliability-placement",
+     "type": "single",
+     "stem": "On day three at peak, the endpoint returned a 529 and the whole document workflow stopped because failure handling had never been tested. Which design change addresses this?",
+     "options": [
+      "Increase the token budget per request so the model has more room to complete each call before it times out",
+      "Pin the model version more tightly so the provider will not overload its endpoint at peak times",
+      "Move the workflow to Batch API so the user waits for results at the same latency as before",
+      "Add a fallback chain in the orchestration layer to an alternative model tier or cached response, and test it in the eval suite"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "A system with no fallback has a single point of failure; routing to another tier or a cached response degrades gracefully, and fallback behavior should be exercised in evals. Pinning and token budgets do not address an overloaded endpoint.",
+     "mnemonic": "529 at peak? Fall back, don't fall over."
+    },
+    {
+     "id": "d4s2q12",
+     "concept": "failure-modes-by-architecture",
+     "type": "multi",
+     "stem": "Which TWO pairings of architecture and mitigation are correct? Select TWO.",
+     "options": [
+      "Orchestrator-workers: give each subagent its own independent trace so failures stay isolated",
+      "Agent: remove all stopping criteria so the loop can finish every task it starts",
+      "Document pipeline: add confidence scoring and route low-confidence extractions to a human review queue",
+      "RAG: raise the temperature so retrieved chunks are paraphrased and stale facts are less visible",
+      "Agent: set turn and token budgets, tool-call limits and explicit stopping criteria, and eval stopping behavior"
+     ],
+     "correct": [
+      2,
+      4
+     ],
+     "explanation": "Agents risk unbounded tool use and growing context, so budgets and stop criteria matter; pipelines need an exception path for low-confidence output. RAG needs retrieval precision and recall monitored, and orchestrators need a shared trace ID.",
+     "mnemonic": "Agents need brakes; pipelines need a human lane."
+    },
+    {
+     "id": "d4s2q13",
+     "concept": "failure-modes-by-architecture",
+     "type": "single",
+     "stem": "A RAG system's answers degrade after documents are added and removed without reindexing, and a live inventory question returns stale data. Which mitigation fits?",
+     "options": [
+      "Add confidence scoring to the generation step and route every low-confidence answer to a human queue",
+      "Monitor retrieval precision and recall as system metrics and separate live-state queries from static knowledge queries",
+      "Set per-turn token budgets and maximum tool-call counts so the retrieval step cannot grow without bound",
+      "Create a shared trace ID across all agents so results equal the units that were submitted"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "RAG's first failure is retrieval quality drift, so retrieval belongs in the eval loop and live state needs a direct lookup instead of an index snapshot. The distractors belong to the document-pipeline, agent and orchestrator patterns.",
+     "mnemonic": "RAG rots at retrieval; live state skips the index."
+    },
+    {
+     "id": "d4s2q14",
+     "concept": "failure-modes-by-architecture",
+     "type": "single",
+     "stem": "An orchestrator submitted 40 sub-tasks, but the final synthesis silently covered only 37 because three subagents dropped without raising errors. Which control prevents this?",
+     "options": [
+      "Reconcile coverage at synthesis so results equal the units submitted, with a shared trace ID and clear recoverable boundaries",
+      "Switch every subagent to the largest model tier so none of them can drop a task",
+      "Retry the whole orchestration run with exponential backoff until all 40 results appear",
+      "Increase the orchestrator's token budget so it can read longer subagent outputs without truncating them"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Orchestrator-workers failures blur boundaries and a dropped subagent can fail silently at synthesis; define retry-or-flag versus orchestrator-level failures, share a trace ID, and check coverage. A bigger model or blind retries do not detect missing units.",
+     "mnemonic": "Count what went out, count what came back."
+    },
+    {
+     "id": "d4s2q15",
+     "concept": "model-pinning",
+     "type": "single",
+     "stem": "Which practice set describes model version pinning as an operational discipline?",
+     "options": [
+      "Always call the newest alias so the system automatically benefits from every model improvement",
+      "Pin the version during the POC, then unpin at launch so rollout follows the provider's schedule",
+      "Pin versions only for agents, since RAG and document pipelines are insensitive to model changes",
+      "Pin versions in configuration, monitor the model deprecation page, and keep a version-update runbook"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Pinning applies to every architecture equally and is paired with deprecation monitoring and a runbook for updates. Floating aliases make a model change an unreviewed deployment.",
+     "mnemonic": "Pin it, watch the deprecations, keep the runbook."
+    },
+    {
+     "id": "d4s2q16",
+     "concept": "batch-api",
+     "type": "single",
+     "stem": "A nightly job summarizes protected health records and has no latency requirement. Which approach reflects the guidance on cost alternatives?",
+     "options": [
+      "Avoid Batch API entirely, since it is only appropriate for workloads that require real-time responses and low latency",
+      "Use Batch API only after enabling prompt caching, which supplies the compliance coverage that batch lacks",
+      "Model Batch API as a cost alternative (the example discount is 50%) but verify BAA coverage for that configuration first",
+      "Route it through Batch API immediately, because asynchronous processing is automatically covered by the existing BAA"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "When the SLA permits asynchronous processing, Batch API is a cost lever; for regulated data, coverage is configuration-specific and must be verified before routing PHI. Assuming coverage is the trap.",
+     "mnemonic": "Async saves half; check the BAA before PHI goes batch."
+    }
+   ]
+  },
+  {
+   "id": "d4s3",
+   "title": "A/B testing and shadow testing",
+   "learn": [
+    "A usable A/B test has a specific falsifiable hypothesis naming treatment, primary metric, threshold and constraints.",
+    "Assignment is random and consistent per user or session; the primary metric is defined before the run to avoid outcome-shopping.",
+    "Sample size is calculated from minimum detectable effect, baseline metric value and confidence level, and LLM output variance makes it larger.",
+    "Statistical significance is not practical significance; check operational overhead and secondary metrics (for example cost up 30%).",
+    "Interaction effects: align the test period and input distribution, since edge cases may spike seasonally.",
+    "Shadow testing runs a copy of live traffic offline with no user exposure but no downstream signal; live A/B needs bounded exposure and high traffic."
+   ],
+   "traps": [
+    "Vague hypothesis: \"the new prompt is better\" names no treatment, metric or threshold, so any result can be called a win.",
+    "Outcome-shopping: picking the metric that moved after seeing results turns an experiment into a search.",
+    "Small-sample wins: a 6-point gain on 50 sessions per arm sits inside the noise floor.",
+    "Significance equals value: a statistically significant gain can still be too small, or too costly, to ship.",
+    "Shadow overreach: shadow outputs never reach users, so they give no downstream behavior signal."
+   ],
+   "questions": [
+    {
+     "id": "d4s3q01",
+     "concept": "ab-hypothesis",
+     "type": "single",
+     "stem": "Which hypothesis is specific and falsifiable enough for an A/B test?",
+     "options": [
+      "The extraction prompt change should be shipped if it looks good in a handful of internal demos",
+      "The revised system prompt is better than the current one and users will probably like it more",
+      "Replacing \"summarize\" with \"extract the three key action items\" will raise task success by at least 5% without worsening p95 latency",
+      "The new prompt will improve overall quality, which we will judge from whichever metrics improve in the results"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "A usable hypothesis names the treatment, primary metric, success threshold and secondary constraint. Without that, you can always find a metric that moved the right way after the fact.",
+     "mnemonic": "Name treatment, metric, threshold, constraint."
+    },
+    {
+     "id": "d4s3q02",
+     "concept": "ab-hypothesis",
+     "type": "single",
+     "stem": "A team writes the hypothesis \"the new prompt is better.\" Why does this fail?",
+     "options": [
+      "It does not mention the judge model, which must be fixed before an experiment can start",
+      "It names no treatment, no metric and no threshold, so any result can be interpreted as a win",
+      "It cannot be tested with real users and must be validated through shadow testing instead",
+      "It is too narrowly worded, since A/B tests should compare entire systems rather than single prompt changes"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "A hypothesis must be specific and testable; \"better\" gives no direction, metric or threshold to falsify. Prompt-level A/B tests are normal, and judge choice is not what makes a hypothesis testable.",
+     "mnemonic": "If nothing can falsify it, everything confirms it."
+    },
+    {
+     "id": "d4s3q03",
+     "concept": "random-assignment",
+     "type": "single",
+     "stem": "In an A/B test the treatment group happened to receive more complex queries, and the new version looked worse. What assignment principle was violated?",
+     "options": [
+      "Requests should be randomly assigned to treatment or control, consistently for a given user or session",
+      "Assignment should favor the treatment with extra traffic so the sample reaches significance faster",
+      "Assignment should be based on query complexity so each version receives only the inputs it handles best",
+      "Both versions should be tested on the same request sequentially to remove any difference in inputs"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Random, consistent assignment makes the groups comparable and avoids contamination; otherwise an apparent win or loss may be an artifact of input distribution. Hand-picking inputs breaks comparability.",
+     "mnemonic": "Randomize, and keep each user in one arm."
+    },
+    {
+     "id": "d4s3q04",
+     "concept": "primary-metric-before",
+     "type": "single",
+     "stem": "A team compares several metrics after the run and reports the one that favored the new version. What is this called, and what should have happened?",
+     "options": [
+      "Statistical power; extend the experiment until every metric favors the new version",
+      "Contamination; assign users inconsistently so each metric receives independent samples",
+      "Interaction effect; split the metrics by input type before the experiment runs",
+      "Outcome-shopping; define a single primary metric before the experiment runs"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Choosing the metric after seeing results turns a test into a retrospective search for whatever moved. The primary metric (such as task success, cost per completion or p95) must be fixed in advance.",
+     "mnemonic": "Pick the metric first, or you will pick the winner."
+    },
+    {
+     "id": "d4s3q05",
+     "concept": "sample-size",
+     "type": "multi",
+     "stem": "Which THREE inputs determine the required sample size for an A/B test? Select THREE.",
+     "options": [
+      "The number of engineers who will review the results",
+      "The required confidence level for the conclusion",
+      "How long the team is willing to wait",
+      "The minimum detectable effect the team needs to be able to see",
+      "The baseline value of the metric being measured"
+     ],
+     "correct": [
+      1,
+      3,
+      4
+     ],
+     "explanation": "Sample size is calculated from minimum detectable effect, baseline metric value and the required confidence level, and for LLM systems the higher output variance pushes the number up. Reviewer count and patience are not inputs.",
+     "mnemonic": "Effect, baseline, confidence: three levers size the test."
+    },
+    {
+     "id": "d4s3q06",
+     "concept": "sample-size",
+     "type": "single",
+     "stem": "A team stops its experiment the moment the treatment pulls ahead. What is the danger?",
+     "options": [
+      "Early stopping lowers the baseline metric, which makes the minimum detectable effect impossible to compute at all",
+      "An underpowered run cannot separate a real effect from noise, so a lead may be only chance",
+      "Stopping early changes random assignment, so users are no longer consistently routed to one arm",
+      "Early stopping guarantees that secondary metrics such as cost will degrade by about thirty percent"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Without a sample size set in advance, stopping on a favorable reading mistakes noise for signal. LLM outputs are probabilistic, so variance is high and the required sample is larger.",
+     "mnemonic": "Stop on a lead and you chase noise."
+    },
+    {
+     "id": "d4s3q07",
+     "concept": "llm-variance",
+     "type": "single",
+     "stem": "Why do LLM A/B tests generally need larger samples than tests of deterministic software?",
+     "options": [
+      "Model outputs are probabilistic, so variance is higher and effects are harder to separate from noise",
+      "Model outputs are deterministic, so each request must be repeated many times to confirm the same result",
+      "Token costs vary per request, so cost noise is the main driver of the sample requirement",
+      "Prompt caching splits traffic across prefixes, which shrinks the effective sample in each arm"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "LLM outputs are probabilistic, which makes results noisier and interaction effects harder to control, so the required sample grows. Cost variation and caching are not the stated reasons.",
+     "mnemonic": "Probabilistic outputs, noisy metrics, bigger samples."
+    },
+    {
+     "id": "d4s3q08",
+     "concept": "significance-vs-value",
+     "type": "single",
+     "stem": "A new prompt shows a statistically significant but tiny task-success gain. What is the right next question?",
+     "options": [
+      "Should the experiment be rerun with a smaller sample to see whether the gain remains?",
+      "Can the metric be changed to one with a larger observed difference before the decision is made?",
+      "Is the p-value small enough to be reported, since significance alone is sufficient to decide?",
+      "Is the effect large enough to justify the operational cost of shipping and maintaining the new version?"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Statistical significance only says the result is unlikely to be chance; practical significance is a separate question about whether the gain outweighs operational overhead. Switching metrics would be outcome-shopping.",
+     "mnemonic": "Significant is not the same as worth shipping."
+    },
+    {
+     "id": "d4s3q09",
+     "concept": "significance-vs-value",
+     "type": "single",
+     "stem": "A prompt change lifts task success but raises cost per request by 30%. How should the result be read?",
+     "options": [
+      "Re-label cost as the primary metric, then treat the experiment as a success in the opposite direction",
+      "Discard the result, since any increase in cost invalidates the experiment's statistical validity",
+      "Check secondary metrics; a success gain with 30% higher cost may not be a net win",
+      "Declare it a win, because only the primary metric defined for the experiment matters in the decision"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Before declaring a winner, check whether any secondary metric degraded and whether the effect justifies overhead. Cost can offset a success gain depending on the budget, though the cost increase does not invalidate the test itself.",
+     "mnemonic": "Win on success, lose on cost: read the secondary metrics."
+    },
+    {
+     "id": "d4s3q10",
+     "concept": "interaction-effects",
+     "type": "single",
+     "stem": "A prompt improves results on typical inputs during a quiet test period, then degrades on edge cases in a seasonal spike. What does this illustrate?",
+     "options": [
+      "A shadow-testing artifact caused by serving users the current version's response",
+      "An interaction effect with input type; align the test period and input distribution with later traffic",
+      "Judge miscalibration, which would be fixed by comparing the judge against human labels",
+      "A sample-size error that disappears if the quiet-period test is simply repeated with the same inputs"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "LLM experiments can show interaction effects where a change helps common inputs and hurts rare ones that surge later. Test period and input distribution alignment matters more than in most software tests.",
+     "mnemonic": "Quiet-season win, peak-season loss: match the test to the traffic."
+    },
+    {
+     "id": "d4s3q11",
+     "concept": "fifty-session",
+     "type": "multi",
+     "stem": "A team tested 50 sessions per arm and saw 68% against 62%, then deployed; two weeks later the new version settled at 61%. Which THREE flaws explain this? Select THREE.",
+     "options": [
+      "The experiment should have been a live A/B test with all traffic sent to the treatment",
+      "The task success rate is an invalid metric for customer service agents",
+      "The primary metric was chosen after seeing which one moved the right way",
+      "The sample was too small to separate a 6-point difference from noise",
+      "The input distribution was uncontrolled, with fewer edge cases in the treatment group"
+     ],
+     "correct": [
+      2,
+      3,
+      4
+     ],
+     "explanation": "The 50-session comparison was underpowered, uncontrolled on input distribution and subject to metric selection after the fact, so the gain was noise. Task success is a valid metric, and sending all traffic to the treatment is not an experiment.",
+     "mnemonic": "Too few, uncontrolled, picked afterwards: the noisy 6-point mirage."
+    },
+    {
+     "id": "d4s3q12",
+     "concept": "shadow-mechanism",
+     "type": "single",
+     "stem": "What defines shadow testing of a new prompt or model version?",
+     "options": [
+      "It serves the new version to a small share of users and measures how they respond to the answers",
+      "It replays old requests from a golden dataset against the new version, with no connection to live traffic",
+      "It runs the new version first and falls back to the current version only if the new one errors",
+      "It receives a copy of live requests, users still get the current version's answer, and outputs are logged and scored offline"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "In shadow testing the new version sees live traffic copies, but its outputs are never returned; they are scored offline, so the deployment decision is made before any user sees it. Serving some users is a live A/B test.",
+     "mnemonic": "Shadow: sees the traffic, never shows the user."
+    },
+    {
+     "id": "d4s3q13",
+     "concept": "shadow-vs-ab",
+     "type": "single",
+     "stem": "A regulated-industry deployment cannot expose users to an unvalidated model change, and traffic is modest. Which approach fits, and what is the trade-off?",
+     "options": [
+      "Live A/B testing; the cost is that results arrive faster because the sample reaches significance sooner",
+      "Live A/B testing; the cost is a lack of control over input distribution compared with shadow traffic",
+      "Shadow testing; the cost is no downstream signal, since scoring relies on an offline rubric or golden answers",
+      "Shadow testing; the cost is that regressions can still reach a small fraction of users before closing"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Shadow testing suits high-risk or low-traffic cases where exposure is unacceptable or a live split cannot reach a meaningful sample, but with no users receiving outputs there is no real behavior signal. Live A/B exposes users to bounded risk.",
+     "mnemonic": "Risky or quiet? Shadow it, and score offline."
+    },
+    {
+     "id": "d4s3q14",
+     "concept": "shadow-vs-ab",
+     "type": "single",
+     "stem": "When is a live A/B test preferred over shadow testing?",
+     "options": [
+      "When traffic is too low to support a live split and the change is needed quickly",
+      "When the deployment can absorb bounded exposure to a worse version and traffic is high enough to reach a meaningful sample",
+      "When a single bad output would carry too much risk and the change must be validated before any user sees it",
+      "When the deployment is regulated and unvalidated model changes may not be permitted at all"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "A live A/B test measures real user behavior, including acceptance and follow-up signals, but requires tolerance for limited exposure and enough traffic. The other conditions point to shadow testing.",
+     "mnemonic": "High traffic, bounded risk, want real behavior: go live."
+    }
+   ]
+  },
+  {
+   "id": "d4s4",
+   "title": "Observability at scale and diagnosing failures",
+   "learn": [
+    "Observability must answer: what is the system doing, how well, when did it change, and why.",
+    "Request-level traces capture model, version, token counts, latency, stop reason and tool calls; aggregates add cost per request, p50/p95, task success and error rate by type.",
+    "Per-request decomposition matters because healthy aggregates can hide a small fraction of requests consuming most of the budget.",
+    "Alerts: cost above 150% of the 7-day average, p95 beyond SLA; drift needs periodic distribution comparison.",
+    "Attribute changes to model drift, data drift or model update; each has a different fix. Classify failures as prompt, hallucination, model mismatch or orchestrator-workers.",
+    "A translation layer built at design time maps technical metrics to business metrics; log request, response, context and outcome."
+   ],
+   "traps": [
+    "Healthy dashboard: aggregate metrics look fine while a small share of requests burns the budget.",
+    "Threshold-only drift: gradual output drift will not trip fixed alerts, and needs periodic distribution comparison.",
+    "Wrong fix: treating data drift, model drift and a model update the same produces the wrong remedy.",
+    "Instruct away hallucination: stronger instructions do not fix ungrounded content; grounding does.",
+    "Retrofit instrumentation: adding logging after the first incident means the root cause cannot be answered from existing data."
+   ],
+   "questions": [
+    {
+     "id": "d4s4q01",
+     "concept": "four-questions",
+     "type": "single",
+     "stem": "Production observability for a Claude system must answer which four questions?",
+     "options": [
+      "What is the token limit, how many users exist, what is the SLA, and when is the next deployment",
+      "Which model is best, which prompt is shortest, what is the p95, and who approved the release",
+      "Who is using it, where is it hosted, what does it cost, and which team owns it",
+      "What is it doing, how well is it performing, when did it change, and why did it change"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "The four questions are what, how well, when and why, and each needs a different instrumentation layer (tracing, metrics, anomaly detection, change attribution).",
+     "mnemonic": "What, how well, when, why: four questions, four layers."
+    },
+    {
+     "id": "d4s4q02",
+     "concept": "observability-logging",
+     "type": "single",
+     "stem": "Which record belongs in a request-level trace for a Claude call?",
+     "options": [
+      "The golden dataset and judge prompt version used to score the model offline in staging",
+      "Only the final answer text and the user's satisfaction rating collected after the session ends",
+      "Model and version, input and output token counts, latency, stop reason and any tool calls",
+      "The team's cost ceiling, the SLA target and the business owner's name and contact details"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Traces are the raw material for metrics and capture model, version, token counts, latency, stop reason and tool calls. Without them, root cause cannot be answered from existing data.",
+     "mnemonic": "Trace the call: model, tokens, time, stop, tools."
+    },
+    {
+     "id": "d4s4q03",
+     "concept": "per-request-decomposition",
+     "type": "single",
+     "stem": "Dashboards show a healthy average cost per request, yet monthly spend keeps overrunning budget. What is the best next step?",
+     "options": [
+      "Switch the dashboard from p95 to median latency, which better reflects typical request cost",
+      "Decompose cost per request to find the small fraction of requests consuming most of the budget",
+      "Add more aggregate panels, such as weekly averages, since a larger window smooths out irregular spikes",
+      "Lower the alert threshold on average cost so smaller deviations from the mean trigger notifications"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Aggregate metrics can look healthy while a small share of requests dominates spend and produces wrong outputs. Per-request decomposition exposes the non-obvious cases that averages hide.",
+     "mnemonic": "Averages hide the hogs; break cost down per request."
+    },
+    {
+     "id": "d4s4q04",
+     "concept": "per-request-decomposition",
+     "type": "multi",
+     "stem": "Which THREE metrics should a Claude dashboard aggregate from request-level trace data? Select THREE.",
+     "options": [
+      "Average prompt length across all users",
+      "Latency at p50 and p95",
+      "The temperature setting used per request",
+      "Cost per request",
+      "Error rate broken down by error type"
+     ],
+     "correct": [
+      1,
+      3,
+      4
+     ],
+     "explanation": "Request-level data rolls up into cost per request, p50 and p95 latency, task success (where the downstream system supplies an acceptance signal) and error rate by type; decomposition then guards against hidden outliers.",
+     "mnemonic": "Roll up four: cost, p50/p95, success, errors by type."
+    },
+    {
+     "id": "d4s4q05",
+     "concept": "anomaly-thresholds",
+     "type": "multi",
+     "stem": "Which TWO threshold alerts match the anomaly detection guidance? Select TWO.",
+     "options": [
+      "Cost exceeding 10% of the monthly budget",
+      "Cost exceeding 150% of the 7-day average",
+      "A weekly drop in golden dataset size",
+      "Any single request above the average token count",
+      "Latency p95 crossing the SLA threshold"
+     ],
+     "correct": [
+      1,
+      4
+     ],
+     "explanation": "Threshold alerts target the metrics that matter: a cost spike exceeding 150% of the 7-day average and a p95 beyond the SLA. Gradual output drift needs a different technique.",
+     "mnemonic": "150% of the weekly mean, p95 past SLA: ring the bell."
+    },
+    {
+     "id": "d4s4q06",
+     "concept": "drift-detection",
+     "type": "single",
+     "stem": "Model outputs have been gradually shifting in distribution over several weeks without tripping any threshold alert. Which approach suits this?",
+     "options": [
+      "Tighten the cost and p95 alert thresholds, since gradual drift always appears as a latency or cost excursion",
+      "Disable alerting on cost and rely on a monthly manual review of a few sampled outputs",
+      "Periodic distribution comparison of outputs over time, since threshold alerts are poor at catching gradual drift",
+      "Wait for task success rate to fall below the SLA, which is the only reliable indicator of drift"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Model drift is harder to detect with threshold alerts and benefits from periodic comparison of output distributions. Waiting for success to collapse means users already saw the problem.",
+     "mnemonic": "Slow drift slips past alarms; compare distributions."
+    },
+    {
+     "id": "d4s4q07",
+     "concept": "change-attribution",
+     "type": "single",
+     "stem": "Task success fell but the model version is unchanged and the model behaves the same on a fixed set of old inputs. Traffic now includes many new document types. Which cause and fix fit?",
+     "options": [
+      "Hallucination; replace the instructions with a stronger and more emphatic warning to the model",
+      "Data drift; update the golden dataset, prompts or routing for the new input distribution",
+      "Model update effect; wait for the provider's next release to restore previous behavior",
+      "Model drift; roll back to the previous model version and wait for behavior to stabilize"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "When the model is unchanged and behaves the same on stable inputs, the cause is a shifted input distribution (data drift), which calls for data-side changes. Mixing up the three causes produces the wrong fix.",
+     "mnemonic": "Same model, new inputs: that is data drift."
+    },
+    {
+     "id": "d4s4q08",
+     "concept": "change-attribution",
+     "type": "single",
+     "stem": "Metrics shifted right after the team moved to a new model version, with input distribution unchanged. How should this be attributed?",
+     "options": [
+      "As a model update effect: the new version behaves differently on old inputs, so use eval-gated selection",
+      "As model drift, where the same model gradually changed, to be handled by raising alert thresholds",
+      "As data drift, to be handled by reindexing the knowledge base and refreshing the golden dataset",
+      "As a prompt failure, to be handled by shortening the system prompt to reduce ambiguity"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "A changed model version behaving differently on existing inputs is a model update effect. The version recorded in each trace makes this attribution possible and differentiates it from drift on stable inputs.",
+     "mnemonic": "New version, old inputs: blame the update."
+    },
+    {
+     "id": "d4s4q09",
+     "concept": "failure-taxonomy",
+     "type": "single",
+     "stem": "A model confidently states a policy detail that appears nowhere in the supplied documents. What is the correct remedy?",
+     "options": [
+      "Treat it as model mismatch and swap to a higher tier without running an eval",
+      "Treat it as a prompt failure and add stronger instructions telling the model never to guess",
+      "Treat it as data drift and refresh the weekly 7-day average used by the cost alert",
+      "Treat it as hallucination and fix grounding through retrieval, tool use or verification"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Hallucination is confident, fluent content not grounded in input or a reliable source, and stronger instruction will not resolve it; grounding through retrieval, tools or verification does.",
+     "mnemonic": "Ungrounded fluency needs grounding, not louder instructions."
+    },
+    {
+     "id": "d4s4q10",
+     "concept": "failure-taxonomy",
+     "type": "multi",
+     "stem": "Which TWO failure-class and fix pairings are correct? Select TWO.",
+     "options": [
+      "Model mismatch: the tier is wrong or was swapped unevaluated, so fix selection, gated by an eval",
+      "Orchestrator-workers failure: fix by examining only the orchestrator's trace, since subagents are recoverable",
+      "Prompt failure: fix by swapping to a larger model tier before ever changing the wording",
+      "Hallucination: fix by strengthening instruction wording so the model avoids any unsupported statements",
+      "Prompt failure: the instruction was ambiguous, so fix the prompt"
+     ],
+     "correct": [
+      0,
+      4
+     ],
+     "explanation": "Prompt failures are fixed in the prompt and model mismatch by eval-gated model selection. Hallucination needs grounding rather than instruction, and orchestrator-workers diagnosis needs a trace spanning both orchestrator and subagents.",
+     "mnemonic": "Prompt fix, grounding fix, eval-gated tier fix, full trace."
+    },
+    {
+     "id": "d4s4q11",
+     "concept": "orchestrator-trace",
+     "type": "single",
+     "stem": "In a multi-agent system, a metric degraded and the team can only see orchestrator logs. Why is attribution difficult?",
+     "options": [
+      "Subagent failures always surface as 4xx errors at the orchestrator, which standard logging already identifies",
+      "A recoverable subagent failure looks different from an unrecoverable orchestrator failure, and attribution needs a trace spanning both",
+      "Orchestrators never log token counts, so cost anomalies cannot be assigned to any specific component",
+      "Spanning traces are only needed for single-agent systems where tool calls are made sequentially"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Attribution in orchestrator-workers designs requires a trace that spans the orchestrator and its subagents, so retry-or-flag subagent failures can be told apart from unrecoverable orchestrator failures.",
+     "mnemonic": "Trace both ends of the orchestra."
+    },
+    {
+     "id": "d4s4q12",
+     "concept": "discernment",
+     "type": "single",
+     "stem": "What does Discernment mean when applied to a production Claude system?",
+     "options": [
+      "Classifying outputs as acceptable, needs revision or needs override, and feeding that judgment back into evals and monitoring",
+      "Detecting hallucination automatically with a regex and blocking any flagged answer before it reaches users",
+      "Reporting technical metrics weekly to executives so they can approve each model update",
+      "Selecting the cheapest model tier that meets latency targets, then recording the choice in the architecture document"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Discernment is judging the quality of model output rather than accepting it, and feeding that back into evals and monitoring. A team without it watches metrics move and never asks whether outputs were good.",
+     "mnemonic": "Judge the output: accept, revise, or override."
+    },
+    {
+     "id": "d4s4q13",
+     "concept": "translation-layer",
+     "type": "single",
+     "stem": "A customer-service agent is monitored by latency, task success and error rate, but executives watch handle time and first-contact resolution. What must be built, and when?",
+     "options": [
+      "A mapping between model tiers and budget lines, built after the first billing cycle arrives",
+      "A second dashboard of raw traces for executives, built once the first business review raises questions",
+      "A weekly report written after each business review to reconstruct which technical change moved the business number",
+      "A translation layer mapping task success to first-contact resolution and latency to handle time, built at design time"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "The funders read business KPIs, so technical metrics must be mapped to them when the system is designed. Retrofitting means retrospective reconstruction instead of a live query.",
+     "mnemonic": "Map success to resolution, latency to handle time, on day one."
+    },
+    {
+     "id": "d4s4q14",
+     "concept": "rag-refresh-diagnosis",
+     "type": "single",
+     "stem": "A RAG assistant returns confident but incorrect answers after a document refresh, while latency and model version are unchanged. Where should investigation start?",
+     "options": [
+      "The temperature setting, which may have become too low after the refresh",
+      "The model weights, which may have silently changed during the document refresh",
+      "The retrieval and indexing step, which may be returning irrelevant or stale chunks",
+      "The context window size, which may have shrunk when documents were refreshed"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "With model and latency unchanged, confident wrong answers after a refresh point to retrieval feeding poor context, such as a broken re-index or mismatched representation. The other causes are not triggered by a refresh.",
+     "mnemonic": "Refresh then wrong? Suspect the index first."
+    },
+    {
+     "id": "d4s4q15",
+     "concept": "observability-logging",
+     "type": "single",
+     "stem": "An LLM system rarely crashes; it just returns subtly wrong answers. Which logging design best supports diagnosing this?",
+     "options": [
+      "Log the final answer text only, and review a random sample of answers manually each quarter",
+      "Log the request, the response, the context, and the outcome including whether the downstream system accepted the output",
+      "Log the response, the context and only the cost, since outcome signals belong to the downstream system",
+      "Log only errors and timeouts, since those are the events that reveal incorrect behavior most reliably"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Standard logging catches errors and timeouts but not quietly incorrect responses, so log the request (model version, input tokens, prompt id), response (output tokens, latency, stop reason), context (user role, session, cache) and outcome (acceptance or rejection).",
+     "mnemonic": "Request, response, context, outcome: four logs, no blind spots."
+    }
+   ]
+  }
+ ]
+}

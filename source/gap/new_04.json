@@ -1,0 +1,349 @@
+{
+  "gaps": [
+    {"subject": "d6s1", "area": "Contents of the four discovery buckets", "source": "04.txt L17-20", "summary": "Must-do is stated as business outcomes rather than features, and must-cost holds latency targets, per-interaction cost ceilings and volume forecasts; the bank tests only the bucket names and the must-not-do and must-prove buckets.", "question_count": 3},
+    {"subject": "d6s1", "area": "Translating 'seamless' into requirement types", "source": "04.txt L11-12, L28-31", "summary": "The follow-up answers become a latency target, an integration requirement, a handoff rule and a safe failure path, and the table row sets a p95 target plus an internal-safe failure state; the bank tests only the follow-up question.", "question_count": 2},
+    {"subject": "d6s1", "area": "Translation table row structure and assumption column", "source": "04.txt L23-43", "summary": "Each row records the statement as said, the implied constraint, the required architectural decision and a labelled assumption to confirm when the constraint is unconfirmed; the bank tests row content but not the structure or the assumption column.", "question_count": 2},
+    {"subject": "d6s1", "area": "Sketching too early ends discovery", "source": "04.txt L50-61", "summary": "A plausible sketch makes the stakeholder assume the architect has the information, so the questions stop; the fix is to finish the four-category set first, and the missed constraints sat in must-prove and must-not-do. The bank tests only which constraints were missed.", "question_count": 3},
+    {"subject": "d6s3", "area": "What each feedback-loop stage asks", "source": "04.txt L166-172", "summary": "Decide picks a team fix, a stakeholder review or no action; Triage separates now from later; Review asks whether the response worked and whether the rule must change. The bank tests only the stage order.", "question_count": 2},
+    {"subject": "d6s3", "area": "Governance table rows for latency, cost and output audit", "source": "04.txt L188-208", "summary": "Latency p95 escalates to stakeholder review if the budget itself is wrong, cost brings a tradeoff if the discovery-agreed envelope needs revisiting, and regulated output audits run on schedule regardless of score; the bank tests only the quality and residency rows.", "question_count": 3},
+    {"subject": "d6s3", "area": "Escalation order: Architect review before stakeholder review", "source": "04.txt L226-233", "summary": "A quality-drift trigger should go to an Architect review first and onward to a stakeholder review only once diagnosis confirms the drift.", "question_count": 2},
+    {"subject": "d6s3", "area": "Governance as a design-time, pre-launch obligation", "source": "04.txt L186-187, L210-212", "summary": "Scheduled regulated checkpoints are design-time obligations, the governance table must exist before launch, and the biggest risk is a compliance checkpoint never wired to a trigger.", "question_count": 3},
+    {"subject": "d6s5", "area": "Measurement owner field of the outcome document", "source": "04.txt L308, L344-345", "summary": "The outcome document must name who owns ongoing measurement after the engagement closes; existing questions test the other on-blueprint fields but not this one.", "question_count": 2}
+  ],
+  "questions": [
+    {
+      "subject": "d6s1",
+      "concept": "four-bucket-contents",
+      "type": "single",
+      "stem": "During discovery, a stakeholder gives a two-second response target, a ceiling of three cents per interaction and a forecast of 50,000 calls a month. Which discovery bucket do these answers belong in?",
+      "options": [
+        "What the system must prove, as evidence obligations for later review",
+        "What the system must cost, as budget constraints the stakeholder controls",
+        "What the system must not do, as boundaries and prohibited actions",
+        "What the system must do, as capabilities the deployment delivers"
+      ],
+      "correct": [1],
+      "explanation": "The must-cost bucket holds the budget constraint expressed in terms the stakeholder controls, which includes a latency target, a per-interaction cost ceiling and a volume forecast. Must-do is tempting because the volume describes usage, but must-do captures capabilities as business outcomes, not budgets.",
+      "mnemonic": "Cost bucket holds the clock, the cents and the count: latency, ceiling, volume."
+    },
+    {
+      "subject": "d6s1",
+      "concept": "four-bucket-contents",
+      "type": "single",
+      "stem": "An architect fills the 'must do' discovery bucket with features such as 'summarize button' and 'auto-tagging'. What should this bucket capture instead?",
+      "options": [
+        "The per-interaction cost ceiling and volume forecast that bound each capability",
+        "The prohibited actions and cases that must be routed to a human reviewer",
+        "The evidence artifacts the deployment must produce for a later legal review",
+        "Capabilities stated as business outcomes, separating Claude's work from systems and humans"
+      ],
+      "correct": [3],
+      "explanation": "Must-do captures the capabilities the deployment must deliver, expressed as business outcomes rather than features, and is where Claude's work is separated from work that stays with an existing system or a human. The cost ceiling and volume forecast belong in the must-cost bucket.",
+      "mnemonic": "Must-do speaks outcomes, not buttons."
+    },
+    {
+      "subject": "d6s1",
+      "concept": "four-bucket-contents",
+      "type": "multi",
+      "stem": "Which TWO statements about the four discovery buckets are correct? Select TWO.",
+      "options": [
+        "The must-prove bucket can wait for legal review, since evidence is a later concern",
+        "The must-do bucket states capabilities as business outcomes rather than features",
+        "The must-not-do bucket is usually volunteered by stakeholders without prompting",
+        "The must-cost bucket includes latency targets and volume forecasts as well as cost ceilings",
+        "The must-cost bucket is expressed in token counts the engineering team controls"
+      ],
+      "correct": [1, 3],
+      "explanation": "Must-do is expressed as business outcomes, and must-cost covers latency targets, per-interaction cost ceilings and volume forecasts in terms the stakeholder controls. Must-prove obligations are far cheaper to find in discovery than in a later legal review, and must-not-do items are rarely volunteered.",
+      "mnemonic": "Do = outcomes; Cost = clock, cents, count, in the stakeholder's terms."
+    },
+    {
+      "subject": "d6s1",
+      "concept": "seamless-translation",
+      "type": "multi",
+      "stem": "A stakeholder wants the tool to 'feel seamless'. Follow-up questions reveal users should never re-enter data that already exists upstream, and exceptions should move quietly to a human reviewer. Which TWO requirement types do those two answers become? Select TWO.",
+      "options": [
+        "A per-interaction cost ceiling",
+        "An upstream integration requirement",
+        "A proof obligation for audit",
+        "A human handoff rule",
+        "A model-tier selection rule"
+      ],
+      "correct": [1, 3],
+      "explanation": "No re-entry of upstream data becomes an integration requirement, and quietly routing exceptions to a person becomes a handoff rule. Alongside a latency target and a safe failure path, these are what 'seamless' turns into. A cost ceiling or proof obligation comes from other questions, not these answers.",
+      "mnemonic": "Seamless splits into four: speed, integration, handoff, safe fall."
+    },
+    {
+      "subject": "d6s1",
+      "concept": "seamless-translation",
+      "type": "single",
+      "stem": "In the discovery translation table, which required architectural decision belongs on the row for 'We want this to feel seamless'?",
+      "options": [
+        "Set a p95 latency target as a design constraint and design a graceful, internal-safe failure state",
+        "Set a median latency target for the pilot and expose detailed error messages to aid support",
+        "Route every exception through a mandatory human authorization gate before output is shown",
+        "Record 'seamless' itself as the requirement and confirm the experience at acceptance testing"
+      ],
+      "correct": [0],
+      "explanation": "The seamless row implies an agreed latency budget and failures that do not expose system internals, so the decision is a p95 latency target plus a graceful, internal-safe failure state. Recording 'seamless' as the requirement captures only the stakeholder's summary, not something you can design against.",
+      "mnemonic": "Seamless = p95 plus a polite failure that hides the plumbing."
+    },
+    {
+      "subject": "d6s1",
+      "concept": "translation-table-structure",
+      "type": "single",
+      "stem": "Which set of columns makes up each row of the discovery translation table?",
+      "options": [
+        "Requirement, capability list, architecture sketch, boundary conditions, and the statement of work",
+        "Options considered, criteria weighed, the recommendation, and the risks that remain afterwards",
+        "Stakeholder statement as said, implied constraint, required architectural decision, and the assumption documented",
+        "Signal type, review trigger, architect action, and the regulated-industry checkpoint for it"
+      ],
+      "correct": [2],
+      "explanation": "Each discovery item becomes one row holding the statement as it was said, the constraint it implies, the architectural decision that constraint forces, and any assumption documented while the constraint is unconfirmed. The other options describe the scoping sequence, the decision package and the governance table.",
+      "mnemonic": "Said, implied, decided, assumed: four columns per row."
+    },
+    {
+      "subject": "d6s1",
+      "concept": "translation-table-structure",
+      "type": "single",
+      "stem": "A stakeholder says the form just needs to be routed by type, but nobody has confirmed who maintains the routing rules. How should the translation-table row handle this?",
+      "options": [
+        "Leave the row blank until the owner is confirmed, so no unverified assumption enters the design record",
+        "Record the decision and label an assumption that routing logic is owned outside the model, to confirm the owner",
+        "Move routing into the prompt for now, since the owner is unknown and the model can be updated later",
+        "Write routing ownership into the decision column as settled, then revisit it during compliance review"
+      ],
+      "correct": [1],
+      "explanation": "The assumption column exists for exactly this: when a constraint is not yet confirmed, you record the decision and label the assumption with what must be confirmed, here the owner. Leaving the row blank loses the item, and writing it as settled hides an assumption as a fact.",
+      "mnemonic": "Unconfirmed? Write it as an assumption with a 'confirm' tag, never as a fact."
+    },
+    {
+      "subject": "d6s1",
+      "concept": "sketch-ends-questions",
+      "type": "single",
+      "stem": "Partway through a discovery call, an architect sketches a confident design and the stakeholder happily agrees. Why is this moment dangerous?",
+      "options": [
+        "Stakeholders tend to reject sketches early, so momentum is lost before requirements are set",
+        "A sketch locks in a model tier before eval data exists, which raises later running costs",
+        "A plausible sketch signals the architect already has the information needed, so the questions stop",
+        "The stakeholder may confuse the sketch with a finished design and expect a prototype within a week"
+      ],
+      "correct": [2],
+      "explanation": "Plausibility is what makes it dangerous: a stakeholder who hears a confident architecture assumes the architect has the information to build it, so the questions that would surface hidden constraints never get asked. The problem is not rejection; in the hospital case the stakeholder agreed readily.",
+      "mnemonic": "A pretty sketch stops the questions."
+    },
+    {
+      "subject": "d6s1",
+      "concept": "sketch-ends-questions",
+      "type": "single",
+      "stem": "Which practice best protects a discovery call from turning into a premature design session?",
+      "options": [
+        "Propose a design early so the stakeholder can react, then collect missing constraints during the build",
+        "Keep the call short and leave constraint gathering to the legal and compliance review that follows",
+        "Agree a prototype date on the call, then add review steps once the stakeholder sees the output",
+        "Finish the four-category question set before proposing anything, and chase every 'just a review' as a constraint"
+      ],
+      "correct": [3],
+      "explanation": "The protective move is deliberately boring: complete the four question categories before proposing any design, and treat every 'it's just a review' as a constraint to chase down. Deferring constraints to the build or to compliance review is exactly how hidden constraints become expensive blockers.",
+      "mnemonic": "Four buckets full before one box is drawn."
+    },
+    {
+      "subject": "d6s1",
+      "concept": "sketch-ends-questions",
+      "type": "multi",
+      "stem": "In a hospital dictation call, a clinician authorization gate, PHI handling rules and two-state record-retention rules all surfaced weeks later. Which TWO discovery categories would have caught them with a direct question? Select TWO.",
+      "options": [
+        "What the system must cost",
+        "What the system must prove",
+        "What the system must do",
+        "What the system must not do"
+      ],
+      "correct": [1, 3],
+      "explanation": "Each of these constraints would have come out of a direct question in the must-prove and must-not-do categories had the call not moved to sketching first. Must-do was the part the architect had already heard, which is why the sketch felt complete.",
+      "mnemonic": "Prove and Prohibit: the two P-buckets catch the late surprises."
+    },
+    {
+      "subject": "d6s3",
+      "concept": "loop-stage-content",
+      "type": "single",
+      "stem": "In the feedback loop, which stage determines whether an issue needs a team fix, a stakeholder review or no action?",
+      "options": [
+        "Triage",
+        "Act",
+        "Decide",
+        "Review"
+      ],
+      "correct": [2],
+      "explanation": "Decide chooses among a team fix, a stakeholder review or no action. Triage comes earlier and only sorts what needs attention now from what can wait; Act then carries out the correction, guardrail update or escalation.",
+      "mnemonic": "Triage sorts, Decide chooses who, Act does, Review checks the rule."
+    },
+    {
+      "subject": "d6s3",
+      "concept": "loop-stage-content",
+      "type": "multi",
+      "stem": "Which TWO pairings of feedback-loop stage and the question it answers are correct? Select TWO.",
+      "options": [
+        "Signals: does the issue need a team fix or a stakeholder review?",
+        "Triage: what needs attention now, and what can wait?",
+        "Act: what is the system showing us across its dashboards?",
+        "Review: did the response work, and does the rule need to change?",
+        "Decide: which guardrail update has already been deployed?"
+      ],
+      "correct": [1, 3],
+      "explanation": "Triage separates what needs attention now from what can wait, and Review asks whether the response worked and whether the rule itself needs to change. Signals asks what the system is showing; Decide chooses between a team fix, a stakeholder review or no action.",
+      "mnemonic": "Review closes the loop by questioning the rule, not just the fix."
+    },
+    {
+      "subject": "d6s3",
+      "concept": "governance-table-rows",
+      "type": "single",
+      "stem": "Latency p95 crosses the budget set from user-experience requirements. Investigation shows the system is well tuned and the budget itself was unrealistic. What does the governance table direct?",
+      "options": [
+        "Re-architect the deployment until it meets the original p95 budget",
+        "Escalate to a stakeholder review, since the budget itself is wrong",
+        "Raise the p95 budget quietly so the alert stops firing every week",
+        "Trigger a periodic output audit against the documentation standard"
+      ],
+      "correct": [1],
+      "explanation": "The latency row says investigate the bottleneck, then tune, or escalate to a stakeholder review if the budget itself is wrong. The budget came from user-experience requirements the stakeholder owns, so quietly changing it or re-architecting to an unrealistic number bypasses that decision.",
+      "mnemonic": "Wrong budget? Not your number to move: take it back to the stakeholder."
+    },
+    {
+      "subject": "d6s3",
+      "concept": "governance-table-rows",
+      "type": "single",
+      "stem": "Cost per interaction crosses the budget envelope agreed in discovery. What is the architect's action according to the production-signal governance table?",
+      "options": [
+        "Switch every call to the cheapest model tier at once, then report the saving to the stakeholder",
+        "Treat it as a regulated checkpoint and run a residency confirmation before any other change",
+        "Identify the driver, then bring a tradeoff to the stakeholder if the budget needs revisiting",
+        "Wait for the quarterly review, since cost is not a quality signal and rarely needs attention"
+      ],
+      "correct": [2],
+      "explanation": "The cost row says identify the driver, then bring a tradeoff to the stakeholder if the budget envelope needs revisiting. Cutting every call to the cheapest tier skips both diagnosis and the stakeholder decision, and cost usually carries no regulated checkpoint.",
+      "mnemonic": "Cost over the envelope: find the driver, then table a tradeoff."
+    },
+    {
+      "subject": "d6s3",
+      "concept": "governance-table-rows",
+      "type": "multi",
+      "stem": "Which TWO statements about the production-signal governance table are correct? Select TWO.",
+      "options": [
+        "Latency p95 always carries a regulated checkpoint, whatever the logging setup",
+        "The cost trigger is a budget chosen after launch from observed spend",
+        "Regulated output quality gets a periodic audit on schedule, regardless of the eval score",
+        "Data residency is reviewed only when an alert fires on configuration drift",
+        "The latency trigger is the budget set from user-experience requirements"
+      ],
+      "correct": [2, 4],
+      "explanation": "The regulated checkpoint for output quality is a periodic audit against the documentation standard on a set schedule, regardless of score, and the latency trigger is the budget drawn from user-experience requirements. Latency usually has no regulated checkpoint unless it masks a logging gap, and residency is confirmed on a schedule, not on alert.",
+      "mnemonic": "Audits run on the calendar, not on the score."
+    },
+    {
+      "subject": "d6s3",
+      "concept": "escalation-order",
+      "type": "single",
+      "stem": "An eval score has drifted downward for two weeks while the error rate stays flat. In a well-designed feedback loop, what should the escalation path be?",
+      "options": [
+        "Escalate straight to a stakeholder review, then diagnose the cause with the team afterwards",
+        "Wait until the error-rate alert fires, then escalate to the quarterly stakeholder review",
+        "Trigger an Architect review first, then a stakeholder review once diagnosis confirms the drift",
+        "Log the drift for the quarterly review, since no hard alert has fired yet on the system"
+      ],
+      "correct": [2],
+      "explanation": "A quality-drift trigger should escalate to an Architect review early and onward to a stakeholder review once diagnosis confirms the drift. Waiting for an error-rate alert fails because slow quality drift never crosses that threshold, which is how the 90-day case went unnoticed until week 12.",
+      "mnemonic": "Architect diagnoses first, stakeholder hears it confirmed."
+    },
+    {
+      "subject": "d6s3",
+      "concept": "escalation-order",
+      "type": "single",
+      "stem": "A team's feedback loop sends every quality-drift trigger straight to the business stakeholder before anyone has examined the cause. Which step does this skip?",
+      "options": [
+        "A scheduled residency confirmation that records posture before any escalation",
+        "An Architect review that diagnoses and confirms the drift before stakeholder escalation",
+        "An error-rate alert that must fire before any quality signal can be escalated",
+        "A quarterly review that batches all drift signals into one stakeholder meeting"
+      ],
+      "correct": [1],
+      "explanation": "The loop escalates quality drift to an Architect review first, and only to a stakeholder review once diagnosis confirms the drift. Requiring an error-rate alert would reintroduce the original failure, since slow drift leaves error rate flat.",
+      "mnemonic": "Diagnose before you escalate: Architect, then stakeholder."
+    },
+    {
+      "subject": "d6s3",
+      "concept": "governance-design-time",
+      "type": "single",
+      "stem": "A healthcare deployment's documentation obligation requires periodic output audits. The team plans to set them up 'once the system is stable'. What is wrong with this plan?",
+      "options": [
+        "Periodic audits are only needed after an eval score crosses its threshold, so none are due yet",
+        "Scheduled checkpoints are design-time obligations; built late they cost far more once proof is requested",
+        "Output audits belong to the compliance team, so the architect has no role in scheduling them",
+        "Stability is the right trigger, since audits during early drift would only measure launch noise"
+      ],
+      "correct": [1],
+      "explanation": "Regulated review checkpoints run on a schedule even when nothing has gone wrong, and they are design-time obligations; if not built early they become far more expensive to establish when someone asks for proof. Tying audits to an eval threshold misses that they run regardless of score.",
+      "mnemonic": "Checkpoints are built in, not bolted on."
+    },
+    {
+      "subject": "d6s3",
+      "concept": "governance-design-time",
+      "type": "single",
+      "stem": "When should the production-signal governance table, mapping each signal to its trigger, action and regulatory checkpoint, exist?",
+      "options": [
+        "After the first quarterly review, once real signals show which ones matter",
+        "After the first SLA breach, so triggers reflect a failure that really occurred",
+        "During handoff, so the inheriting engineer can tailor it to their own routine",
+        "Before launch, as the mechanism that turns policy into an operating routine"
+      ],
+      "correct": [3],
+      "explanation": "The governance table should exist before launch; it is the mechanism that turns policy into an operating routine. Waiting for a quarterly review or a breach repeats the 90-day drift failure, where signals existed but no rule decided they mattered.",
+      "mnemonic": "Table before takeoff: policy becomes routine on day one."
+    },
+    {
+      "subject": "d6s3",
+      "concept": "unwired-checkpoint-risk",
+      "type": "single",
+      "stem": "When designing a feedback loop for a regulated deployment, which failure mode carries the biggest risk?",
+      "options": [
+        "An alert threshold set too tightly, so the team is flooded with noise from minor spikes",
+        "A compliance checkpoint never wired to a trigger, so a standard violation runs for weeks",
+        "A dashboard showing too many signals, so stakeholders stop reading the weekly reports",
+        "A latency budget set from the pilot, so production traffic breaches it on launch day"
+      ],
+      "correct": [1],
+      "explanation": "The biggest failure mode is a compliance checkpoint that was never wired to a trigger, letting a documented-standard violation run for weeks before a routine review catches it. Noisy alerts are a real complexity cost, but deciding signal versus noise is the hard part, not the biggest risk.",
+      "mnemonic": "An unwired checkpoint is a silent alarm."
+    },
+    {
+      "subject": "d6s5",
+      "concept": "measurement-owner",
+      "type": "single",
+      "stem": "An engagement closes with an outcome document showing before and after metrics and an auditable control. Six months later nobody knows whether the gains have held. Which outcome-document field was missing?",
+      "options": [
+        "Use case with scope boundary: what the deployment does and does not do",
+        "Metric after: the same business metric measured using the same definition",
+        "Measurement owner: who owns ongoing measurement after the engagement closes",
+        "Control in place: what makes the comparison auditable rather than asserted"
+      ],
+      "correct": [2],
+      "explanation": "The measurement owner field names who is responsible for ongoing measurement once the engagement closes. The before and after metrics and the control were present, so the gap is that nobody owned keeping the measurement going.",
+      "mnemonic": "Engagement ends, measurement doesn't: name its owner."
+    },
+    {
+      "subject": "d6s5",
+      "concept": "measurement-owner",
+      "type": "single",
+      "stem": "Whom should the measurement owner field in a customer outcome document name?",
+      "options": [
+        "The architect who built the deployment, since they defined the original metrics",
+        "The person or team responsible for ongoing measurement once the engagement closes",
+        "The CFO who approves expansion, since they consume the before-and-after figures",
+        "The observability vendor, since its stack exports the technical metrics automatically"
+      ],
+      "correct": [1],
+      "explanation": "The field records who owns ongoing measurement after the engagement closes. The building architect leaves with the engagement, and the CFO consumes the result rather than measuring it.",
+      "mnemonic": "Owner outlasts the build team."
+    }
+  ]
+}

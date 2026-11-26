@@ -1,0 +1,1275 @@
+{
+  "domain": 6,
+  "subjects": [
+    {
+      "id": "d6s1",
+      "title": "Structured discovery and the translation table",
+      "learn": [
+        "Discovery is a three-step filter: listen to the business goal, translate it into requirements, assumptions and unresolved constraints, and write it down before the conversation moves on.",
+        "A stated preference ('seamless', 'easy', 'fast') hides a constraint; ask what would make it feel not seamless to reach latency budget, no re-entry, quiet human handoff and safe failure path.",
+        "Four buckets: what the system must do, must NOT do, must cost, and must PROVE. Stakeholders rarely volunteer the must-not-do items.",
+        "A translation-table row holds: stakeholder statement, implied constraint, required architectural decision, and assumption documented (e.g. routing belongs in the rule engine; clinician review is a mandatory HITL gate).",
+        "The expensive failure is an unstated constraint that surfaces at legal or compliance review. In the hospital dictation case, sketching started before the four buckets were finished."
+      ],
+      "traps": [
+        "Recording the word: writing 'seamless' as the requirement captures the summary, not a testable, bounded constraint the design can be built against.",
+        "Sketching early: a plausible architecture makes the stakeholder assume you have the information, and the questions stop at exactly the wrong moment.",
+        "Quick check dismissal: 'it's just a quick review' may be a licensed-clinician authorization gate, which is architectural, not optional.",
+        "Model owns routing: 'read the form and route it' implies a deterministic rule; Claude extracts and the system routes.",
+        "Forgetting must-prove: proof obligations in regulated workflows are requirements and are far cheaper to find in discovery than in a legal review weeks later."
+      ],
+      "questions": [
+        {
+          "id": "d6s1q01",
+          "concept": "preference-hides-constraint",
+          "type": "single",
+          "stem": "A stakeholder says the new assistant must 'feel seamless'. Which next move best reflects structured discovery?",
+          "options": [
+            "Record 'seamless' as the requirement and move on to design so momentum is kept",
+            "Ask what would make the experience feel not seamless, to surface the hidden constraints",
+            "Commit to a sub-second latency target immediately and ask the stakeholder to sign off",
+            "Ask the stakeholder to rank the product features they care about most"
+          ],
+          "correct": [
+            1
+          ],
+          "explanation": "A stated preference sits on top of constraints. Asking what would make it feel not seamless exposes the latency budget, re-entry, handoff and failure-path requirements. Picking a latency number straight away guesses at one constraint and ignores the rest.",
+          "mnemonic": "Seamless is the label; 'what would break it?' opens the box."
+        },
+        {
+          "id": "d6s1q02",
+          "concept": "preference-hides-constraint",
+          "type": "single",
+          "stem": "In a kickoff, a claims director says the tool should be 'simple and intuitive' for adjusters. What is the best way to treat this statement?",
+          "options": [
+            "Add 'simple and intuitive' to the requirements list verbatim, since the director owns the wording of the goal",
+            "Choose a single delivery route, because fewer platforms is what simple means in architectural terms",
+            "Defer the wording to the design review, where the UX team will define what simple should mean",
+            "Treat it as a signal: ask what would break it, what users must never notice, and failure behaviour"
+          ],
+          "correct": [
+            3
+          ],
+          "explanation": "Experience words like simple, easy, fast and intuitive signal that more discovery is needed. Ask what would break the experience, what the user must never notice and what happens when something fails. Writing the word down verbatim leaves the design inheriting your assumptions.",
+          "mnemonic": "Easy, fast, simple, seamless: each word is a question mark, not a requirement."
+        },
+        {
+          "id": "d6s1q03",
+          "concept": "listen-translate-write",
+          "type": "single",
+          "stem": "Which sequence describes the three-step filter a discovery conversation should function as?",
+          "options": [
+            "Listen, sketch the architecture, then confirm the sketch with the stakeholder",
+            "Gather features, estimate cost, then present a recommended pattern",
+            "Listen to the goal, translate it into requirements and assumptions, then write it down",
+            "Write the requirements first, then listen for corrections, then translate for the design team"
+          ],
+          "correct": [
+            2
+          ],
+          "explanation": "Discovery is listen, translate, write down, and the write-down happens before the conversation moves on. Without it the design inherits the architect's assumptions. Sketching during the call replaces the translation step with a guess.",
+          "mnemonic": "Listen, translate, write down: ears, brain, paper."
+        },
+        {
+          "id": "d6s1q04",
+          "concept": "four-buckets",
+          "type": "multi",
+          "stem": "Which TWO of the following are among the four question buckets used to turn a vague stakeholder statement into requirements? Select TWO.",
+          "options": [
+            "What the system must prove",
+            "Which cloud vendor the stakeholder prefers",
+            "Which model tier the team enjoys most",
+            "What the system must not do",
+            "Which team will own the sales relationship"
+          ],
+          "correct": [
+            0,
+            3
+          ],
+          "explanation": "The four buckets are must do, must not do, must cost and must prove. Vendor preference and sales ownership are not discovery buckets; a vendor preference may emerge from them but is not one of the four questions.",
+          "mnemonic": "Do, Don't, Dollars, Demonstrate: the four D-questions of discovery."
+        },
+        {
+          "id": "d6s1q05",
+          "concept": "must-not-do-explicit",
+          "type": "single",
+          "stem": "Which discovery bucket do stakeholders rarely volunteer, so the architect must ask for it explicitly?",
+          "options": [
+            "What the system must do, expressed as business outcomes the stakeholder describes naturally",
+            "What the system must cost, expressed as a latency target or per-interaction ceiling",
+            "What the system must not do, including boundaries and cases that must route to a human",
+            "How the system will be hosted, expressed as a cloud preference for the program"
+          ],
+          "correct": [
+            2
+          ],
+          "explanation": "Boundaries, prohibited actions and human-routed cases are rarely volunteered, so they have to be asked for. Must-do capabilities are what stakeholders talk about naturally, so they surface unprompted.",
+          "mnemonic": "Nobody volunteers the 'don't': ask for the fence before the field."
+        },
+        {
+          "id": "d6s1q06",
+          "concept": "must-not-do-explicit",
+          "type": "single",
+          "stem": "After a call, an architect's notes list only capabilities the stakeholders want. What is the most significant gap in the discovery record?",
+          "options": [
+            "No cost ceiling, since a per-interaction budget is always set later by finance teams",
+            "No explicit prohibited actions or human-routed cases, because nobody was asked for them",
+            "No preferred model name, which blocks the design from starting in the next sprint",
+            "No ranking of requested features by how many users asked for each of them"
+          ],
+          "correct": [
+            1
+          ],
+          "explanation": "Stakeholders describe what they want and seldom the boundaries, so a capabilities-only record signals the must-not-do bucket was never asked. Cost is also a bucket, but the gap named here is the one that stakeholders almost never fill on their own.",
+          "mnemonic": "Capabilities-only notes mean the fence questions were never asked."
+        },
+        {
+          "id": "d6s1q07",
+          "concept": "rule-engine-routing",
+          "type": "single",
+          "stem": "A stakeholder says, 'It just needs to read the form and route it.' Which translation-table row is correct?",
+          "options": [
+            "Implied constraint: routing is a deterministic business rule; decision: Claude extracts, the rule engine routes",
+            "Implied constraint: routing needs a larger context; decision: pass every routing policy into the prompt",
+            "Implied constraint: the form is complex; decision: add a second model to judge the first model's route",
+            "Implied constraint: the form is urgent; decision: lower the latency target for routing calls"
+          ],
+          "correct": [
+            0
+          ],
+          "explanation": "Routing may be a deterministic business rule, so the decision stays in the rule engine while Claude handles extraction. The assumption to document is that the routing logic is owned outside the model, and the owner must be confirmed.",
+          "mnemonic": "Claude extracts, the system routes: reading is fuzzy, routing is a rule."
+        },
+        {
+          "id": "d6s1q08",
+          "concept": "hitl-quick-check",
+          "type": "single",
+          "stem": "A stakeholder says, 'Clinicians will review the output anyway.' What architectural decision does this statement force?",
+          "options": [
+            "Add an optional review button that users can ignore when they are busy",
+            "Lower the model tier, since a human reviewer will catch any quality problems",
+            "Build a mandatory human-in-the-loop authorization step before output becomes part of the record",
+            "Log the reviewer's name after the fact and treat that as the control"
+          ],
+          "correct": [
+            2
+          ],
+          "explanation": "When output feeds a record with legal, financial or clinical consequence, a licensed human must authorize it, which makes review a mandatory architectural gate. The assumption to confirm is the reviewer's authority and timing. An optional button or after-the-fact log does not gate anything.",
+          "mnemonic": "'Reviewed anyway' means a mandatory gate: authorize before it becomes record."
+        },
+        {
+          "id": "d6s1q09",
+          "concept": "hitl-quick-check",
+          "type": "single",
+          "stem": "In the hospital dictation case, the stakeholder called the review step 'just a quick check'. What did it actually turn out to be?",
+          "options": [
+            "A usability feature that could be added after the prototype shipped",
+            "A latency optimisation to reduce how often the model was called",
+            "A logging step to satisfy the retention rules of one state",
+            "A required licensed-clinician authorization gate before output reached the patient record"
+          ],
+          "correct": [
+            3
+          ],
+          "explanation": "The nursing workflow required a licensed clinician to authorize model output before it reached the patient record, making human authorization an architectural gate rather than a convenience. The retention issue was a separate missed constraint.",
+          "mnemonic": "'Quick check' hid a clinician's signature: gate, not garnish."
+        },
+        {
+          "id": "d6s1q10",
+          "concept": "unstated-constraint-cost",
+          "type": "single",
+          "stem": "Which description best captures the expensive failure mode of weak discovery?",
+          "options": [
+            "A discovery call that runs long enough to uncover the real constraints early",
+            "A translation table with so many rows that the design team cannot read it",
+            "An assumption labelled as an assumption that is later confirmed by the owner",
+            "An unstated constraint that survives until legal or compliance review, when change costs most"
+          ],
+          "correct": [
+            3
+          ],
+          "explanation": "The costly failure is the constraint nobody stated that appears at the production review blocker stage, when changing course is slowest and most expensive. A longer discovery call is the cheaper alternative, not the failure.",
+          "mnemonic": "Hidden constraints grow pricier every week they stay hidden."
+        },
+        {
+          "id": "d6s1q11",
+          "concept": "unstated-constraint-cost",
+          "type": "single",
+          "stem": "Six weeks into a build, compliance demands an audit trail the design never included. Which discovery question would most directly have caught this earlier?",
+          "options": [
+            "What must the system prove, and to whom, in a regulated workflow?",
+            "What must the system cost, stated as a per-interaction ceiling or volume forecast?",
+            "What must the system do, stated as business outcomes rather than product features?",
+            "What would make the experience feel not seamless to the end user?"
+          ],
+          "correct": [
+            0
+          ],
+          "explanation": "Proof obligations belong in the must-prove bucket, and finding them in discovery is far cheaper than in a legal review weeks later. The cost and must-do questions would not reveal an evidence requirement.",
+          "mnemonic": "Must-prove asked early beats must-prove demanded late."
+        },
+        {
+          "id": "d6s1q12",
+          "concept": "healthcare-proof-obligation",
+          "type": "single",
+          "stem": "A stakeholder says, 'We are in healthcare, so be careful with data.' How should the translation table treat this?",
+          "options": [
+            "Constraint: use a smaller prompt; decision: shorten the context window to limit data exposure",
+            "Constraint: likely proof obligation under health-privacy rules; decision: audit-trail evidence from day one",
+            "Constraint: data is sensitive; decision: defer the compliance conversation until after the pilot ends",
+            "Constraint: caution is only a preference; decision: record it as a nice-to-have for later"
+          ],
+          "correct": [
+            1
+          ],
+          "explanation": "The sentence implies a proof obligation, so audit-trail and data-handling evidence become core requirements from the start, with scope confirmed with compliance as the documented assumption. Deferring compliance recreates the late-surfacing constraint problem.",
+          "mnemonic": "'Be careful' in healthcare translates to 'be able to prove it'."
+        },
+        {
+          "id": "d6s1q13",
+          "concept": "hospital-missed-constraints",
+          "type": "multi",
+          "stem": "In the hospital dictation call, which THREE constraints surfaced weeks later because the architect began sketching before the question set was finished? Select THREE.",
+          "options": [
+            "Licensed-clinician authorization was required before output reached the record",
+            "Protected health information passed through the context window without the required handling",
+            "The network spanned two states with different retention rules that a single-region design ignored",
+            "Prompt caching was not configured for the static policy document",
+            "The chosen model tier was too small to summarise dictation"
+          ],
+          "correct": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "The missed constraints were the clinician authorization gate, the PHI handling in the context window, and the two-state record-retention difference. Caching and model-tier size were not part of that case.",
+          "mnemonic": "Gate, PHI, two states: three constraints a sketch skipped."
+        }
+      ]
+    },
+    {
+      "id": "d6s2",
+      "title": "Communicating trade-offs",
+      "learn": [
+        "The architect's job is to make decisions possible, not to resolve the trade-off in advance; present a package of options, criteria, recommendation and remaining risks.",
+        "Decision frame: what do we gain, what do we give up, what happens if we choose now and must reverse later, and (regulated) what it does to compliance posture. Reversal cost is the one most often skipped.",
+        "Description competency for stakeholders: lead with the business outcome, frame limitations honestly, and anticipate the peer-proof demand so the stakeholder can justify the choice to others.",
+        "Trade-off map examples: large context vs retrieval (evaluate prompt caching for static content), logging detail vs latency (compliance gap), single route vs multi-platform (blocked cutover).",
+        "False alignment: a decision looks approved in the room but reversal cost was never made explicit; the CTO who approved 'a direction, not a number' is the case."
+      ],
+      "traps": [
+        "Pre-resolved verdicts: presenting only the conclusion looks decisive but leaves the stakeholder approving something without understanding what came with it.",
+        "Answering only what was asked: the per-call cost answer was accurate, yet the monthly bill and unwind cost never entered the conversation.",
+        "Treating per-call cost as fixed: for static documents held in context, evaluate prompt caching before accepting the cost as given.",
+        "Technical precision as sufficiency: an accurate recommendation can still be unusable if the approver cannot translate it into business consequence.",
+        "Room agreement as proof: a yes at the end of a complete presentation can still be false alignment."
+      ],
+      "questions": [
+        {
+          "id": "d6s2q01",
+          "concept": "make-decisions-possible",
+          "type": "single",
+          "stem": "Which statement best describes the architect's role when presenting a significant design trade-off to a stakeholder?",
+          "options": [
+            "Resolve the trade-off before the meeting and present the single best technical answer",
+            "Describe the options clearly enough that the stakeholder can make an informed choice",
+            "Present as many options as possible without a recommendation to stay neutral",
+            "Hold back the downsides until the stakeholder has agreed to the direction"
+          ],
+          "correct": [
+            1
+          ],
+          "explanation": "The job is to make decisions possible, which means describing options clearly enough for an informed choice. Presenting only the conclusion makes the decision look clear but weak.",
+          "mnemonic": "Don't hand down a verdict; hand over a decision."
+        },
+        {
+          "id": "d6s2q02",
+          "concept": "make-decisions-possible",
+          "type": "single",
+          "stem": "An architect arrives with a single recommended design and a polished justification, and no alternatives. Why is this approach weak?",
+          "options": [
+            "The recommendation may be technically wrong, and stakeholders prefer an unfinished proposal to a polished one",
+            "Executives dislike recommendations, so they should always be left to the stakeholders to form themselves",
+            "If the downside appears later, the stakeholder feels they approved a recommendation without understanding its price",
+            "A single design cannot be documented using a translation table or a decision record afterwards"
+          ],
+          "correct": [
+            2
+          ],
+          "explanation": "Presenting only the conclusion hides the trade-off, so when the downside shows up the stakeholder feels they did not make an informed choice. A recommendation is still wanted, but inside a package that includes options, criteria and risks.",
+          "mnemonic": "A verdict without its price tag becomes a grievance later."
+        },
+        {
+          "id": "d6s2q03",
+          "concept": "decision-frame-questions",
+          "type": "multi",
+          "stem": "Which THREE questions belong to the simple decision frame for presenting a trade-off? Select THREE.",
+          "options": [
+            "What do we gain?",
+            "Which engineer on the team will implement it?",
+            "What happens if we choose this now but have to reverse it later?",
+            "In regulated environments, what does this do to our compliance posture?",
+            "Which competitor has already chosen the same option?"
+          ],
+          "correct": [
+            0,
+            2,
+            3
+          ],
+          "explanation": "The frame asks what we gain, what we give up, what happens if we must reverse later, and the compliance impact in regulated environments. Who implements it and what competitors did are not part of the frame.",
+          "mnemonic": "Gain, give up, go back, guard compliance: four G-questions."
+        },
+        {
+          "id": "d6s2q04",
+          "concept": "reversal-cost",
+          "type": "single",
+          "stem": "Of the decision-frame questions, which is the one most often skipped, and often the one that changes the meeting?",
+          "options": [
+            "What do we gain from the option, in the stakeholder's own goal terms?",
+            "What do we give up by choosing it, in cost, latency or risk?",
+            "What is the vendor's roadmap for features over the next year?",
+            "What happens if we choose this now but have to reverse it later?"
+          ],
+          "correct": [
+            3
+          ],
+          "explanation": "The reversal question is skipped most often, and it shifts the discussion from the better technical answer to the better business choice. Gains and give-ups are the questions people usually remember to answer.",
+          "mnemonic": "The skipped question is the cost of going back."
+        },
+        {
+          "id": "d6s2q05",
+          "concept": "reversal-cost",
+          "type": "single",
+          "stem": "A review covers what a design gains and what it gives up, and the room feels aligned. Which element is still missing before the approval is truly informed?",
+          "options": [
+            "The cost to the business of reversing the choice once the system depends on it",
+            "A detailed diagram of every component in the production route and its dependencies",
+            "A comparison of the prompt styles used in the pilot and their eval scores",
+            "The list of engineers who attended the design sessions and their responsibilities"
+          ],
+          "correct": [
+            0
+          ],
+          "explanation": "Reversal cost is the third element of the frame, and without it the approver cannot judge what a wrong choice would cost later. A diagram or attendee list does not address the consequence of reversing a decision.",
+          "mnemonic": "Gain and give-up are half a decision; reversal cost completes it."
+        },
+        {
+          "id": "d6s2q06",
+          "concept": "decision-package",
+          "type": "single",
+          "stem": "Which set of contents makes up the decision package presented to a stakeholder?",
+          "options": [
+            "Options considered, criteria weighed, a recommendation, and the risks that remain",
+            "A recommendation, a diagram, a delivery date, and a cost estimate",
+            "Options considered, a vendor comparison, a demo script, and a budget",
+            "A recommendation, a rejected alternative, a test plan, and an owner"
+          ],
+          "correct": [
+            0
+          ],
+          "explanation": "The package is options, criteria, recommendation and remaining risks, so the stakeholder accepts a decision they can defend to their own leadership. The other lists omit criteria or remaining risks.",
+          "mnemonic": "Options, criteria, recommendation, risks: the package, not the verdict."
+        },
+        {
+          "id": "d6s2q07",
+          "concept": "description-competency",
+          "type": "multi",
+          "stem": "Which TWO practices belong to applying the Description competency when communicating with stakeholders? Select TWO.",
+          "options": [
+            "Lead with the architecture so the stakeholder sees the engineering depth",
+            "Frame the system's limitations honestly, since clearly stated limits build trust",
+            "Remove limitations from the summary to keep the message positive",
+            "Lead with the business outcome rather than the architecture",
+            "Use the same technical vocabulary for every audience to stay precise"
+          ],
+          "correct": [
+            1,
+            3
+          ],
+          "explanation": "Description means leading with the business outcome and framing limitations honestly, matched to the audience's AI familiarity without losing accuracy. Hiding limits or leading with architecture works against stakeholder trust and understanding.",
+          "mnemonic": "Outcome first, limits honest, justification in hand."
+        },
+        {
+          "id": "d6s2q08",
+          "concept": "peer-proof-demand",
+          "type": "single",
+          "stem": "A security director will need to justify the chosen design to the leadership team afterwards. What should the architect ensure at the end of the conversation?",
+          "options": [
+            "The director has approved the design verbally in the room",
+            "The director leaves with the justification they can use with their own peers",
+            "The director has seen the full list of model parameters used",
+            "The director has deferred the justification to the architect for later meetings"
+          ],
+          "correct": [
+            1
+          ],
+          "explanation": "Anticipating the peer-proof demand means the stakeholder leaves with the justification needed to defend the choice to others. A verbal yes without usable justification risks the approval later being withdrawn.",
+          "mnemonic": "Approval travels only if the justification travels with it."
+        },
+        {
+          "id": "d6s2q09",
+          "concept": "context-vs-retrieval-caching",
+          "type": "single",
+          "stem": "A design keeps a static policy document in the prompt on every call instead of building retrieval. What should the architect state about per-call cost?",
+          "options": [
+            "It is fixed by the model tier, so only building a retrieval layer can lower it",
+            "It will drop automatically as production volume grows, so no action is needed",
+            "It becomes irrelevant once the full document stays in view on every call",
+            "Prompt caching can recover much of the input cost on static content, so evaluate it first"
+          ],
+          "correct": [
+            3
+          ],
+          "explanation": "Larger context gains simplicity but gives up per-call cost and speed at scale, and caching static content can recover much of the input cost. Treating per-call cost as fixed ignores that lever.",
+          "mnemonic": "Static document in context? Check caching before blaming cost."
+        },
+        {
+          "id": "d6s2q10",
+          "concept": "logging-vs-latency",
+          "type": "single",
+          "stem": "A team proposes reducing logging detail to gain faster responses in a regulated workload. What does the trade-off map say a wrong, reversed choice could cost?",
+          "options": [
+            "A slower response that users will tolerate",
+            "A potential compliance gap requiring remediation",
+            "A larger prompt cache that raises storage cost",
+            "A change of model tier at the next renewal"
+          ],
+          "correct": [
+            1
+          ],
+          "explanation": "Less logging buys speed but reduces visibility into each interaction, and in a regulated workload that can create a compliance gap needing remediation. The other options are not the stated consequence.",
+          "mnemonic": "Trim the logs for speed, and compliance sends the bill."
+        },
+        {
+          "id": "d6s2q11",
+          "concept": "single-route-vs-multi",
+          "type": "single",
+          "stem": "A team picks one delivery route for lower build complexity. Which reversal cost should the architect name for the stakeholder?",
+          "options": [
+            "Higher authentication complexity across several different logging profiles in production",
+            "A loss of the one consistent logging profile that the single route provided",
+            "A delayed or blocked cutover if the route cannot meet a late residency requirement",
+            "A permanent ban on adding another platform once the first route is live"
+          ],
+          "correct": [
+            2
+          ],
+          "explanation": "A single route gains simplicity and one consistent auth and logging profile, but gives up flexibility; the reversal cost is a delayed or blocked cutover when a residency or deployment need appears late. Added complexity is what the multi-platform option costs instead.",
+          "mnemonic": "One road is simple until residency closes it."
+        },
+        {
+          "id": "d6s2q12",
+          "concept": "false-alignment",
+          "type": "single",
+          "stem": "What is 'false alignment' in a tradeoff presentation?",
+          "options": [
+            "A decision looks approved in the room, but reversal cost was never made explicit",
+            "Two stakeholders approve different options during the same meeting without noticing the conflict",
+            "An architect presents an option that the delivery team has not yet built or tested",
+            "A stakeholder rejects the recommendation in the room but still approves the budget"
+          ],
+          "correct": [
+            0
+          ],
+          "explanation": "False alignment is an apparent yes where the reversal cost was never named, so the real consequence only appears after commitment. Disagreement among stakeholders is a different problem.",
+          "mnemonic": "A yes in the room can still be a no on the invoice."
+        },
+        {
+          "id": "d6s2q13",
+          "concept": "context-vs-retrieval-caching",
+          "type": "multi",
+          "stem": "In the CTO review, the approved context-strategy recommendation led to a surprise invoice. Which THREE things were never communicated to the CTO? Select THREE.",
+          "options": [
+            "That per-call cost multiplied by call volume produced a five-figure monthly line",
+            "That the model tier had been chosen above the pilot's needs",
+            "That a static document could have been cached to cut the input cost",
+            "That unwinding a full-context design later would carry its own cost",
+            "That the CTO would need regulator sign-off for the invoice"
+          ],
+          "correct": [
+            0,
+            2,
+            3
+          ],
+          "explanation": "The CTO heard a per-call number and a simplicity argument but not the monthly bill at volume, the caching opportunity on a static document, or the cost of unwinding the decision once the system depended on it.",
+          "mnemonic": "Monthly bill, caching, unwind cost: three things the CTO never heard."
+        },
+        {
+          "id": "d6s2q14",
+          "concept": "false-alignment",
+          "type": "single",
+          "stem": "The CTO later wrote, 'I approved a direction, not a number.' What does this show about the earlier presentation?",
+          "options": [
+            "The architect should have refused to give a per-call cost until volumes were known",
+            "The CTO should have asked for a retrieval layer instead of the larger context",
+            "The invoice was caused by the model tier, which the CTO had not approved",
+            "An accurate answer to the question asked can still miss the version of the question that mattered"
+          ],
+          "correct": [
+            3
+          ],
+          "explanation": "The presentation answered the per-call question accurately but never surfaced monthly cost at volume or the reversal cost, so the CTO's yes was not an informed choice. Naming all three elements, especially reversal cost when a design feels obviously simpler, avoids it.",
+          "mnemonic": "Accurate is not complete: answer the question behind the question."
+        }
+      ]
+    },
+    {
+      "id": "d6s3",
+      "title": "Feedback loops and SLAs",
+      "learn": [
+        "Live deployments drift: quality erodes gradually rather than breaking dramatically, and teams without a feedback loop may not notice until users feel it.",
+        "The feedback loop is a decision layer above observability: Signals, Triage, Decide, Act, Review. Decide chooses between team fix, stakeholder review or no action.",
+        "An SLA names what is measured, what counts as a breach, and what happens on breach. Thresholds trace to tangible sources: latency to UX expectation, availability to business criticality, quality to eval results and acceptance criteria.",
+        "Cost is the expectation that breaks most after launch: production volume often runs one to two orders of magnitude above pilot; give a forecast, name spend controls (caching, model tiering, budget alerts) before the first invoice.",
+        "Regulated deployments add scheduled review checkpoints independent of incidents; a governance table maps signal to trigger, architect action and regulated checkpoint."
+      ],
+      "traps": [
+        "Dashboards equal feedback: observability collects signals, but without a rule mapping signal to trigger and owner, a slow drift stays invisible.",
+        "Error-rate alerting only: quality can fall for weeks while the error rate stays flat, so no hard alert fires.",
+        "Arbitrary thresholds: a number that cannot be tied to UX expectation, business criticality or eval results is just a target someone chose.",
+        "Cost shock: pilot cost looks trivial; production volume turns it into a five-figure monthly line unless forecast and controls were framed first.",
+        "Incident-only reviews: regulated checkpoints must run on a schedule even when nothing has gone wrong."
+      ],
+      "questions": [
+        {
+          "id": "d6s3q01",
+          "concept": "drift-without-monitoring",
+          "type": "single",
+          "stem": "A customer support assistant launched well, and months later users complain that answers are 'less useful'. Which description of how this typically happens is correct?",
+          "options": [
+            "Quality erodes gradually as usage patterns change, rather than failing all at once",
+            "The model is updated overnight and answers change abruptly for every user",
+            "Latency spikes first, and quality only falls after the spikes are fixed",
+            "Quality stays flat until the first scheduled review, then drops sharply"
+          ],
+          "correct": [
+            0
+          ],
+          "explanation": "Drift is gradual: usage patterns shift, issues get more complex and answers slowly miss the mark, which is why it is hard to catch. It rarely presents as one dramatic break.",
+          "mnemonic": "Drift is a slow leak, not a burst pipe."
+        },
+        {
+          "id": "d6s3q02",
+          "concept": "loop-vs-observability",
+          "type": "single",
+          "stem": "How does the feedback loop relate to the observability stack?",
+          "options": [
+            "It replaces the stack by producing its own latency and error metrics",
+            "It is a decision layer above the stack that turns signals into triage, decisions and actions",
+            "It is a reporting tool that formats the stack's output for quarterly review",
+            "It is a sub-feature of the stack that raises alerts when thresholds are crossed"
+          ],
+          "correct": [
+            1
+          ],
+          "explanation": "Observability supplies the raw signals; the feedback loop decides which need attention, who acts and what changes. It is not another metrics source or a formatting step.",
+          "mnemonic": "Sensors measure; the control room decides."
+        },
+        {
+          "id": "d6s3q03",
+          "concept": "five-stage-loop",
+          "type": "single",
+          "stem": "Which is the correct order of the feedback loop's five stages?",
+          "options": [
+            "Signals, Decide, Triage, Act, Review",
+            "Triage, Signals, Decide, Review, Act",
+            "Signals, Triage, Decide, Act, Review",
+            "Signals, Triage, Act, Decide, Review"
+          ],
+          "correct": [
+            2
+          ],
+          "explanation": "The loop runs Signals, Triage, Decide, Act, Review, where Review checks whether the response worked and whether the rule needs to change. Acting before deciding skips the judgement step.",
+          "mnemonic": "STDAR: Signals, Triage, Decide, Act, Review."
+        },
+        {
+          "id": "d6s3q04",
+          "concept": "sla-three-parts",
+          "type": "multi",
+          "stem": "Which THREE things must an SLA make clear? Select THREE.",
+          "options": [
+            "What is being measured",
+            "Which cloud region hosts the monitoring tools",
+            "What counts as a breach",
+            "What happens when a breach occurs",
+            "Which engineer wrote the first prompt"
+          ],
+          "correct": [
+            0,
+            2,
+            3
+          ],
+          "explanation": "An SLA names the measure, the breach definition and the consequence of a breach. Hosting region and prompt authorship are not part of the SLA definition.",
+          "mnemonic": "Measure, breach, consequence: the SLA triangle."
+        },
+        {
+          "id": "d6s3q05",
+          "concept": "threshold-sources",
+          "type": "single",
+          "stem": "Where should a latency threshold in an SLA come from?",
+          "options": [
+            "The best p95 the team achieved during load testing",
+            "The default value suggested by the monitoring tool",
+            "The latency of the previous system, regardless of user needs",
+            "The user experience expectation identified earlier in discovery"
+          ],
+          "correct": [
+            3
+          ],
+          "explanation": "Latency thresholds should reflect the UX expectation set earlier, which keeps the SLA defensible. A number chosen because it was achievable or because it was a default has no tangible source.",
+          "mnemonic": "Latency limit comes from what users expect, not what tools suggest."
+        },
+        {
+          "id": "d6s3q06",
+          "concept": "threshold-sources",
+          "type": "single",
+          "stem": "An architect must set availability and quality thresholds for a claims deployment. Which pairing of source to threshold is correct?",
+          "options": [
+            "Availability from business criticality; quality from eval results and acceptance criteria",
+            "Availability from the cloud provider's published figure; quality from user complaints",
+            "Availability from the pilot's uptime; quality from the cost budget",
+            "Availability from the UX expectation; quality from business criticality"
+          ],
+          "correct": [
+            0
+          ],
+          "explanation": "Availability reflects how critical the deployment is to the business, and quality reflects the eval results and acceptance criteria already established. Mixing the sources breaks the traceability that keeps an SLA defensible.",
+          "mnemonic": "Uptime follows criticality; quality follows the evals."
+        },
+        {
+          "id": "d6s3q07",
+          "concept": "arbitrary-threshold",
+          "type": "single",
+          "stem": "A proposed SLA sets a 98% quality target, but nobody can say where the figure came from. What is the most accurate assessment?",
+          "options": [
+            "It is acceptable because round numbers are easier to communicate",
+            "It is probably just a target someone chose because it sounded reasonable",
+            "It is acceptable if the monitoring tool can measure it",
+            "It should be raised to match the best result in testing"
+          ],
+          "correct": [
+            1
+          ],
+          "explanation": "If a threshold cannot be tied to a tangible source such as eval results or acceptance criteria, it is probably an arbitrary target. Measurability does not make it defensible.",
+          "mnemonic": "No source, no SLA: an untraceable number is a guess."
+        },
+        {
+          "id": "d6s3q08",
+          "concept": "cost-breaks-most",
+          "type": "single",
+          "stem": "Which expectation most often breaks after launch, and why?",
+          "options": [
+            "Latency, because networks slow down noticeably once the full user base is onboarded",
+            "Cost, because production volume often runs one to two orders of magnitude above pilot",
+            "Availability, because cloud providers change their commitments soon after a launch",
+            "Quality, because the eval suite is retired once the pilot has ended"
+          ],
+          "correct": [
+            1
+          ],
+          "explanation": "Cost is the expectation that breaks most; a trivial pilot cost can become a five-figure monthly line at production volume. The other expectations can degrade, but the notes single out cost.",
+          "mnemonic": "Pilot pennies, production pounds: one to two orders of magnitude."
+        },
+        {
+          "id": "d6s3q09",
+          "concept": "cost-breaks-most",
+          "type": "multi",
+          "stem": "To pre-empt the cost surprise after launch, which TWO actions should the architect take before the first invoice? Select TWO.",
+          "options": [
+            "Provide a consumption forecast at expected production volume",
+            "Wait for the first invoice, then explain the model-tiering narrative",
+            "Name the spend-control posture such as caching, model tiering and budget alerts",
+            "Quote only the pilot's per-call cost to keep the message simple",
+            "Raise the SLA latency threshold to reduce spend"
+          ],
+          "correct": [
+            0,
+            2
+          ],
+          "explanation": "Give a forecast at production volume and state the spend-control posture, framing model tiering before the first invoice rather than after it. Quoting only pilot cost or waiting for the invoice reproduces the surprise.",
+          "mnemonic": "Forecast first, controls named, narrative before the invoice."
+        },
+        {
+          "id": "d6s3q10",
+          "concept": "regulated-scheduled-checkpoints",
+          "type": "single",
+          "stem": "How do regulated deployments differ in feedback-loop design?",
+          "options": [
+            "They only review output when an incident or a complaint has been reported",
+            "They replace SLAs entirely with thresholds supplied directly by the regulator",
+            "They add scheduled review checkpoints that run even when nothing has gone wrong",
+            "They skip triage because every signal in a regulated system must be escalated"
+          ],
+          "correct": [
+            2
+          ],
+          "explanation": "Some reviews, such as periodic output audits or residency confirmations, must happen on a defined schedule regardless of incidents. They are design-time obligations, not tasks to add later.",
+          "mnemonic": "Regulated means the calendar triggers the review, not the alarm."
+        },
+        {
+          "id": "d6s3q11",
+          "concept": "governance-table-actions",
+          "type": "single",
+          "stem": "In the governance table, an output quality score crosses the threshold drawn from the eval suite. What is the architect's action?",
+          "options": [
+            "Diagnose prompt, data or model drift, then decide whether to iterate or re-architect",
+            "Raise the threshold to match the new score and continue operating as normal",
+            "Escalate straight to the regulator and trigger a periodic output audit immediately",
+            "Switch to a cheaper model tier in order to restore the previous score"
+          ],
+          "correct": [
+            0
+          ],
+          "explanation": "The architect diagnoses prompt, data or model drift and decides whether to iterate or re-architect. The regulated audit runs on its own schedule regardless of score.",
+          "mnemonic": "Score drops: prompt, data or model? Diagnose, then iterate or rebuild."
+        },
+        {
+          "id": "d6s3q12",
+          "concept": "monitoring-not-loop",
+          "type": "single",
+          "stem": "Over 90 days an eval score drifts down for weeks while the error rate stays flat, and no review happens until week 12. What best explains the miss?",
+          "options": [
+            "The error-rate threshold was set too high by the vendor when the alerts were built",
+            "The eval suite was producing inaccurate scores during weeks four to seven of the window",
+            "No rule mapped slow quality drift to a trigger, owner or action, so nothing decided it mattered",
+            "The stakeholder review calendar was run monthly instead of quarterly after launch week"
+          ],
+          "correct": [
+            2
+          ],
+          "explanation": "The signals existed, but nothing decided they mattered: no rule mapped a quality drift to a review trigger. A flat error rate means no hard alert fires, so drift stays invisible until someone notices.",
+          "mnemonic": "The signal existed; the trigger did not."
+        },
+        {
+          "id": "d6s3q13",
+          "concept": "monitoring-not-loop",
+          "type": "single",
+          "stem": "After the 90-day drift, what should the architect build to prevent a repeat?",
+          "options": [
+            "A larger set of dashboards covering more latency percentiles and error breakdowns",
+            "A governance table mapping each signal, slow drifts included, to a trigger, action and owner",
+            "A tighter error-rate alert that fires at a much lower threshold than before",
+            "A longer launch review held in week one with the full stakeholder group"
+          ],
+          "correct": [
+            1
+          ],
+          "explanation": "A dashboard collects and displays; a feedback loop maps each signal to a trigger, owner and required action, including both slow drifts and hard failures. More dashboards or a tighter error alert do not address a flat error rate.",
+          "mnemonic": "Table, not dashboard: signal, trigger, action, owner."
+        },
+        {
+          "id": "d6s3q14",
+          "concept": "regulated-scheduled-checkpoints",
+          "type": "single",
+          "stem": "In the governance table, what is the review trigger for the data-residency configuration signal?",
+          "options": [
+            "A cost-per-interaction budget breach that exceeds the envelope agreed in discovery",
+            "A latency p95 crossing the user-experience budget set during design",
+            "A drop in the eval score below the threshold drawn from the eval suite",
+            "Scheduled confirmation, with posture recorded and any drift flagged immediately"
+          ],
+          "correct": [
+            3
+          ],
+          "explanation": "Residency is checked on a scheduled confirmation, with the posture recorded and any drift flagged immediately. The other triggers belong to cost, latency and quality signals.",
+          "mnemonic": "Residency is checked on the calendar, not after the breach."
+        }
+      ]
+    },
+    {
+      "id": "d6s4",
+      "title": "Documentation for handoff and audit",
+      "learn": [
+        "One document serves three readers: the inheriting engineer, the auditor, and the returning architect. Serving only one makes it incomplete.",
+        "Handoff recipients need rejected alternatives and the rationale for each rejection; compliance reviewers need obligation, control, owner and evidence artifact (the control register carried forward), not assertions.",
+        "Returning architects need dated decisions, assumptions labelled as assumptions, and open items with owners and resolution criteria.",
+        "Completeness test: can a competent architect who was not in the room make a safe change after reading it?",
+        "Checklist fields: decision, rejected alternatives, tradeoff named, owner, evidence artifact, audit-ready status. Documentation is the handoff stage; the feedback loop is the monitoring-and-iteration stage."
+      ],
+      "traps": [
+        "Diagram as documentation: a diagram shows what the system is but loses why, so a successor can reverse a load-bearing decision.",
+        "Assertions as evidence: a statement that a control exists is not enough; the reviewer needs an evidence artifact showing it operating.",
+        "Assumptions as facts: embedding assumptions in the text as settled facts leaves the returning architect unable to tell what was confirmed.",
+        "Right decision, wrong reason: without rejected alternatives, a successor reverses the right decision for an understandable wrong reason.",
+        "Writing it later: rationale not recorded at design time leaves with the architect and is reconstructed from email threads, if at all."
+      ],
+      "questions": [
+        {
+          "id": "d6s4q01",
+          "concept": "three-readers",
+          "type": "multi",
+          "stem": "Which THREE readers must architecture documentation serve to be considered complete? Select THREE.",
+          "options": [
+            "The inheriting engineer who had no part in the build",
+            "The end user who submits requests to the system",
+            "The auditor looking for evidence that a control is operating",
+            "The returning architect who has lost the design context",
+            "The vendor's account executive preparing a renewal"
+          ],
+          "correct": [
+            0,
+            2,
+            3
+          ],
+          "explanation": "The three readers are the inheriting engineer, the auditor and the returning architect. A document built for only one of them is incomplete even when detailed.",
+          "mnemonic": "Inheritor, auditor, returner: three readers, one document."
+        },
+        {
+          "id": "d6s4q02",
+          "concept": "three-readers",
+          "type": "single",
+          "stem": "A handoff document is highly detailed for the engineer taking over but has no control evidence and no dated decisions. How should it be judged?",
+          "options": [
+            "Complete, because detail is the measure of documentation quality for any reader",
+            "Complete, because auditors read separate material in any case and need nothing here",
+            "Incomplete, because a document built for only one reader is incomplete even when detailed",
+            "Incomplete only if the deployment sits in a regulated industry with formal audits"
+          ],
+          "correct": [
+            2
+          ],
+          "explanation": "Serving one reader but not the others leaves the document incomplete regardless of detail. The returning architect and the auditor each need things this document lacks.",
+          "mnemonic": "Detail for one reader still leaves two readers stranded."
+        },
+        {
+          "id": "d6s4q03",
+          "concept": "rejected-alternatives",
+          "type": "single",
+          "stem": "Why must a handoff document record rejected alternatives and the reason each was rejected?",
+          "options": [
+            "So the auditor can see how many different options were considered during design",
+            "So the successor can tell which trade-off the design resolved and not reverse it wrongly",
+            "So the sales team can reuse the comparison in later proposals for other customers",
+            "So the document reaches the minimum length a compliance reviewer normally expects to see"
+          ],
+          "correct": [
+            1
+          ],
+          "explanation": "Rejected options explain why the design is shaped as it is; without them a successor cannot tell which trade-off a decision was resolving. The count of options is not what matters.",
+          "mnemonic": "The road not taken explains the road you're on."
+        },
+        {
+          "id": "d6s4q04",
+          "concept": "evidence-not-assertion",
+          "type": "single",
+          "stem": "For the compliance reviewer, which set of items must the document carry for each regulatory obligation?",
+          "options": [
+            "The obligation, the satisfying control, its owner, and the evidence artifact showing it operates",
+            "The obligation, the vendor's compliance certificate, the project cost, and the go-live date",
+            "The control, the rejected alternative, the named tradeoff, and the planned reversal date",
+            "The obligation, the control, the monitoring dashboard, and the log of open assumptions"
+          ],
+          "correct": [
+            0
+          ],
+          "explanation": "The reviewer needs obligation, control, owner and evidence artifact, which is the control register carried forward into the living document. They do not accept a statement that a control exists.",
+          "mnemonic": "Obligation, control, owner, evidence: no proof, no pass."
+        },
+        {
+          "id": "d6s4q05",
+          "concept": "evidence-not-assertion",
+          "type": "single",
+          "stem": "A reviewer asks about request logging. The document says only, 'Logging is enabled on all calls.' What is the issue?",
+          "options": [
+            "The statement is too short; it needs a diagram of the whole logging route",
+            "It names the control but gives no owner and no evidence artifact showing it operates",
+            "The statement should be removed because logging is merely a low-level technical detail",
+            "The statement is sufficient because reviewers accept the architect's attestation at face value"
+          ],
+          "correct": [
+            1
+          ],
+          "explanation": "A reviewer requires evidence, not assertions, so the control needs an owner and an evidence artifact. A diagram would still only show what exists, not that it operates.",
+          "mnemonic": "'Enabled' is a claim; the artifact is the proof."
+        },
+        {
+          "id": "d6s4q06",
+          "concept": "returning-architect",
+          "type": "multi",
+          "stem": "Which THREE features make a document navigable for an architect returning months later? Select THREE.",
+          "options": [
+            "Decisions are dated so the sequence of choices can be followed later",
+            "Assumptions are explicitly labelled as assumptions, not embedded as settled facts",
+            "Open items have named owners and criteria for what counts as resolved",
+            "A short summary that leaves out rejected options to save the reader time",
+            "Technical vocabulary assumed to be familiar to the original design team members"
+          ],
+          "correct": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "The returning architect needs dated decisions, assumptions labelled as such, and open items with owners and resolution criteria. Omitting rejected options or assuming shared vocabulary makes the document harder to use without a briefing.",
+          "mnemonic": "Dated, labelled, owned: a document that needs no briefing."
+        },
+        {
+          "id": "d6s4q07",
+          "concept": "completeness-test",
+          "type": "single",
+          "stem": "What is the practical test for whether architecture documentation is complete?",
+          "options": [
+            "Whether it passes a length and formatting review by the compliance team",
+            "Whether the original architect agrees that it matches the design they built",
+            "Whether every component in the deployment appears somewhere in the architecture diagram",
+            "Whether a competent architect absent from the design sessions could make a safe change"
+          ],
+          "correct": [
+            3
+          ],
+          "explanation": "The test is whether a competent architect who was not in the room can make a safe change. A complete diagram or the original architect's approval does not show that.",
+          "mnemonic": "If a stranger can't change it safely, it isn't finished."
+        },
+        {
+          "id": "d6s4q08",
+          "concept": "checklist-field-readers",
+          "type": "multi",
+          "stem": "Which TWO checklist fields primarily serve the handoff recipient? Select TWO.",
+          "options": [
+            "Evidence artifact showing the control is operating",
+            "Rejected alternatives and why each was set aside",
+            "Audit-ready status of the available evidence",
+            "Tradeoff named, with gains, costs and reversal implications",
+            "Decision date, serving only the compliance reviewer"
+          ],
+          "correct": [
+            1,
+            3
+          ],
+          "explanation": "Rejected alternatives primarily serve the handoff recipient, and the named tradeoff serves the handoff recipient and the returning architect. Evidence artifact and audit-ready status primarily serve the compliance reviewer.",
+          "mnemonic": "Rejected options and named trade-offs are for the heir."
+        },
+        {
+          "id": "d6s4q09",
+          "concept": "checklist-field-readers",
+          "type": "single",
+          "stem": "Which checklist field records whether the available evidence is current and sufficient for review?",
+          "options": [
+            "Decision, recording the architectural choice made and its date",
+            "Audit-ready status, recording whether evidence is current and sufficient",
+            "Tradeoff named, recording gains, costs and reversal implications",
+            "Owner, recording who is responsible for the control going forward"
+          ],
+          "correct": [
+            1
+          ],
+          "explanation": "Audit-ready status captures whether the available evidence is current and sufficient, and it serves the compliance reviewer. Owner names who is responsible for the decision or control going forward.",
+          "mnemonic": "Audit-ready status: is the proof fresh enough to show?"
+        },
+        {
+          "id": "d6s4q10",
+          "concept": "diagram-lost-why",
+          "type": "single",
+          "stem": "In the financial-services handoff, the replacement switched context strategies and broke data residency. What did the diagram fail to carry?",
+          "options": [
+            "The list of services that had been deployed in the required region",
+            "The latency measurements from the launch period and the performance baseline",
+            "The reason the original strategy was chosen, as a decision with a named tradeoff",
+            "The approval history showing who signed off the original architecture diagram"
+          ],
+          "correct": [
+            2
+          ],
+          "explanation": "The diagram showed what the system was but lost why; the context strategy was a deliberate choice to keep regulated data in-region, and nothing recorded that. The replacement acted reasonably on the information they had.",
+          "mnemonic": "The diagram showed what; the why left with the architect."
+        },
+        {
+          "id": "d6s4q11",
+          "concept": "rejected-alternatives",
+          "type": "single",
+          "stem": "In that postmortem, why was the replacement unable to avoid the failure?",
+          "options": [
+            "They did not realise the strategy was load-bearing for compliance, because no rationale was documented",
+            "The document warned that the strategy must not change, and the warning was ignored",
+            "They lacked the access rights to read recordings of the original design sessions",
+            "They tested the switch only in a different region from the production deployment"
+          ],
+          "correct": [
+            0
+          ],
+          "explanation": "Without the rationale the replacement could not tell the original strategy was load-bearing for residency, so they reversed the right decision for an understandable wrong reason. No warning existed in the record.",
+          "mnemonic": "Undocumented rationale lets a competent successor break a load-bearing wall."
+        },
+        {
+          "id": "d6s4q12",
+          "concept": "lifecycle-stage-mapping",
+          "type": "single",
+          "stem": "In lifecycle terms, which mapping of artifacts to stages is correct?",
+          "options": [
+            "Documentation is the discovery stage; the feedback loop is the design stage",
+            "Documentation is the handoff stage; the feedback loop is the monitoring-and-iteration stage",
+            "Documentation is the monitoring stage; the feedback loop is the handoff stage",
+            "Documentation is the design stage; the feedback loop is the discovery stage"
+          ],
+          "correct": [
+            1
+          ],
+          "explanation": "Documentation that survives your absence is the handoff stage, while the feedback loop keeps the live deployment healthy in the monitoring-and-iteration stage. The other mappings swap the stages.",
+          "mnemonic": "Write it for handoff; loop it for monitoring and iteration."
+        }
+      ]
+    },
+    {
+      "id": "d6s5",
+      "title": "Entry-point selection in production and outcome documents",
+      "learn": [
+        "In a live multi-platform deployment the route question becomes which entry point performs best across latency, cost and compliance, not just which survives the compliance pre-filter.",
+        "Cross-platform problems: model identifier strings differ, features can lag on cloud-provider routes, and Bedrock/Vertex need explicit regional configuration; defaulting to a global endpoint commonly breaks residency.",
+        "An entry-point-responsibility map says which entry point owns which task and why, preventing task creep; draw it before the first line of integration code.",
+        "Decision matrix: direct API by default unless procurement or residency points elsewhere; Bedrock or Vertex for AWS or GCP standardised partners; Foundry, verify residency and coverage per hosting form.",
+        "Outcome document: use case with scope boundary, metric before, metric after using the same definition, control making the comparison auditable, and measurement owner. Capture the before metric at the start."
+      ],
+      "traps": [
+        "Global endpoint default: leaving a Bedrock or Vertex region unconfigured is the common way a residency requirement quietly breaks.",
+        "Assuming parity: model IDs differ across routes, and cloud-provider routes can lag direct API features.",
+        "Task creep: without a responsibility map, an entry point chosen for one task gradually takes on another.",
+        "Platform-name assumption: Foundry coverage depends on hosting form, so verify residency per route rather than from the name.",
+        "Easy metrics: volume, latency and error rate show the system runs, not what it changed; without a before metric the story cannot be told."
+      ],
+      "questions": [
+        {
+          "id": "d6s5q01",
+          "concept": "route-question-in-production",
+          "type": "single",
+          "stem": "How does the entry-point question change once a deployment is live across more than one platform?",
+          "options": [
+            "It becomes only a procurement question settled by the customer's cloud contract alone",
+            "It no longer matters because the compliance pre-filter already decided the route",
+            "It becomes a question of which model name is cheapest on each platform",
+            "It becomes which route performs best across latency, cost and compliance in live use"
+          ],
+          "correct": [
+            3
+          ],
+          "explanation": "Earlier, route selection was a compliance pre-filter; with the full production picture the question is performance across latency, cost and compliance. Procurement is one input, not the whole question.",
+          "mnemonic": "Pre-filter picks who qualifies; production asks who performs."
+        },
+        {
+          "id": "d6s5q02",
+          "concept": "cross-platform-problems",
+          "type": "single",
+          "stem": "A team ports a working integration from the direct API to a cloud-provider route and it fails to find the model. Which cross-platform issue is the most likely cause?",
+          "options": [
+            "Model identifier strings differ across routes, so the identifier must be changed",
+            "Prompt caching is disabled on every cloud-provider route by default",
+            "The logging profile is identical across routes, which causes naming conflicts",
+            "The regional endpoint is always global on cloud-provider routes"
+          ],
+          "correct": [
+            0
+          ],
+          "explanation": "Model identifier strings differ across entry points, so a configuration that works on one route may not work on another. The other options are not stated cross-platform behaviours.",
+          "mnemonic": "Same model, different name: IDs change with the route."
+        },
+        {
+          "id": "d6s5q03",
+          "concept": "cross-platform-problems",
+          "type": "multi",
+          "stem": "Which TWO problems does a deployment spanning more than one entry point expose that a single-entry-point system does not? Select TWO.",
+          "options": [
+            "Feature availability can lag on a cloud-provider route versus the direct API",
+            "Eval scores can no longer be compared between releases on different routes",
+            "Regional availability on Bedrock and Vertex requires explicit configuration",
+            "Every route must share one authentication method and one logging profile",
+            "Latency budgets no longer apply to deployments that span multiple routes"
+          ],
+          "correct": [
+            0,
+            2
+          ],
+          "explanation": "Features can lag on cloud-provider routes, and Bedrock and Vertex regions need explicit configuration. Each route keeps its own authentication and logging profile, so a shared auth method is not required.",
+          "mnemonic": "IDs differ, features lag, regions need explicit setting."
+        },
+        {
+          "id": "d6s5q04",
+          "concept": "global-endpoint-residency",
+          "type": "single",
+          "stem": "Which common configuration pattern most often breaks a data-residency requirement on a Bedrock or Vertex deployment?",
+          "options": [
+            "Using a different model identifier than the direct API",
+            "Defaulting to a global endpoint instead of explicitly configuring the region",
+            "Running two entry points inside the same workflow",
+            "Keeping the policy document in the prompt rather than in retrieval"
+          ],
+          "correct": [
+            1
+          ],
+          "explanation": "Regional availability needs explicit configuration, and defaulting to a global endpoint is the common residency breaker. Model identifiers affect compatibility rather than data location.",
+          "mnemonic": "Global by default means residency by accident."
+        },
+        {
+          "id": "d6s5q05",
+          "concept": "global-endpoint-residency",
+          "type": "single",
+          "stem": "A deployment passes testing, but a quarterly confirmation finds requests are being served outside the required region. Which cause should be investigated first?",
+          "options": [
+            "A global endpoint default instead of an explicitly configured region",
+            "A model tier chosen above the pilot's needs, raising the monthly cost",
+            "An eval score drifting below the threshold set from the eval suite",
+            "A missing before metric in the outcome document written at close"
+          ],
+          "correct": [
+            0
+          ],
+          "explanation": "On Bedrock and Vertex, regional execution needs explicit configuration, and a global endpoint default is the usual way residency quietly breaks. The other options concern cost, quality and reporting.",
+          "mnemonic": "Residency drift? Check for a quiet global endpoint."
+        },
+        {
+          "id": "d6s5q06",
+          "concept": "responsibility-map",
+          "type": "single",
+          "stem": "What does an entry-point-responsibility map record, and when should it exist?",
+          "options": [
+            "Which entry point owns which task and why; before writing any integration code",
+            "Which entry point had the lowest cost; compiled after the first invoice arrives",
+            "Which team approved each route; recorded after the production cutover is done",
+            "Which entry point holds the logs; produced once an auditor asks for them"
+          ],
+          "correct": [
+            0
+          ],
+          "explanation": "The map says which entry point handles which task and why, and it should precede integration code because each boundary has its own auth, logging and failure profile. Writing it later invites undocumented routing.",
+          "mnemonic": "Map the owners before you write the integration."
+        },
+        {
+          "id": "d6s5q07",
+          "concept": "responsibility-map",
+          "type": "single",
+          "stem": "Over a year, a Bedrock endpoint set up for a regulated data path starts handling unrelated tasks nobody planned. Which missing artifact most directly allowed this?",
+          "options": [
+            "A consumption forecast at expected production volume for each entry point",
+            "A governance table of production signals, triggers and owners for the loop",
+            "An entry-point-responsibility map stating which entry point owns which task and why",
+            "A measurement owner named in the outcome document after the engagement closes"
+          ],
+          "correct": [
+            2
+          ],
+          "explanation": "Task creep is the common multi-entry-point failure when routing logic was never documented; the responsibility map prevents it. The other artifacts address cost, drift and outcome measurement.",
+          "mnemonic": "Undocumented routing lets one entry point creep into another's job."
+        },
+        {
+          "id": "d6s5q08",
+          "concept": "matrix-direct-default",
+          "type": "single",
+          "stem": "No procurement rule or residency requirement points elsewhere for a new deployment. Which entry point does the decision matrix suggest?",
+          "options": [
+            "AWS Bedrock, because it is region-configurable for every deployment",
+            "GCP Vertex AI, because it fits any procurement path a partner has",
+            "The direct Anthropic API, the default unless procurement or residency says otherwise",
+            "Microsoft Foundry, because its platform name implies full residency coverage"
+          ],
+          "correct": [
+            2
+          ],
+          "explanation": "The direct API is the default, with newest features first and the fewest extra hops, unless a procurement or residency rule points elsewhere. Foundry coverage cannot be assumed from the platform name.",
+          "mnemonic": "Direct first, unless procurement or residency says otherwise."
+        },
+        {
+          "id": "d6s5q09",
+          "concept": "matrix-csp-routes",
+          "type": "single",
+          "stem": "A partner has standardised on AWS and needs in-region execution. Which entry point does the decision matrix favour, with what condition?",
+          "options": [
+            "The direct API, with no regional configuration required",
+            "Microsoft Foundry, with residency assumed from the platform",
+            "GCP Vertex AI, with the region left at its default",
+            "AWS Bedrock, configured explicitly for the required region"
+          ],
+          "correct": [
+            3
+          ],
+          "explanation": "Bedrock fits AWS-centric procurement and region rules when configured explicitly, though features may lag the direct API. Vertex is the equivalent for GCP-standardised partners.",
+          "mnemonic": "AWS shop, in-region need: Bedrock, region set explicitly."
+        },
+        {
+          "id": "d6s5q10",
+          "concept": "foundry-verify-per-route",
+          "type": "single",
+          "stem": "A partner requires Microsoft Foundry for procurement reasons. How should the architect handle data residency?",
+          "options": [
+            "Assume the partner's Azure environment hosts inference for every model",
+            "Verify residency and coverage per hosting form, since hosted-on-Azure and hosted-on-Anthropic models differ",
+            "Treat residency as satisfied because Foundry is an Azure platform",
+            "Default to the global endpoint and confirm residency after cutover"
+          ],
+          "correct": [
+            1
+          ],
+          "explanation": "Foundry varies by hosting form: hosted-on-Azure models run inference in the partner's Azure environment, whereas hosted-on-Anthropic models route to Anthropic infrastructure. Residency must be verified per route, not assumed from the name.",
+          "mnemonic": "Foundry: check the hosting form, never the brand name."
+        },
+        {
+          "id": "d6s5q11",
+          "concept": "outcome-document-fields",
+          "type": "multi",
+          "stem": "Which THREE fields belong in a customer outcome document? Select THREE.",
+          "options": [
+            "The use case with its scope boundary",
+            "Monthly request volume as the headline result",
+            "The business metric before deployment and after it, using the same definition",
+            "The control that makes the comparison auditable",
+            "Average latency as the proof of value"
+          ],
+          "correct": [
+            0,
+            2,
+            3
+          ],
+          "explanation": "The document records the use case with scope boundary, the before and after metric on the same definition, the control making the comparison auditable, and a measurement owner. Volume and latency are technical metrics, not business outcomes.",
+          "mnemonic": "Scope, before and after, control, owner: outcomes beat throughput."
+        },
+        {
+          "id": "d6s5q12",
+          "concept": "before-metric-at-start",
+          "type": "single",
+          "stem": "A sponsor presents 40,000 requests a month, sub-two-second latency and a low error rate. The CFO asks what the deployment changed. What was missing?",
+          "options": [
+            "A higher request volume, so the spend looks easier to justify upward",
+            "A before-and-after comparison on the targeted business metric, such as processing time",
+            "A lower average latency than the one reported to the sponsor",
+            "A longer list of supported entry points and the models on each"
+          ],
+          "correct": [
+            1
+          ],
+          "explanation": "Volume, latency and error rate show the system runs, not what it changed. The before-and-after on the targeted business metric, with a control making it auditable, is what the CFO needed.",
+          "mnemonic": "It runs is not it worked: show the business metric moved."
+        },
+        {
+          "id": "d6s5q13",
+          "concept": "before-metric-at-start",
+          "type": "single",
+          "stem": "When should the architect capture the before metric for the outcome document?",
+          "options": [
+            "At the start of the engagement, before the deployment changes anything",
+            "At project close, by estimating it back from the measured after result",
+            "At the first SLA review, pulled from the observability stack exports",
+            "Whenever the sponsor asks for funding to expand the deployment"
+          ],
+          "correct": [
+            0
+          ],
+          "explanation": "Without the before number there is no story, so it must be captured at the start. Reconstructing it afterwards leaves the comparison an assertion.",
+          "mnemonic": "No before, no story: baseline on day one."
+        },
+        {
+          "id": "d6s5q14",
+          "concept": "control-makes-auditable",
+          "type": "single",
+          "stem": "Why does the outcome document include a control in place alongside the before and after metrics?",
+          "options": [
+            "To assign an owner for the monitoring dashboards",
+            "To list the guardrails used in the prompts",
+            "To make the before-and-after comparison auditable rather than merely asserted",
+            "To record which entry point served each request"
+          ],
+          "correct": [
+            2
+          ],
+          "explanation": "Without a control, the after number is an assertion; the control lets a sponsor defend the comparison upward. The measurement owner is a separate field.",
+          "mnemonic": "Without a control, the after number is just a claim."
+        }
+      ]
+    }
+  ]
+}

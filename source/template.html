@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CCAR-P Study Aid</title>
+<style>
+:root{
+  --bg:#0c1016; --bg2:#10151d; --surface:#161c26; --surface2:#1c2431; --line:#273041; --line2:#344055;
+  --text:#e6ebf2; --muted:#9aa6b8; --dim:#6f7b8e;
+  --good:#4cc38a; --good-bg:rgba(76,195,138,.12); --bad:#f0647a; --bad-bg:rgba(240,100,122,.12); --warn:#e8b04a;
+  --accent:#7aa7ff; --radius:14px;
+  --d1:#6ea8fe; --d2:#a48cf4; --d3:#35c2b0; --d4:#e6b04b; --d5:#ea6f86; --d6:#66c47a; --d7:#e08a52;
+  --shadow:0 6px 24px rgba(0,0,0,.35);
+  font-family: Inter, "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,#162033 0,transparent 60%),var(--bg);color:var(--text);line-height:1.55;min-height:100vh;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:var(--accent)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:rgba(12,16,22,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:16px;height:60px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.2px;background:none;border:0;padding:0}
+.logo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#7aa7ff,#a48cf4);display:grid;place-items:center;color:#0c1016;font-weight:800;font-size:14px}
+.brand small{display:block;color:var(--dim);font-weight:500;font-size:11px;letter-spacing:.6px;text-transform:uppercase}
+.spacer{flex:1}
+.overall{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+.overall .bar{width:130px}
+.btn{background:var(--surface);border:1px solid var(--line);padding:9px 16px;border-radius:10px;font-weight:600;font-size:14px;transition:.15s}
+.btn:hover{border-color:var(--line2);background:var(--surface2)}
+.btn.primary{background:var(--accent);color:#08101f;border-color:transparent}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.ghost{background:transparent}
+.btn.sm{padding:6px 12px;font-size:13px;border-radius:8px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.dom{background:color-mix(in srgb,var(--dc) 22%,var(--surface));border-color:color-mix(in srgb,var(--dc) 45%,var(--line));}
+.btn.dom:hover{background:color-mix(in srgb,var(--dc) 32%,var(--surface))}
+
+/* progress bar */
+.bar{position:relative;height:8px;border-radius:99px;background:#222b3a;overflow:visible}
+.bar>i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:var(--dc,var(--accent));transition:width .4s}
+.bar>b{position:absolute;top:-3px;bottom:-3px;width:2px;background:#cfd8e6;opacity:.7;border-radius:2px}
+.bar.pass>i{background:var(--good)}
+
+h1{font-size:30px;line-height:1.2;margin:34px 0 8px;letter-spacing:-.4px}
+h2{font-size:21px;margin:0 0 6px;letter-spacing:-.2px}
+h3{font-size:15px;margin:0 0 10px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+p.lead{color:var(--muted);max-width:760px;margin:0 0 22px}
+.crumbs{margin:22px 0 4px;font-size:13px;color:var(--dim)}
+.crumbs button{background:none;border:0;color:var(--muted);padding:0;text-decoration:underline;text-underline-offset:3px}
+.crumbs button:hover{color:var(--text)}
+
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px;margin-bottom:60px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;transition:.18s}
+.card.click{cursor:pointer}
+.card.click:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--dc) 50%,var(--line));box-shadow:var(--shadow)}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--dc,var(--accent));opacity:.9}
+.card::after{content:"";position:absolute;inset:0;background:radial-gradient(400px 120px at 0 0,color-mix(in srgb,var(--dc) 10%,transparent),transparent);pointer-events:none}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--dc);margin-bottom:8px}
+.tag .w{color:var(--muted);font-weight:600;letter-spacing:.3px;text-transform:none}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted);margin:12px 0 0}
+.stat{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--muted);margin:14px 0 7px}
+.stat strong{font-size:22px;color:var(--text);font-variant-numeric:tabular-nums}
+.chip{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;border:1px solid var(--line2);color:var(--muted);letter-spacing:.3px}
+.chip.good{color:var(--good);border-color:rgba(76,195,138,.5);background:var(--good-bg)}
+.chip.warn{color:var(--warn);border-color:rgba(232,176,74,.45)}
+.chip.bad{color:var(--bad);border-color:rgba(240,100,122,.45)}
+
+.hero{display:grid;grid-template-columns:1.4fr 1fr;gap:20px;margin:6px 0 26px}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.overall .bar,.overall span.t{display:none}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.big{font-size:44px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1}
+.legend{font-size:12.5px;color:var(--dim);margin:6px 0 40px;max-width:800px}
+
+/* subject rows */
+.subj{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;padding:16px 18px;margin-bottom:10px}
+.subj h2{font-size:17px}
+.subj .actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+@media(max-width:700px){.subj{grid-template-columns:1fr}.subj .actions{justify-content:flex-start}}
+.mini{display:flex;align-items:center;gap:12px;margin-top:8px;font-size:12.5px;color:var(--muted)}
+.mini .bar{width:180px;max-width:46vw}
+
+/* learn page */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px}
+@media(max-width:820px){.cols{grid-template-columns:1fr}}
+.list{margin:0;padding:0;list-style:none}
+.list li{position:relative;padding:9px 0 9px 26px;border-bottom:1px dashed var(--line);font-size:15px}
+.list li:last-child{border-bottom:0}
+.list.learn li::before{content:"";position:absolute;left:3px;top:17px;width:8px;height:8px;border-radius:2px;background:var(--dc)}
+.list.trap li::before{content:"!";position:absolute;left:2px;top:9px;width:16px;height:16px;border-radius:50%;background:rgba(232,176,74,.18);color:var(--warn);font-weight:800;font-size:11px;display:grid;place-items:center}
+.list strong{color:#fff}
+.callout{border:1px solid rgba(232,176,74,.35);background:rgba(232,176,74,.05)}
+.cta{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 60px}
+
+/* quiz */
+.qhead{display:flex;align-items:center;gap:14px;margin:22px 0 16px;flex-wrap:wrap}
+.qhead .bar{flex:1;min-width:120px}
+.qhead .cnt{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:26px;position:relative;margin-bottom:20px;border-top:3px solid var(--dc)}
+.qmeta{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--dim);margin-bottom:14px}
+.qmeta .tag{margin:0}
+.badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;letter-spacing:.5px}
+.badge.single{background:rgba(122,167,255,.14);color:var(--accent)}
+.badge.multi{background:rgba(232,176,74,.14);color:var(--warn)}
+.stem{font-size:18.5px;line-height:1.55;margin:0 0 20px;font-weight:500}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:14px;align-items:flex-start;text-align:left;width:100%;padding:14px 16px;border-radius:12px;background:var(--bg2);border:1.5px solid var(--line);transition:.12s;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--line2);background:var(--surface2)}
+.opt .k{flex:0 0 28px;height:28px;border-radius:8px;border:1.5px solid var(--line2);display:grid;place-items:center;font-weight:700;font-size:13px;color:var(--muted);margin-top:-1px}
+.opt.multi .k{border-radius:6px}
+.opt.sel{border-color:var(--accent);background:rgba(122,167,255,.09)}
+.opt.sel .k{background:var(--accent);color:#08101f;border-color:var(--accent)}
+.opt.right{border-color:var(--good);background:var(--good-bg)}
+.opt.right .k{background:var(--good);color:#06150d;border-color:var(--good)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-bg)}
+.opt.wrong .k{background:var(--bad);color:#1c050a;border-color:var(--bad)}
+.opt.missed{border-style:dashed}
+.opt:disabled{cursor:default}
+.opt .flag{margin-left:auto;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;padding-left:10px;align-self:center}
+.right .flag{color:var(--good)} .wrong .flag{color:var(--bad)}
+.qfoot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:20px}
+.hint{font-size:13px;color:var(--dim)}
+.fb{margin-top:20px;border-radius:12px;padding:18px 20px;border:1px solid var(--line);animation:in .25s}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.fb.ok{background:var(--good-bg);border-color:rgba(76,195,138,.4)}
+.fb.no{background:var(--bad-bg);border-color:rgba(240,100,122,.4)}
+.fb h4{margin:0 0 6px;font-size:16px}
+.fb.ok h4{color:var(--good)} .fb.no h4{color:var(--bad)}
+.fb p{margin:0 0 10px;font-size:15px}
+.mnemonic{display:flex;gap:12px;align-items:flex-start;background:rgba(0,0,0,.25);border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:10px;padding:12px 14px;font-size:15px}
+.mnemonic .m{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--warn);white-space:nowrap;padding-top:3px}
+.mnemonic q{quotes:none;font-weight:600;color:#fff}
+.sess{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;font-size:13px;color:var(--muted)}
+
+/* results */
+.resbig{text-align:center;padding:34px 20px}
+.resbig .big{font-size:64px}
+.resbig .verdict{font-size:20px;font-weight:700;margin:10px 0 4px}
+.resbig.pass .big,.resbig.pass .verdict{color:var(--good)}
+.resbig.fail .big,.resbig.fail .verdict{color:var(--warn)}
+.miss{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:12px;background:var(--surface)}
+.miss .s{font-weight:600;margin-bottom:8px}
+.miss .a{font-size:14.5px;color:var(--muted);margin:3px 0}
+.miss .a b{color:var(--good)}
+.sub-res{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.sub-res:last-child{border:0}
+.foot{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--dim);font-size:12.5px}
+.empty{padding:30px;text-align:center;color:var(--muted)}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:grid;place-items:center;z-index:50;padding:20px}
+.modal{background:var(--surface);border:1px solid var(--line2);border-radius:var(--radius);padding:26px;max-width:420px;box-shadow:var(--shadow)}
+.modal p{color:var(--muted)}
+.modal .row{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <button class="brand" id="home" aria-label="Home"><span class="logo">CA</span><span>CCAR-P Study Aid<small>Claude Certified Architect &ndash; Professional</small></span></button>
+  <div class="spacer"></div>
+  <div class="overall" id="overall"></div>
+</div></header>
+<main class="wrap" id="app"></main>
+<div class="wrap foot" id="foot"></div>
+
+<script>
+const DATA = /*__DATA__*/null;
+const PASS = 85;
+const DOMAINS = {
+  1:{name:"Solution Design & Architecture",weight:17,short:"Design",desc:"Turn business problems into Claude architectures: decomposition, patterns, multi-agent systems and value cases."},
+  2:{name:"Claude Models, Prompting & Context Engineering",weight:13,short:"Prompting",desc:"Pick the right model, shape prompts and templates, manage the context window, and reuse prompts through caching and Skills."},
+  3:{name:"Integration",weight:19,short:"Integration",desc:"Entry points, delivery routes, RAG, identity and least privilege, regulated-industry constraints, Claude Code layers."},
+  4:{name:"Evaluation, Testing & Optimization",weight:16,short:"Evaluation",desc:"Evals, grading, POC-to-production readiness, A/B and shadow testing, observability and diagnosis."},
+  5:{name:"Governance, Safety & Risk Management",weight:14,short:"Governance",desc:"Layered safety, guarded request paths, supply-chain security, fairness, human review and compliance evidence."},
+  6:{name:"Stakeholder Communication & Lifecycle Management",weight:14,short:"Stakeholders",desc:"Discovery, trade-off communication, feedback loops and SLAs, documentation and handoff, outcome documents."},
+  7:{name:"Developer Productivity & Operational Enablement",weight:7,short:"Enablement",desc:"Team environments, Skills distribution, AI-assisted workflows with diligence, and operational support."}
+};
+const dcol = d => `var(--d${d})`;
+
+/* ---------- storage ---------- */
+const KEY = "ccarp-study-v1";
+let mem = null;
+function load(){
+  try{ const r = localStorage.getItem(KEY); if(r) return JSON.parse(r); }catch(e){}
+  return mem || {q:{},viewed:{},sessions:[]};
+}
+let P = load();
+function save(){ mem = P; try{ localStorage.setItem(KEY, JSON.stringify(P)); }catch(e){} }
+
+/* ---------- data helpers ---------- */
+const doms = DATA.domains;                     // [{domain, subjects}]
+const byDomain = {}; const bySubject = {}; const byQ = {};
+doms.forEach(d=>{ byDomain[d.domain]=d; d.subjects.forEach(s=>{ s.domain=d.domain; bySubject[s.id]=s; s.questions.forEach(q=>{ q.subject=s.id; q.domain=d.domain; byQ[q.id]=q; }); }); });
+const allQ = dom => byDomain[dom].subjects.flatMap(s=>s.questions);
+function stats(qs){
+  let seen=0, right=0;
+  qs.forEach(q=>{ const r=P.q[q.id]; if(r&&r.n){ seen++; if(r.last) right++; } });
+  return {total:qs.length, seen, right, mastery: qs.length? Math.round(100*right/qs.length):0, acc: seen? Math.round(100*right/seen):0, cover: qs.length? Math.round(100*seen/qs.length):0};
+}
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function spread(list){ // random order, but keep same-concept variants apart where possible
+  const a = shuffle(list);
+  for(let i=1;i<a.length;i++){
+    if(a[i].concept===a[i-1].concept){
+      for(let j=i+1;j<a.length;j++){ if(a[j].concept!==a[i-1].concept && (i+1>=a.length || a[j].concept!==a[i+1]?.concept)){ [a[i],a[j]]=[a[j],a[i]]; break; } }
+    }
+  }
+  return a;
+}
+const esc = s => String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const boldLead = s => { const i=s.indexOf(":"); return (i>0 && i<70) ? `<strong>${esc(s.slice(0,i))}</strong>${esc(s.slice(i))}` : esc(s); };
+const $ = (sel,root=document)=>root.querySelector(sel);
+const app = $("#app");
+const letters = "ABCDE";
+
+/* ---------- chrome ---------- */
+function renderChrome(){
+  const all = doms.flatMap(d=>allQ(d.domain)); const st = stats(all);
+  const passing = doms.filter(d=>stats(allQ(d.domain)).mastery>=PASS).length;
+  $("#overall").innerHTML = `<span class="t">${passing}/7 domains at ${PASS}%</span><div class="bar ${passing===7?'pass':''}" style="--dc:var(--accent);width:130px"><i style="width:${st.mastery}%"></i></div><span>${st.mastery}% overall</span>`;
+  $("#foot").innerHTML = `Mastery = share of a domain&rsquo;s questions whose <em>latest</em> attempt was correct. The pass mark is ${PASS}% in every domain, so missed questions return until you get them right. Progress is saved in this browser only. &nbsp;<button class="btn sm ghost" id="reset">Reset progress</button>`;
+  $("#reset").onclick = confirmReset;
+}
+function confirmReset(){
+  const m = document.createElement("div"); m.className="modal-bg";
+  m.innerHTML = `<div class="modal" role="dialog" aria-modal="true"><h2>Reset all progress?</h2><p>This clears every answer, score and studied marker saved in this browser. It cannot be undone.</p><div class="row"><button class="btn" id="no">Cancel</button><button class="btn primary" id="yes">Reset</button></div></div>`;
+  document.body.appendChild(m);
+  $("#no",m).onclick=()=>m.remove();
+  $("#yes",m).onclick=()=>{ P={q:{},viewed:{},sessions:[]}; save(); m.remove(); go("home"); };
+}
+$("#home").onclick = ()=>go("home");
+
+/* ---------- router ---------- */
+let sess = null;
+let currentView=["home"];
+function go(view, arg){
+  if(view==="domain"||view==="subject"||view==="home") currentView=[view,arg];
+  window.scrollTo({top:0});
+  renderChrome();
+  if(view==="home") return viewHome();
+  if(view==="domain") return viewDomain(arg);
+  if(view==="subject") return viewSubject(arg);
+  if(view==="quiz") return viewQuestion();
+  if(view==="results") return viewResults();
+}
+
+function statusChip(s){
+  if(!s.seen) return `<span class="chip">Not started</span>`;
+  if(s.mastery>=PASS) return `<span class="chip good">Pass level &ge; ${PASS}%</span>`;
+  if(s.cover<100) return `<span class="chip warn">In progress</span>`;
+  return `<span class="chip bad">Below ${PASS}%</span>`;
+}
+function barHTML(pct, dom){
+  return `<div class="bar ${pct>=PASS?'pass':''}" style="--dc:${dcol(dom)}"><i style="width:${pct}%"></i><b style="left:${PASS}%"></b></div>`;
+}
+
+/* ---------- home ---------- */
+function viewHome(){
+  const all = doms.flatMap(d=>allQ(d.domain)); const st = stats(all);
+  const passing = doms.filter(d=>stats(allQ(d.domain)).mastery>=PASS).length;
+  app.innerHTML = `
+  <h1>Prepare for the CCAR-P exam</h1>
+  <p class="lead">${all.length} scenario-based questions across the seven exam domains. Study each subject&rsquo;s learning points and traps, then test yourself. Every question you miss comes with the correct reasoning and a memory hook. You need ${PASS}% mastery in <em>every</em> domain.</p>
+  <div class="hero">
+    <div class="panel"><h3>Overall readiness</h3><div class="big">${st.mastery}<span style="font-size:24px;color:var(--muted)">%</span></div>
+      <div style="margin:14px 0 10px">${barHTML(st.mastery,'accent').replace('--dc:var(--daccent)','--dc:var(--accent)')}</div>
+      <div class="meta"><span>${st.seen} of ${st.total} questions attempted</span><span>${passing} of 7 domains at pass level</span></div></div>
+    <div class="panel"><h3>How it works</h3>
+      <ol style="margin:0;padding-left:18px;color:var(--muted);font-size:14.5px"><li>Open a domain and read a subject&rsquo;s <b style="color:var(--text)">learning points &amp; traps</b>.</li><li>Take the subject quiz. It serves every question first time; retakes serve only what you missed or have not answered. Order is shuffled every time.</li><li>Retake until the subject shows <b style="color:var(--text)">Mastered</b>, or use <b style="color:var(--text)">Restart subject</b> for a clean run.</li><li>Finish with each domain&rsquo;s mixed test.</li></ol></div>
+  </div>
+  <div class="grid" id="grid"></div>
+  <p class="legend">The white tick on each bar marks the ${PASS}% pass line. Domain weights show the share of the 63-item exam drawn from each domain.</p>`;
+  const grid = $("#grid");
+  doms.forEach(d=>{
+    const D = DOMAINS[d.domain]; const s = stats(allQ(d.domain));
+    const c = document.createElement("div"); c.className="card click"; c.style.setProperty("--dc",dcol(d.domain)); c.tabIndex=0; c.setAttribute("role","button");
+    c.innerHTML = `<div class="tag">Domain ${d.domain} <span class="w">&middot; ${D.weight}% of exam</span></div>
+      <h2>${esc(D.name)}</h2><p style="color:var(--muted);font-size:14px;margin:6px 0 0">${esc(D.desc)}</p>
+      <div class="stat"><span>Mastery</span><strong>${s.mastery}%</strong></div>${barHTML(s.mastery,d.domain)}
+      <div class="meta"><span>${d.subjects.length} subjects</span><span>${s.total} questions</span><span>${s.cover}% attempted</span><span style="margin-left:auto">${statusChip(s)}</span></div>`;
+    c.onclick = ()=>go("domain",d.domain);
+    c.onkeydown = e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); go("domain",d.domain);} };
+    grid.appendChild(c);
+  });
+}
+
+/* ---------- domain ---------- */
+function viewDomain(n){
+  const d = byDomain[n], D = DOMAINS[n], s = stats(allQ(n));
+  app.style.setProperty("--dc",dcol(n));
+  app.innerHTML = `
+  <div class="crumbs"><button data-h>All domains</button> &rsaquo; Domain ${n}</div>
+  <div style="--dc:${dcol(n)}">
+  <div class="tag" style="margin-top:14px">Domain ${n} <span class="w">&middot; ${D.weight}% of exam</span></div>
+  <h1 style="margin-top:4px">${esc(D.name)}</h1>
+  <p class="lead">${esc(D.desc)}</p>
+  <div class="panel" style="margin-bottom:22px"><div class="stat" style="margin-top:0"><span>Domain mastery &middot; pass line ${PASS}%</span><strong>${s.mastery}%</strong></div>${barHTML(s.mastery,n)}
+    <div class="meta"><span>${s.seen}/${s.total} attempted</span><span>${s.acc}% of attempted currently correct</span>${statusChip(s)}</div>
+    <div class="cta" style="margin:16px 0 0"><button class="btn primary dom" id="mix">Domain test &middot; ${Math.min(MIX_LEN,s.total)} mixed questions</button></div></div>
+  <div id="subs"></div></div>`;
+  $("[data-h]").onclick=()=>go("home");
+  $("#mix").onclick=()=>startSession({title:`Domain ${n} test`, dom:n, qs:pick(allQ(n),MIX_LEN), back:["domain",n]});
+  const subs = $("#subs");
+  d.subjects.forEach(sub=>{
+    const ss = stats(sub.questions);
+    const row = document.createElement("div"); row.className="card subj"; row.style.setProperty("--dc",dcol(n));
+    row.innerHTML = `<div><div class="tag" style="margin-bottom:2px">Subject ${sub.id.replace(/^d\d+s/,'')}${P.viewed[sub.id]?' &middot; studied':''}</div><h2>${esc(sub.title)}</h2>
+      <div class="mini">${barHTML(ss.mastery,n)}<span>${ss.mastery}% &middot; ${ss.seen}/${ss.total} attempted</span></div></div>
+      <div class="actions"><button class="btn sm dom" data-act="study">Learn &amp; traps</button><button class="btn sm primary" data-act="quiz">${quizLabel(sub)}</button></div>`;
+    row.querySelector('[data-act=study]').onclick=()=>go("subject",sub.id);
+    row.querySelector('[data-act=quiz]').onclick=()=>startSubjectQuiz(sub);
+    subs.appendChild(row);
+  });
+}
+const weak = qs => qs.filter(q=>{ const r=P.q[q.id]; return !r||!r.n||!r.last; });
+const MIX_LEN = 20;
+/* random draw of k questions: unseen/missed first (shuffled), topped up with already-correct ones (shuffled) */
+function pick(qs,k){
+  const w = shuffle(weak(qs)), wid = new Set(w.map(q=>q.id));
+  const rest = shuffle(qs.filter(q=>!wid.has(q.id)));
+  return spread(w.concat(rest).slice(0,Math.min(k,qs.length)));
+}
+const attempted = qs => qs.some(q=>P.q[q.id]&&P.q[q.id].n);
+
+/* Subject quiz: first run serves every question. Retakes serve only missed + unanswered. */
+function quizLabel(sub){
+  const w = weak(sub.questions);
+  if(!attempted(sub.questions)) return "Start quiz";
+  return w.length ? `Retake missed (${w.length})` : "Mastered ✓";
+}
+function startSubjectQuiz(sub){
+  const w = weak(sub.questions);
+  if(!attempted(sub.questions)) return startSession({title:sub.title, dom:sub.domain, qs:spread(sub.questions), back:["subject",sub.id]});
+  if(w.length) return startSession({title:sub.title+" (retake)", dom:sub.domain, qs:spread(w), back:["subject",sub.id]});
+  choice(`You have answered all ${sub.questions.length} questions in this subject correctly.`,
+    [{label:"Start full quiz again", primary:true, fn:()=>startSession({title:sub.title, dom:sub.domain, qs:spread(sub.questions), back:["subject",sub.id]})},
+     {label:"Cancel"}]);
+}
+function restartSubject(sub){
+  choice(`Restart "${sub.title}"? This clears your saved results for this subject only, so the next quiz serves all ${sub.questions.length} questions again.`,
+    [{label:"Cancel"},{label:"Restart subject", primary:true, fn:()=>{ sub.questions.forEach(q=>delete P.q[q.id]); save(); go(currentView[0],currentView[1]); }}]);
+}
+function choice(msg, btns){
+  const m = document.createElement("div"); m.className="modal-bg";
+  m.innerHTML = `<div class="modal" role="dialog" aria-modal="true"><p style="color:var(--text);margin:0">${esc(msg)}</p><div class="row"></div></div>`;
+  btns.forEach(b=>{ const e=document.createElement("button"); e.className="btn"+(b.primary?" primary":""); e.textContent=b.label; e.onclick=()=>{ m.remove(); if(b.fn) b.fn(); }; $(".row",m).appendChild(e); });
+  document.body.appendChild(m); $(".btn.primary",m)?.focus();
+}
+function toast(msg){ choice(msg,[{label:"OK",primary:true}]); }
+
+/* ---------- subject learn page ---------- */
+function viewSubject(id){
+  const sub = bySubject[id], n = sub.domain, D = DOMAINS[n]; const ss = stats(sub.questions);
+  P.viewed[id]=true; save();
+  app.innerHTML = `
+  <div class="crumbs"><button data-h>All domains</button> &rsaquo; <button data-d>Domain ${n}</button> &rsaquo; Subject</div>
+  <div style="--dc:${dcol(n)}">
+  <div class="tag" style="margin-top:14px">Domain ${n} &middot; ${esc(D.short)}</div>
+  <h1 style="margin-top:4px">${esc(sub.title)}</h1>
+  <div class="mini" style="margin:0 0 22px">${barHTML(ss.mastery,n)}<span>${ss.mastery}% mastery &middot; ${sub.questions.length} questions</span></div>
+  <div class="cols">
+    <div class="card"><h3>What will be tested</h3><ul class="list learn">${sub.learn.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+    <div class="card callout" style="--dc:var(--warn)"><h3 style="color:var(--warn)">Traps the exam may set</h3><ul class="list trap">${sub.traps.map(x=>`<li>${boldLead(x)}</li>`).join("")}</ul></div>
+  </div>
+  <div class="cta"><button class="btn primary" id="q">${quizLabel(sub)}</button><button class="btn dom" id="r">Restart subject</button><button class="btn ghost" data-d>Back to domain</button></div></div>`;
+  $("[data-h]").onclick=()=>go("home");
+  app.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>go("domain",n));
+  $("#q").onclick=()=>startSubjectQuiz(sub);
+  $("#r").onclick=()=>restartSubject(sub);
+}
+
+/* ---------- quiz session ---------- */
+function startSession(cfg){
+  sess = {...cfg, i:0, results:[], picked:new Set(), done:false, order:[]};
+  sess.qs = cfg.qs.slice();
+  go("quiz");
+}
+function viewQuestion(){
+  const q = sess.qs[sess.i], n = q.domain, total = sess.qs.length;
+  if(!sess.order[sess.i]) sess.order[sess.i] = shuffle(q.options.map((_,k)=>k));   // answer order randomised each time
+  const order = sess.order[sess.i];
+  const need = q.correct.length, multi = q.type==="multi";
+  sess.picked = new Set(); sess.done=false;
+  app.innerHTML = `
+  <div style="--dc:${dcol(n)}">
+  <div class="qhead"><button class="btn sm ghost" id="quit">&larr; Exit</button><div class="bar" style="--dc:${dcol(n)}"><i style="width:${Math.round(100*sess.i/total)}%"></i></div><span class="cnt">Question ${sess.i+1} of ${total}</span></div>
+  <div class="qcard">
+    <div class="qmeta"><span class="tag">Domain ${n} &middot; ${esc(bySubject[q.subject].title)}</span><span class="badge ${multi?'multi':'single'}">${multi?`Select ${need}`:'Select 1'}</span></div>
+    <p class="stem">${esc(q.stem)}</p>
+    <div class="opts" role="${multi?'group':'radiogroup'}" id="opts">${order.map((oi,pos)=>`<button class="opt ${multi?'multi':''}" data-oi="${oi}" aria-pressed="false"><span class="k">${letters[pos]}</span><span class="t">${esc(q.options[oi])}</span><span class="flag"></span></button>`).join("")}</div>
+    <div id="fb"></div>
+    <div class="qfoot"><span class="hint" id="hint">${multi?`Choose exactly ${need} answers. Keys 1&ndash;${order.length} select, Enter submits.`:`Keys 1&ndash;${order.length} select, Enter submits.`}</span><button class="btn primary" id="go" disabled>Check answer</button></div>
+  </div>
+  <div class="sess"><span>Correct so far: <b style="color:var(--good)">${sess.results.filter(r=>r.ok).length}</b></span><span>Missed: <b style="color:var(--bad)">${sess.results.filter(r=>!r.ok).length}</b></span></div></div>`;
+  const go_ = $("#go");
+  const btns = [...app.querySelectorAll(".opt")];
+  const refresh = ()=>{
+    btns.forEach(b=>{ const on=sess.picked.has(+b.dataset.oi); b.classList.toggle("sel",on); b.setAttribute("aria-pressed",on); });
+    go_.disabled = sess.picked.size!==need;
+  };
+  const pick = b=>{
+    if(sess.done) return; const oi=+b.dataset.oi;
+    if(multi){ if(sess.picked.has(oi)) sess.picked.delete(oi); else if(sess.picked.size<need) sess.picked.add(oi); }
+    else { sess.picked=new Set([oi]); }
+    refresh();
+  };
+  btns.forEach(b=>b.onclick=()=>pick(b));
+  sess.keyHandler = e=>{
+    if(e.target.closest && e.target.closest(".modal")) return;
+    const k = parseInt(e.key,10);
+    if(!sess.done && k>=1 && k<=btns.length){ pick(btns[k-1]); e.preventDefault(); }
+    else if(e.key==="Enter"){ if(!go_.disabled){ e.preventDefault(); go_.click(); } }
+  };
+  document.onkeydown = sess.keyHandler;
+  go_.onclick = ()=> sess.done ? advance() : submit(q,btns,order,go_);
+  $("#quit").onclick=()=>{ if(sess.results.length && !confirmQuit()) return; document.onkeydown=null; go(...sess.back); };
+}
+function confirmQuit(){ return window.confirm("Leave this quiz? Answers already checked are saved.") }
+function submit(q,btns,order,go_){
+  const picked = [...sess.picked].sort(), right = [...q.correct].sort();
+  const ok = picked.length===right.length && picked.every((v,i)=>v===right[i]);
+  sess.done = true;
+  btns.forEach(b=>{
+    const oi=+b.dataset.oi, isC=q.correct.includes(oi), isP=sess.picked.has(oi);
+    b.disabled=true; b.classList.remove("sel");
+    const flag=b.querySelector(".flag");
+    if(isC && isP){ b.classList.add("right"); flag.textContent="Correct"; }
+    else if(isC){ b.classList.add("right","missed"); flag.textContent= ok?"":"Correct answer"; }
+    else if(isP){ b.classList.add("wrong"); flag.textContent="Your pick"; }
+  });
+  const r = P.q[q.id] || {n:0,c:0,last:0}; r.n++; if(ok) r.c++; r.last = ok?1:0; r.t=Date.now(); P.q[q.id]=r; save();
+  sess.results.push({q, ok, picked:[...sess.picked]});
+  const correctText = q.correct.map(i=>q.options[i]);
+  $("#fb").innerHTML = ok
+   ? `<div class="fb ok"><h4>Correct</h4><p>${esc(q.explanation)}</p><div class="mnemonic"><span class="m">Hook</span><q>${esc(q.mnemonic)}</q></div></div>`
+   : `<div class="fb no"><h4>Not quite &mdash; ${q.correct.length>1?'the correct answers are':'the correct answer is'}:</h4>
+      ${correctText.map(t=>`<p style="margin:0 0 6px"><b>&bull; ${esc(t)}</b></p>`).join("")}
+      <p style="margin-top:10px">${esc(q.explanation)}</p><div class="mnemonic"><span class="m">Mnemonic</span><q>${esc(q.mnemonic)}</q></div></div>`;
+  const last = sess.i===sess.qs.length-1;
+  go_.disabled=false; go_.textContent= last? "See results" : "Next question";
+  $("#hint").textContent="Press Enter to continue.";
+  go_.focus();
+  renderChrome();
+}
+function advance(){
+  if(sess.i < sess.qs.length-1){ sess.i++; viewQuestion(); window.scrollTo({top:0}); }
+  else { finishSession(); }
+}
+function finishSession(){
+  document.onkeydown=null;
+  const ok = sess.results.filter(r=>r.ok).length;
+  P.sessions.push({t:Date.now(), title:sess.title, dom:sess.dom, ok, n:sess.results.length}); P.sessions=P.sessions.slice(-60); save();
+  go("results");
+}
+
+/* ---------- results ---------- */
+function viewResults(){
+  const res = sess.results, n = sess.dom, ok = res.filter(r=>r.ok).length, pct = res.length? Math.round(100*ok/res.length):0;
+  const pass = pct>=PASS, missed = res.filter(r=>!r.ok);
+  const bySub = {}; res.forEach(r=>{ const s=r.q.subject; (bySub[s]=bySub[s]||{ok:0,n:0}); bySub[s].n++; if(r.ok) bySub[s].ok++; });
+  const dstat = stats(allQ(n));
+  app.innerHTML = `<div style="--dc:${dcol(n)}">
+  <div class="crumbs"><button data-h>All domains</button> &rsaquo; <button data-d>Domain ${n}</button> &rsaquo; Results</div>
+  <div class="panel resbig ${pass?'pass':'fail'}" style="margin-top:14px"><div class="big">${pct}%</div><div class="verdict">${pass?`Pass level reached (${PASS}% needed)`:`Below the ${PASS}% pass level`}</div>
+    <div style="color:var(--muted)">${ok} of ${res.length} correct &middot; ${esc(sess.title)}</div>
+    <div style="max-width:420px;margin:18px auto 0"><div class="mini" style="justify-content:center">Domain ${n} mastery now <b style="color:var(--text)">${dstat.mastery}%</b></div><div style="margin-top:8px">${barHTML(dstat.mastery,n)}</div></div></div>
+  ${Object.keys(bySub).length>1?`<div class="panel" style="margin:16px 0"><h3>By subject</h3>${Object.entries(bySub).map(([s,v])=>`<div class="sub-res"><span>${esc(bySubject[s].title)}</span><b>${v.ok}/${v.n}</b></div>`).join("")}</div>`:""}
+  <div class="cta" style="margin-top:20px">
+    ${missed.length?`<button class="btn primary" id="retry">Retry the ${missed.length} missed</button>`:""}
+    <button class="btn dom" id="again">Run again (new order)</button><button class="btn ghost" id="back">Back</button></div>
+  ${missed.length?`<h3 style="margin-top:30px">Review what you missed</h3>${missed.map(r=>`<div class="miss"><div class="s">${esc(r.q.stem)}</div>
+     ${r.q.correct.map(i=>`<div class="a"><b>Correct:</b> ${esc(r.q.options[i])}</div>`).join("")}
+     <div class="a">${esc(r.q.explanation)}</div>
+     <div class="mnemonic" style="margin-top:10px"><span class="m">Mnemonic</span><q>${esc(r.q.mnemonic)}</q></div></div>`).join("")}`:`<div class="panel empty">A clean sweep. Nothing to review.</div>`}
+  <div style="height:40px"></div></div>`;
+  $("[data-h]").onclick=()=>go("home");
+  $("[data-d]").onclick=()=>go("domain",n);
+  $("#back").onclick=()=>go(...sess.back);
+  $("#again").onclick=()=>startSession({title:sess.title, dom:n, qs:spread(sess.qs.map(x=>x)), back:sess.back});
+  const rt=$("#retry"); if(rt) rt.onclick=()=>startSession({title:sess.title+" (retry)", dom:n, qs:spread(missed.map(r=>r.q)), back:sess.back});
+}
+
+go("home");
+</script>
+</body>
+</html>

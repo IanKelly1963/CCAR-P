@@ -1,0 +1,1132 @@
+{
+ "domain": 7,
+ "subjects": [
+  {
+   "id": "d7s1",
+   "title": "Team environment, rollout and spend",
+   "learn": [
+    "A team environment is a shared project-level baseline: shared CLAUDE.md, agreed tools and MCP servers, and a permission posture, reviewed and versioned.",
+    "Rollout runs through a champion per team, then batches; the 200-person example uses two weeks and a 45-minute session for five peers.",
+    "Spend posture is set before the first bill: model defaults, allowlists, effort guidance and spend, rate or per-user caps.",
+    "Server-managed settings come from Anthropic's servers on authentication, refresh hourly, and are not a Skills distribution path.",
+    "Shaping layers (CLAUDE.md, skills, subagents, MCP) differ from governing layers (hooks, permissions, sandboxing); six permission modes control prompting."
+   ],
+   "traps": [
+    "All-hands switch-on: a mass enablement looks efficient but causes confused first prompts and a retreat to old habits.",
+    "Inherited spend defaults: unmanaged model choice quietly multiplies a costlier tier across every member.",
+    "Settings versus Skills: server-managed settings do not distribute Skills.",
+    "Prompt versus gate: CLAUDE.md shapes behavior, only hooks guarantee a check cannot be skipped.",
+    "Mode mix-ups: bypassPermissions is for containers or CI only; dontAsk is the locked-down CI mode."
+   ],
+   "questions": [
+    {
+     "id": "d7s1q01",
+     "concept": "team-baseline",
+     "type": "single",
+     "stem": "Which description best fits a team environment for Claude Code?",
+     "options": [
+      "Each developer's personal setup, tuned over time and shared informally between colleagues on request",
+      "A reviewed, versioned project baseline: shared CLAUDE.md, agreed tools and MCP servers, and a permission posture",
+      "A vendor-supplied default configuration the team adopts unchanged and never customizes locally",
+      "A single administrator's configuration that every developer's session inherits without anyone reviewing it"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "A team environment is a shared project-level baseline that can be reviewed, versioned and improved once for everyone. Personal setups drift apart, which is exactly what the baseline prevents.",
+     "mnemonic": "One baseline, reviewed and versioned; personal setups drift."
+    },
+    {
+     "id": "d7s1q02",
+     "concept": "rollout-champions",
+     "type": "single",
+     "stem": "A 200-person engineering org wants Claude Code across four departments. Which rollout plan matches the pattern that works best?",
+     "options": [
+      "Grant everyone access immediately and let the heaviest early adopters decide which workflows to standardize",
+      "One champion per department converts a real workflow over two weeks, then runs a 45-minute session for five peers",
+      "A mass email enabling all four departments at once, with the Architect answering every question personally",
+      "Enable only the Architect's own team for a quarter, then switch on every other department simultaneously"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Champions go first, prove a real workflow, then seed adoption batch by batch, so each department has an example and a local expert. A single all-hands switch-on produces confused first prompts and a quiet retreat to old habits.",
+     "mnemonic": "Champion first, two weeks, 45 minutes, five peers."
+    },
+    {
+     "id": "d7s1q03",
+     "concept": "rollout-champions",
+     "type": "multi",
+     "stem": "Which TWO responsibilities does a department champion take on during rollout? Select TWO.",
+     "options": [
+      "Waits for the broad rollout before trying the workflow in practice",
+      "Owns organization billing and sets the shared per-user spend caps",
+      "Approves every permission-mode change across the whole organization",
+      "Absorbs early friction and builds local examples for peers",
+      "Acts as first-line support so the Architect is not the sole answerer"
+     ],
+     "correct": [
+      3,
+      4
+     ],
+     "explanation": "The champion absorbs early friction, builds local examples, and becomes first-line support. Spend caps and permission posture remain admin and Architect decisions, and a champion who waits defeats the purpose.",
+     "mnemonic": "Champions soak up friction and answer first."
+    },
+    {
+     "id": "d7s1q04",
+     "concept": "spend-posture",
+     "type": "single",
+     "stem": "When should admins set model defaults, model allowlists, effort guidance and spend caps for a team?",
+     "options": [
+      "Only for champions, since later batches inherit them automatically",
+      "Once the champion batch has shown real usage patterns",
+      "Before the first bill, set intentionally rather than inherited as defaults",
+      "After the first monthly bill shows which teams overspent"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Spend posture is part of team setup and must be decided up front. Waiting for a bill means the cost has already multiplied across every member and request.",
+     "mnemonic": "Set the guardrails before the bill, not after."
+    },
+    {
+     "id": "d7s1q05",
+     "concept": "spend-posture",
+     "type": "single",
+     "stem": "A 60-developer team's Claude spend doubled in a month with no growth in usage. Developers had been free to pick any model for every task. What is the most likely root cause?",
+     "options": [
+      "Unmanaged model choice sending routine work to a costlier tier, multiplied",
+      "Server-managed settings refreshing hourly and re-running sessions repeatedly",
+      "Too many champions generating examples that every later batch then reran",
+      "Permission modes prompting too often and lengthening every single session"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Leaving model choice unmanaged quietly sends work to a more capable, more expensive tier than needed, and at team scale that choice multiplies across every member and request. Defaults, allowlists and caps prevent it.",
+     "mnemonic": "One unmanaged model pick, times every developer."
+    },
+    {
+     "id": "d7s1q06",
+     "concept": "server-managed-settings",
+     "type": "single",
+     "stem": "How are server-managed settings for Claude Code delivered?",
+     "options": [
+      "Read from Organization settings > Skills at the start of every session",
+      "From Anthropic's servers on authentication, refreshed on an hourly polling cycle",
+      "Committed to .claude/ in the repository and applied at checkout",
+      "Pushed once at install time and changed only when an admin re-uploads"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Server-managed settings come from Anthropic's servers when users authenticate and refresh hourly. The repository and Skills settings are different channels.",
+     "mnemonic": "Authenticate, fetch, refresh hourly: settings from the server."
+    },
+    {
+     "id": "d7s1q07",
+     "concept": "server-managed-settings",
+     "type": "single",
+     "stem": "A colleague proposes using server-managed settings to roll out the team's release-notes skill to every engineer. What is the best response?",
+     "options": [
+      "It is a settings mechanism, not Skills distribution; use a plugin, org Skill or project Skill",
+      "It works well, and the hourly refresh gives the skill built-in version rollback for free",
+      "It works only for API Skills, which are the sole Skills that settings can carry",
+      "It is correct, provided the skill is also placed in the repository's CLAUDE.md file"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Server-managed settings centrally manage Claude Code configuration but are not a way to distribute Skills. Skills go through org-provisioning, plugins, project .claude/skills/ or the API.",
+     "mnemonic": "Settings are not Skills: different pipe."
+    },
+    {
+     "id": "d7s1q08",
+     "concept": "shaping-vs-governing",
+     "type": "single",
+     "stem": "A team needs a guarantee that a check runs before a tool executes and that the agent cannot skip it. Which Claude Code layer fits?",
+     "options": [
+      "An MCP server exposing the check",
+      "A subagent with a restricted prompt",
+      "CLAUDE.md standing instructions",
+      "A hook on the lifecycle event"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Hooks are scripts on lifecycle events that act as deterministic gates, so the guarantee comes from code rather than prompting. CLAUDE.md and subagents shape behavior but do not enforce it.",
+     "mnemonic": "Prompts persuade; hooks enforce."
+    },
+    {
+     "id": "d7s1q09",
+     "concept": "shaping-vs-governing",
+     "type": "multi",
+     "stem": "Which TWO Claude Code layers govern what the agent is allowed to touch, rather than shaping what it knows and does? Select TWO.",
+     "options": [
+      "Hooks firing on lifecycle events",
+      "CLAUDE.md standing project instructions",
+      "Subagents with isolated context windows",
+      "Permission boundaries and approval flows",
+      "MCP servers exposing external tools"
+     ],
+     "correct": [
+      0,
+      3
+     ],
+     "explanation": "Governing layers are hooks, permissions and approval flows, and sandboxing. CLAUDE.md, skills, subagents and MCP servers are shaping layers.",
+     "mnemonic": "Shape: know and do. Govern: touch and gate."
+    },
+    {
+     "id": "d7s1q10",
+     "concept": "permission-modes",
+     "type": "single",
+     "stem": "Which permission mode suits a locked-down CI job that should run only what the allow rules explicitly cover?",
+     "options": [
+      "plan mode",
+      "default",
+      "acceptEdits",
+      "dontAsk"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "dontAsk auto-denies anything that would prompt and runs only what allow rules cover, making it the mode for locked-down CI. Default prompts before each action, which CI cannot answer.",
+     "mnemonic": "dontAsk: no asking, only allow-list, built for CI."
+    },
+    {
+     "id": "d7s1q11",
+     "concept": "permission-modes",
+     "type": "multi",
+     "stem": "Which TWO statements about Claude Code permission modes are accurate? Select TWO.",
+     "options": [
+      "acceptEdits approves every Bash command of any kind as well as all file edits",
+      "bypassPermissions skips all checks and is scoped to containers or CI only",
+      "Default mode approves common filesystem commands without prompting the user at all",
+      "Plan mode locks the session to read-only until the user approves a plan"
+     ],
+     "correct": [
+      1,
+      3
+     ],
+     "explanation": "Plan mode is read-only until a plan is approved, and bypassPermissions skips every check so it belongs only in containers or CI. acceptEdits covers edits and common filesystem commands only, and default asks before each action.",
+     "mnemonic": "Plan reads, bypass only in boxes."
+    },
+    {
+     "id": "d7s1q12",
+     "concept": "spend-guardrail-controls",
+     "type": "single",
+     "stem": "An admin wants every new Claude Code session to begin on a mid-tier model, while still letting developers switch to a stronger model when a task needs it. Which spend guardrail sets the starting model?",
+     "options": [
+      "A per-user spend cap applied across the whole team",
+      "A model default, which fixes the model a session starts on",
+      "A model allowlist naming which models the team may use",
+      "Effort guidance setting how hard the model works per task"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "The model default decides which model a session starts on. An allowlist or restriction governs which models the team may switch to, so it limits choice rather than setting the starting point; caps and effort guidance bound consumption and effort.",
+     "mnemonic": "Default is where you start; allowlist is where you may go."
+    },
+    {
+     "id": "d7s1q13",
+     "concept": "spend-guardrail-controls",
+     "type": "multi",
+     "stem": "A team lead wants to stop developers switching to the most expensive model tier and to bound how much any single person can consume. Which TWO spend guardrails address these needs? Select TWO.",
+     "options": [
+      "Model allowlists and restrictions on which models the team may switch to",
+      "Per-user caps that keep each person's consumption within a set bound",
+      "A shared CLAUDE.md that asks developers to prefer cheaper models",
+      "A model default that sets which model each session starts on",
+      "Effort guidance describing how hard the model should work on a task"
+     ],
+     "correct": [
+      0,
+      1
+     ],
+     "explanation": "Allowlists and restrictions control which models people may switch to, and per-user caps bound individual consumption. A model default only sets the starting model, so developers can still switch up; a CLAUDE.md request is guidance, not a guardrail.",
+     "mnemonic": "Allowlist fences the tiers; per-user cap fences the person."
+    },
+    {
+     "id": "d7s1q14",
+     "concept": "mass-rollout-failure",
+     "type": "single",
+     "stem": "A director proposes enabling Claude Code for all four engineering departments on the same day through a single announcement email. What outcome does the rollout guidance predict?",
+     "options": [
+      "Faster standardization, because everyone starts from the same date",
+      "A spend overrun first, because model defaults have not been set",
+      "Confused first-time prompts spike, then people quietly retreat to old habits",
+      "Even adoption, since every developer receives the same instructions"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "A single all-hands switch-on tends to produce a spike of confused first-time prompts and a quiet retreat to old habits. Champions first, then batches, leaves each department with a working example, a local expert and a tuned CLAUDE.md before the broad rollout.",
+     "mnemonic": "Mass email, mass confusion, quiet retreat."
+    }
+   ]
+  },
+  {
+   "id": "d7s2",
+   "title": "Distributing Skills to a team",
+   "learn": [
+    "Org-provisioned Skills reach everyone at once; users can toggle them off but not remove them; no version pinning or native rollback, so updates need manual re-upload.",
+    "Plugins assigned to a group or org give group targeting, install preferences and version-controlled updates from a connected repo: the strongest governance.",
+    "Claude Code project Skills live in .claude/skills/, version and roll back with the repo, and are scoped to its projects.",
+    "API Skills are called programmatically by partner products, support explicit version pinning, and are machine-to-machine.",
+    "Choose by who needs access and how much control and rollback is needed; packaging a local practice makes it a team standard."
+   ],
+   "traps": [
+    "Flat bundle: pushing a skill without versioning lets one bad edit reach every team.",
+    "Wrong channel: server-managed settings are not a Skills distribution path.",
+    "Org-wide overshoot: org-provisioned reaches everyone and cannot be natively rolled back.",
+    "Plugin-only assumption: API Skills and project Skills also have a path back to a prior version.",
+    "Missing owner: shared assets need a named owner, not just a distribution path."
+   ],
+   "questions": [
+    {
+     "id": "d7s2q01",
+     "concept": "org-provisioned",
+     "type": "single",
+     "stem": "A Skill uploaded under Organization settings > Skills reaches everyone at once. What can individual users do with it?",
+     "options": [
+      "Pin it to a specific version",
+      "Toggle it off but not remove it",
+      "Remove it from their own account permanently",
+      "Roll it back to the earlier version"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Org-provisioned Skills are owner-managed: users can toggle individual skills off but cannot remove them. There is no version pinning or native rollback.",
+     "mnemonic": "Toggle off, never remove: owner holds the switch."
+    },
+    {
+     "id": "d7s2q02",
+     "concept": "org-provisioned",
+     "type": "single",
+     "stem": "An org-provisioned Skill gets a bad edit and every employee sees degraded output. What is the recovery path?",
+     "options": [
+      "Manually re-upload a corrected version, as no pinning or rollback exists",
+      "Roll back natively to the last pinned version of the skill",
+      "Reassign the plugin to a different group of employees",
+      "Wait for the hourly settings refresh to restore the earlier version"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Org-provisioned Skills lack version pinning and native rollback, so updates and fixes require manual re-upload. The hourly refresh belongs to server-managed settings, not Skills.",
+     "mnemonic": "Org-wide upload: fix means re-upload by hand."
+    },
+    {
+     "id": "d7s2q03",
+     "concept": "plugin-governance",
+     "type": "single",
+     "stem": "Which Skills distribution mechanism offers the strongest governance for group-scoped distribution?",
+     "options": [
+      "An API Skill called programmatically from a partner's own product",
+      "A plugin assigned to a group, with install preferences and versioned updates",
+      "A Claude Code project Skill stored under .claude/skills/ in the repository",
+      "An org-provisioned Skill uploaded under Organization settings > Skills"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Plugins combine group targeting, install preferences and version-controlled updates from a connected repository. Org-provisioned Skills lack pinning and rollback.",
+     "mnemonic": "Plugin: group, preference, version. The governed route."
+    },
+    {
+     "id": "d7s2q04",
+     "concept": "plugin-install-prefs",
+     "type": "multi",
+     "stem": "Which TWO capabilities does distributing Skills through a plugin provide? Select TWO.",
+     "options": [
+      "Skills that exist only as files in a project's .claude/skills/ folder",
+      "Version-controlled updates from a connected repository",
+      "Install preferences such as required, installed-by-default, available or not available",
+      "Users removing the plugin permanently from the organization",
+      "Explicit version pinning inside a Messages API container"
+     ],
+     "correct": [
+      1,
+      2
+     ],
+     "explanation": "Plugins offer install preferences and version-controlled updates from a connected repo, plus group targeting. Container version pinning belongs to API Skills and .claude/skills/ files are project Skills.",
+     "mnemonic": "Plugin knobs: install preference plus repo-versioned updates."
+    },
+    {
+     "id": "d7s2q05",
+     "concept": "project-skills",
+     "type": "single",
+     "stem": "One team wants a coding convention skill shared across its own repositories, versioned with the code. Which mechanism fits?",
+     "options": [
+      "An API Skill with explicit version pinning",
+      "Organization settings > Skills upload",
+      "A Claude Code project Skill in .claude/skills/",
+      "A plugin assigned to the whole organization"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Project Skills are filesystem artifacts in the repo, so they version with it, are scoped to the projects that carry them, and roll back with the repository.",
+     "mnemonic": "Skills in the repo travel and roll back with the repo."
+    },
+    {
+     "id": "d7s2q06",
+     "concept": "rollback-paths",
+     "type": "single",
+     "stem": "A partner's own product calls a capability programmatically and needs to pin an exact version. Which mechanism fits?",
+     "options": [
+      "Plugin installed by default",
+      "API Skill",
+      "Server-managed settings",
+      "Org-provisioned Skill"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "API Skills are called programmatically in machine-to-machine reuse and support explicit version pinning, governed in the calling system.",
+     "mnemonic": "API Skill: machine caller, pinned version."
+    },
+    {
+     "id": "d7s2q07",
+     "concept": "plugin-governance",
+     "type": "single",
+     "stem": "A 40-engineer platform group needs a release procedure that is group-scoped, receives versioned updates and can be rolled back. What is the best distribution choice?",
+     "options": [
+      "Publish it as an API Skill that the group calls manually when needed",
+      "Ask each engineer to copy it into a personal skills folder by hand",
+      "Upload it under Organization settings > Skills so everyone in the company receives it",
+      "Bundle it into a plugin and assign it to the group, with a named owner"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Group targeting, versioned updates and a path back are plugin features. Org-wide upload overshoots the audience and lacks rollback.",
+     "mnemonic": "Group scope plus rollback means plugin plus owner."
+    },
+    {
+     "id": "d7s2q08",
+     "concept": "release-notes-failure",
+     "type": "single",
+     "stem": "A release-notes skill was pushed as a flat bundle to forty engineers. One prompt edit broke its format for every team, and the fix was a manual re-edit while bad output kept shipping. What was the core mistake?",
+     "options": [
+      "It was distributed without versioned updates and rollback, so one edit propagated everywhere",
+      "Too many champions had edited its prompt concurrently during the pilot",
+      "It should have been written in CLAUDE.md instead of being packaged as a skill",
+      "It was scoped too narrowly to the platform group, hiding the failure"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "The skill was a good idea distributed without the governance it needed: no versioning, no way back. One change reached every consumer before anyone could stop it.",
+     "mnemonic": "Good skill, no way back: one edit hits everyone."
+    },
+    {
+     "id": "d7s2q09",
+     "concept": "release-notes-failure",
+     "type": "single",
+     "stem": "After the release-notes incident, what distribution change best prevents a repeat?",
+     "options": [
+      "Use server-managed settings to refresh the skill hourly",
+      "Convert it to an org-provisioned Skill so users can toggle it off",
+      "Distribute it inside an organization-managed plugin with an identified owner",
+      "Ask engineers to review each edit informally before it spreads"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "When a shared asset needs versioning, group targeting or rollback, put it in an organization-managed plugin and name an owner. Toggling off by users does not roll back the shared definition.",
+     "mnemonic": "Versioned plugin, named owner: edits get a way back."
+    },
+    {
+     "id": "d7s2q10",
+     "concept": "shared-asset-liability",
+     "type": "single",
+     "stem": "Why does the guidance call a shared Skill with no version and no rollback a liability?",
+     "options": [
+      "It consumes the team's spend caps faster than versioned shared assets would do",
+      "It cannot be toggled off by individual users once it is published",
+      "Once several people depend on it, one bad change reaches all before it stops",
+      "It only functions for the single Architect who originally wrote the skill"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "The risk is propagation: a shared asset without versioning lets a single bad change spread to the whole team. Spend and toggling are separate concerns.",
+     "mnemonic": "No version, no way back: one slip hits all."
+    },
+    {
+     "id": "d7s2q11",
+     "concept": "packaging-as-standard",
+     "type": "single",
+     "stem": "Why does packaging a team's local workflow as a distributable skill matter?",
+     "options": [
+      "It turns undocumented know-how into one governed artifact updated through versioning",
+      "It lets individual developers keep their working practice private to themselves",
+      "It removes the need for any review of the workflow before release",
+      "It guarantees that the workflow itself never needs updating in future"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "A packaged skill carries the procedure as one governed artifact instead of undocumented know-how, so a good local practice becomes a team standard.",
+     "mnemonic": "Package the practice, and it becomes the standard."
+    },
+    {
+     "id": "d7s2q12",
+     "concept": "rollback-paths",
+     "type": "multi",
+     "stem": "Besides plugins, which TWO mechanisms provide a path back to a prior version? Select TWO.",
+     "options": [
+      "Server-managed settings, through their hourly refresh cycle",
+      "Org-provisioned Skills, through native built-in rollback",
+      "Claude Code project Skills, rolling back with the repository",
+      "API Skills, through explicit version pinning"
+     ],
+     "correct": [
+      2,
+      3
+     ],
+     "explanation": "API Skills support explicit version pinning and project Skills roll back with the repo that carries them. Org-provisioned Skills have no native rollback and server-managed settings are not a Skills channel.",
+     "mnemonic": "Pin the API, revert the repo; org upload has neither."
+    },
+    {
+     "id": "d7s2q13",
+     "concept": "per-asset-distribution-governance",
+     "type": "single",
+     "stem": "An Architect is setting up distribution for a team's release-notes skill, a coding-conventions skill and a shared configuration. What is the hard part, and at what level should it be decided?",
+     "options": [
+      "Which single mechanism suits every asset, decided once for the team",
+      "How to write each skill's prompt, decided by the department champions",
+      "Which model each skill runs on, decided by the spend posture",
+      "Who can reach, update and revoke each asset, decided per asset"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Distribution governance, meaning who can reach, update and revoke each shared asset, is the hard part and is decided on a per-asset basis. Picking one mechanism for everything ignores that assets differ in audience and in who should govern them.",
+     "mnemonic": "Reach, update, revoke: decide it asset by asset."
+    },
+    {
+     "id": "d7s2q14",
+     "concept": "per-asset-distribution-governance",
+     "type": "multi",
+     "stem": "Which THREE considerations should drive the choice of distribution mechanism for a given team skill? Select THREE.",
+     "options": [
+      "What the tool is and what job it performs",
+      "Which model tier the skill author tested it on",
+      "Who will use it, whether everyone or one group",
+      "Who has access to govern, update and revoke it",
+      "How long the SKILL.md instructions file has grown"
+     ],
+     "correct": [
+      0,
+      2,
+      3
+     ],
+     "explanation": "The mechanism should account for what the tool is, who uses it and who has access to govern it. The authoring model tier and the length of the instructions do not determine whether a skill should be org-wide, group-scoped, project-scoped or API-called.",
+     "mnemonic": "What, who uses, who governs: three questions pick the channel."
+    },
+    {
+     "id": "d7s2q15",
+     "concept": "org-provisioned-best-when",
+     "type": "single",
+     "stem": "A security-awareness skill must reach every member of the organization, and its owner is comfortable managing updates by hand. Which distribution mechanism is the simplest fit?",
+     "options": [
+      "A Claude Code project Skill committed to each repository",
+      "An org-provisioned Skill uploaded under Organization settings > Skills",
+      "An API Skill pinned to an explicit version in a container",
+      "Server-managed settings pushed on the hourly polling cycle"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "An org-provisioned Skill becomes available to everyone in the organization at once, the simplest path when a capability genuinely should reach all members; updates require manual re-upload. Server-managed settings are a settings channel, not a Skills distribution path.",
+     "mnemonic": "Everyone, simply: upload it in Organization settings."
+    },
+    {
+     "id": "d7s2q16",
+     "concept": "api-skill-governance",
+     "type": "single",
+     "stem": "A partner's billing product calls a document-classification Skill programmatically through the Messages API. Where does governance of that Skill primarily live?",
+     "options": [
+      "In the admin UI's install preferences for the group using it",
+      "In Organization settings, where users can toggle it off",
+      "In the calling system, with explicit version pinning, machine to machine",
+      "In the project repository's .claude/skills/ directory with the code"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "API Skills are governed in the calling system and support explicit version pinning; their reuse is machine-to-machine rather than human-facing. Install preferences belong to plugins, and toggling belongs to org-provisioned Skills.",
+     "mnemonic": "API Skill: the caller governs, the version is pinned."
+    }
+   ]
+  },
+  {
+   "id": "d7s3",
+   "title": "AI-assisted developer workflows and diligence",
+   "learn": [
+    "Integrate assistance into the existing editor, review and test loop; team knowledge in people's heads becomes Skills and project configuration.",
+    "Stage discipline: writing code needs correctness and security review; reviewing treats AI flags as input; debugging verifies hypotheses against evidence.",
+    "Two failure modes: lumpy adoption (few heavy users) and stalling at basic chat; access is not adoption.",
+    "Diligence is responsibility for verifying and vouching for outputs; AI code meets the same standards as any other code.",
+    "The verification checklist covers correctness, security, maintainability and human understanding, backed by automated regression tests and eval gates."
+   ],
+   "traps": [
+    "Green tests as proof: passing checks and plausible code do not show anyone understands the change.",
+    "Verdict trap: AI review flags are input to human judgment, not a verdict.",
+    "Access equals adoption: giving a team access does not move it past basic chat.",
+    "Lighter bar for AI: faster output tempts teams to review it less, which is judgment erosion.",
+    "Volume blind spot: cheaper code production raises review volume, so checks need to be automated."
+   ],
+   "questions": [
+    {
+     "id": "d7s3q01",
+     "concept": "integrate-workflow",
+     "type": "single",
+     "stem": "Where does AI tooling pay off most for a development team?",
+     "options": [
+      "In a weekly session where one expert runs prompts for others",
+      "In a standalone tool that replaces the team's review process",
+      "Inside the existing workflow: editor, review process and test loop",
+      "In a separate chat window developers visit when stuck"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Assistance should live inside the workflow the team already uses, with the Architect finding where it removes real friction. A separate chat window is visited occasionally and rarely changes the process.",
+     "mnemonic": "Put Claude in the loop, not in a side window."
+    },
+    {
+     "id": "d7s3q02",
+     "concept": "integrate-workflow",
+     "type": "single",
+     "stem": "How does integrating Claude into the workflow help encode a team's knowledge?",
+     "options": [
+      "Conventions and procedures held in people's heads become Skills and project configuration",
+      "The model infers team standards automatically with no configuration needed at all",
+      "Reviewers store every past decision in chat history for later keyword search",
+      "Developers are asked to memorize prompts so the practice stays personal to them"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Conventions, review standards and procedures that usually live in heads become Skills and project config, so good practice travels with the tooling.",
+     "mnemonic": "Head knowledge becomes skills and config."
+    },
+    {
+     "id": "d7s3q03",
+     "concept": "writing-code-discipline",
+     "type": "single",
+     "stem": "Claude drafts a first-pass implementation from a clear spec. Which review discipline does the writing stage still require?",
+     "options": [
+      "None, if the spec was clear and the draft compiles",
+      "Only a style check, since logic follows from the spec",
+      "Review by a second AI session in place of the author's understanding",
+      "Correctness and security review, and the author must understand what was generated"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Generated code still needs correctness and security review, and the author must be able to explain it. A clear spec does not remove that duty.",
+     "mnemonic": "Clear spec, still review: author must understand."
+    },
+    {
+     "id": "d7s3q04",
+     "concept": "ai-review-input",
+     "type": "single",
+     "stem": "Claude summarizes a diff and flags three likely issues in a pull request. How should the reviewer treat the flags?",
+     "options": [
+      "As a final verdict that replaces human review",
+      "As unnecessary, since reviewing is the one stage AI cannot help",
+      "As input to the reviewer's judgment, not a verdict",
+      "As authoritative if more than two issues are flagged"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "In the reviewing stage Claude summarizes, flags and explains, but human judgment makes the call. AI flags are input, not a verdict.",
+     "mnemonic": "Flags inform; humans decide."
+    },
+    {
+     "id": "d7s3q05",
+     "concept": "debug-verify",
+     "type": "single",
+     "stem": "Claude proposes a hypothesis for a production bug from a stack trace. What should the engineer do before acting on it?",
+     "options": [
+      "Ask Claude to repeat the hypothesis more confidently",
+      "Escalate to the Architect before any investigation",
+      "Apply the fix at once, since the trace supports it",
+      "Verify the hypothesis against evidence before acting"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "For debugging, Claude proposes hypotheses from a symptom and trace, but the engineer verifies against evidence before acting on them.",
+     "mnemonic": "Hypothesis first, evidence second, action third."
+    },
+    {
+     "id": "d7s3q06",
+     "concept": "lumpy-adoption",
+     "type": "single",
+     "stem": "Two developers on a 30-person team use Claude heavily, while the rest barely touch it. Which failure mode is this, and what addresses it?",
+     "options": [
+      "Spend overrun; tighten per-user caps and model allowlists",
+      "Lumpy adoption; spread usage through champions and batches",
+      "Stalling at basic chat; enable tool use and repo-aware assistance",
+      "Judgment erosion; add a verification checklist before merge"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Lumpy adoption means a few heavy users and many barely using it, so the gain never standardizes. The champion-and-batch rollout spreads usage deliberately.",
+     "mnemonic": "Few heavy users is lumpy; batches smooth it."
+    },
+    {
+     "id": "d7s3q07",
+     "concept": "lumpy-adoption",
+     "type": "single",
+     "stem": "Why does leaving adoption to early adopters tend to fail?",
+     "options": [
+      "Early adopters exhaust the team's shared spend caps before others start",
+      "Early adopters usually misuse the tooling and teach bad habits to others",
+      "The team never sees the real gain and the practice never standardizes",
+      "Their usage typically violates the shared project baseline configuration"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "When a few use it heavily and the rest do not, the team does not realize the tool's real benefit and the practice is not standardized across it.",
+     "mnemonic": "Heavy few, idle many: no standard forms."
+    },
+    {
+     "id": "d7s3q08",
+     "concept": "stalling-basic-chat",
+     "type": "multi",
+     "stem": "A team has full Claude access but uses it only as a question-answering box. Which TWO steps move them past basic chat? Select TWO.",
+     "options": [
+      "Package repeated procedures as skills",
+      "Remove the shared CLAUDE.md to reduce friction",
+      "Wait for individual developers to find advanced features",
+      "Increase every user's model tier by default",
+      "Enable tool use and repository-aware assistance"
+     ],
+     "correct": [
+      0,
+      4
+     ],
+     "explanation": "Access is not adoption. Teams stall until someone enables tool use, repository-aware assistance and packaged skills within current workflows.",
+     "mnemonic": "Access is not adoption: enable tools, repo, skills."
+    },
+    {
+     "id": "d7s3q09",
+     "concept": "diligence-standard",
+     "type": "single",
+     "stem": "How is diligence defined for deployment in developer workflows?",
+     "options": [
+      "Taking responsibility for verifying and vouching for outputs we use or share",
+      "Limiting AI assistance to non-production code that carries no risk",
+      "Reviewing only the code that fails automated tests during the pipeline",
+      "Using the most capable model available for every task in the workflow"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Deployment diligence is responsibility for verifying and vouching for the outputs used or shared, shown as holding AI code to the same standards as any other code.",
+     "mnemonic": "Diligence: verify it, vouch for it."
+    },
+    {
+     "id": "d7s3q10",
+     "concept": "checklist-dimensions",
+     "type": "multi",
+     "stem": "Which THREE belong among the four dimensions a verification checklist for AI-generated output must cover? Select THREE.",
+     "options": [
+      "Human understanding of what shipped",
+      "Security of the generated change",
+      "Token cost per request at scale",
+      "Maintainability for the next engineer",
+      "Model latency percentile under load"
+     ],
+     "correct": [
+      0,
+      1,
+      3
+     ],
+     "explanation": "The four dimensions are correctness, security, maintainability and human understanding. Cost and latency are operational metrics, not part of that checklist.",
+     "mnemonic": "Correct, secure, maintainable, understood: four checks."
+    },
+    {
+     "id": "d7s3q11",
+     "concept": "merge-unexplained",
+     "type": "single",
+     "stem": "An AI-assisted change passed review and green tests, then leaked data through an unvalidated input. The author could not explain its handling of that input. What was missing?",
+     "options": [
+      "A second reviewer who reruns the model on the same change",
+      "A checklist question: can the person merging explain what it does and why?",
+      "Faster tests and a larger regression suite as the only extra control",
+      "A rule banning all AI-assisted changes in production code paths"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Speed had replaced understanding. A checklist item on human understanding would have forced the question: can the person merging this explain it?",
+     "mnemonic": "Green tests, plausible code, nobody asked: can you explain it?"
+    },
+    {
+     "id": "d7s3q12",
+     "concept": "merge-unexplained",
+     "type": "single",
+     "stem": "What does judgment erosion look like in an AI-assisted team?",
+     "options": [
+      "Reviewers rejecting generated code far too often during the review stage",
+      "Shipping output nobody fully understands because it looked right and passed checks",
+      "Developers refusing to use the tools inside their own editor at all",
+      "Escalating nearly every incident to the Architect for resolution"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Judgment erosion is accepting output you no longer understand because it looks plausible and passes checks, until an unreasoned input reaches production.",
+     "mnemonic": "Looks right, passes checks, nobody understands."
+    },
+    {
+     "id": "d7s3q13",
+     "concept": "diligence-standard",
+     "type": "single",
+     "stem": "Which stance toward AI-generated code matches the diligence guidance?",
+     "options": [
+      "Apply a lighter bar since the model has already tested its own output",
+      "Trust it by default and catch problems later through production monitoring",
+      "Relax review somewhat because it ships faster and looks right on inspection",
+      "Hold it to the same correctness, security and maintainability standards as hand-written code"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Diligence means the same standards for AI code as any other, especially when it ships faster and looks right. A team without a checklist trusts output by default.",
+     "mnemonic": "Same bar for AI code as human code."
+    },
+    {
+     "id": "d7s3q14",
+     "concept": "automate-checks",
+     "type": "single",
+     "stem": "AI assistance lowers the cost of producing code. What is the consequence for review, and what keeps quality intact?",
+     "options": [
+      "Review volume falls, so fewer checks are needed per change",
+      "Review volume rises; a checklist with automated tests and evals holds the bar",
+      "Review volume rises, so the Architect must approve every change personally",
+      "Review volume stays flat, so only the chosen model tier matters"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Cheaper code production raises the volume reaching review. The checklist defines what must be true, and regression suites and eval sets prove it automatically on every change.",
+     "mnemonic": "More code in, so automate the gate."
+    },
+    {
+     "id": "d7s3q15",
+     "concept": "checklist-vs-automated-gates",
+     "type": "single",
+     "stem": "A team has a written verification checklist for AI-generated changes, but reviewers re-derive correctness by hand on every pull request. Which improvement best follows the diligence guidance?",
+     "options": [
+      "Replace the checklist with Claude's own review flags on each pull request",
+      "Adopt a vendor-published checklist so the standard is not team-specific",
+      "Add a second human reviewer so two people re-check each change by hand",
+      "Automate checkable items as a regression suite and eval set gating every change"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Wherever a check can be automatic it should be: a regression suite and eval set turn verification into a gate that runs on every change. The checklist is produced internally for the team's needs, and AI review flags are input, not a verdict.",
+     "mnemonic": "Checklist says what; tests and evals prove it every time."
+    },
+    {
+     "id": "d7s3q16",
+     "concept": "checklist-vs-automated-gates",
+     "type": "multi",
+     "stem": "Which TWO statements correctly describe how a verification checklist relates to tests and evals? Select TWO.",
+     "options": [
+      "Once tests and evals exist, the checklist can be retired",
+      "The checklist defines what must be true before output reaches production",
+      "The checklist should be adopted unchanged from a standard template",
+      "Tests and evals prove those properties repeatably on every change",
+      "Evals remove the need for the author to understand the change"
+     ],
+     "correct": [
+      1,
+      3
+     ],
+     "explanation": "The checklist defines what must be true; tests and evals are how the team proves it repeatably instead of by hand. The checklist is team-produced for specific needs, and human understanding remains one of its four dimensions.",
+     "mnemonic": "Checklist defines, gates prove: both stay."
+    },
+    {
+     "id": "d7s3q17",
+     "concept": "diligence-cultural-complexity",
+     "type": "single",
+     "stem": "A team's AI-assisted coding tools are well configured, yet review standards keep slipping on generated changes. What is the hard part of diligence in this situation?",
+     "options": [
+      "Technical: configuring hooks so generated code cannot skip linting",
+      "Cultural: holding generated code to the hand-written review standard",
+      "Financial: the review budget cannot keep pace with the volume",
+      "Technical: choosing a model tier strong enough to skip review"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "The hard part is cultural rather than technical: holding AI-generated code to the same review standard as hand-written code, especially when it ships faster and looks right. Better tooling or a stronger model does not remove the need for that standard.",
+     "mnemonic": "Looks right, ships fast: culture, not tooling, holds the bar."
+    }
+   ]
+  },
+  {
+   "id": "d7s4",
+   "title": "Operational support, runbooks and escalation",
+   "learn": [
+    "The Architect's support role is translation from symptom to architecture cause, not firefighting.",
+    "Gradual quality drop with no code change points to model or prompt change or retrieval drift; compare against an eval set.",
+    "Latency spikes: context growth, slow tool or cache not hitting; use traces and token counts. Intermittent tool failures: auth, limits, error paths.",
+    "Cost rising without usage change: model tier creep or caching regression; check per-request tier and cache hit rate against the budget model.",
+    "Runbooks capture known symptom-to-cause-to-action paths; escalation paths define who handles what and when; the goal is a team needing you only for new problems."
+   ],
+   "traps": [
+    "Firefighting instinct: fixing the incident yourself is faster now but repeats the load later.",
+    "Green dashboards: a gradual quality slide may never trip alerts without a runbook entry for retrieval drift.",
+    "Cause mismatch: quality drop, latency, tool failures and cost each map to different first actions.",
+    "Fix before trace: act on a hypothesis only after tracing evidence, not by changing models first.",
+    "Missing boundary: without an escalation path, people do not know what they can resolve."
+   ],
+   "questions": [
+    {
+     "id": "d7s4q01",
+     "concept": "translation-not-firefighting",
+     "type": "single",
+     "stem": "What is the Architect's core value when an operational issue lands with the team?",
+     "options": [
+      "Replacing the team's on-call rotation with the Architect's own availability",
+      "Approving every deploy until incidents stop occurring in production",
+      "Connecting the symptom to its architecture cause and teaching the path",
+      "Resolving each incident personally and as quickly as possible every time"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "The team usually sees a symptom, not a cause. The Architect translates symptom to cause; resolving one incident alone is firefighting rather than lasting support.",
+     "mnemonic": "Translate the symptom; don't just fight the fire."
+    },
+    {
+     "id": "d7s4q02",
+     "concept": "gradual-quality-drop",
+     "type": "single",
+     "stem": "Answer quality has declined gradually for weeks with no code change. What is the likely architecture cause and first action?",
+     "options": [
+      "Model or prompt change, or retrieval drift; compare to an eval set",
+      "Rate limits; trace one failed call end to end through the tool",
+      "A cache stopped hitting; inspect token counts per request",
+      "Model tier crept up; check the per-request model tier in use"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Gradual quality decline without code changes points to a model or prompt change or retrieval drift as the corpus grew. Compare to an eval set and check model, prompt and corpus.",
+     "mnemonic": "Slow slide, no code: eval set, then model, prompt, corpus."
+    },
+    {
+     "id": "d7s4q03",
+     "concept": "latency-first-action",
+     "type": "single",
+     "stem": "Latency has spiked in a production deployment. What is the best first action?",
+     "options": [
+      "Use traces to find the slowest span: token counts, slowest tool, cache behavior",
+      "Switch the whole team to a smaller model immediately to cut latency",
+      "Rewrite CLAUDE.md so that the responses become much shorter",
+      "Raise the per-user rate cap so requests stop queueing up"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Likely causes are context growth, a slow tool, or a cache that stopped hitting. Traces find the slowest span before any change is made, linking back to production observability.",
+     "mnemonic": "Find the slowest span before changing anything."
+    },
+    {
+     "id": "d7s4q04",
+     "concept": "intermittent-tool-failures",
+     "type": "single",
+     "stem": "A tool call fails intermittently, and only for some users. Which first action best fits?",
+     "options": [
+      "Re-run the eval set against the current prompt and model version",
+      "Check whether the retrieval index kept pace with the growing corpus",
+      "Compare the per-request model tier against the budget model",
+      "Inspect the tool's auth and limits; trace one failed call end to end"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Intermittent tool failures usually trace to authorization, rate limits, or an unhandled error path. Inspect auth and limits and trace a single failed call end to end.",
+     "mnemonic": "Flaky tool: auth, limits, error path; trace one call."
+    },
+    {
+     "id": "d7s4q05",
+     "concept": "cost-without-usage",
+     "type": "single",
+     "stem": "Spend rose though request volume stayed flat. Which first action is most appropriate?",
+     "options": [
+      "Check per-request model tier and cache hit rate against the budget model",
+      "Tighten the escalation path so that cost incidents reach the Architect sooner",
+      "Trace the slowest tool call in the request path end to end",
+      "Compare the eval set results against those of the previous release"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Cost rising without a usage change suggests model tier crept up or caching regressed. Check per-request tier and cache hit rate against the budget model.",
+     "mnemonic": "Flat usage, rising cost: tier crept, cache slipped."
+    },
+    {
+     "id": "d7s4q06",
+     "concept": "runbook-purpose",
+     "type": "single",
+     "stem": "What is the purpose of a runbook for a deployment?",
+     "options": [
+      "To capture known symptom, cause and action paths for recurring issues",
+      "To replace the monitoring dashboards the team already runs",
+      "To record who is on call for each weekend and holiday",
+      "To document the original architecture decisions for later auditors"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "A runbook captures known symptom-to-cause-to-action paths. The symptom-to-cause table is its foundation, letting the team handle recurring issues independently.",
+     "mnemonic": "Runbook: known symptom, cause, action. No Architect needed."
+    },
+    {
+     "id": "d7s4q07",
+     "concept": "escalation-path",
+     "type": "single",
+     "stem": "What does an escalation path define?",
+     "options": [
+      "Which dashboards should be turned red during an incident",
+      "Who handles what, and when an issue leaves the team",
+      "Which model tier each support ticket is processed on",
+      "The weekly report schedule the Architect follows for the team"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "An escalation path identifies who handles what and when an issue crosses the team's boundary, so people know what to resolve and what to escalate.",
+     "mnemonic": "Escalation: who handles what, and when."
+    },
+    {
+     "id": "d7s4q08",
+     "concept": "translation-not-firefighting",
+     "type": "single",
+     "stem": "Teaching the team a symptom-to-cause path costs more of the Architect's time than fixing one incident directly. Why is it still the right approach?",
+     "options": [
+      "Incidents never recur once the Architect has fixed them once",
+      "Teams are prohibited from touching production without the Architect",
+      "It is the only support that reduces future load rather than repeating it",
+      "It removes the need for the team to keep any runbook"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Teaching costs more up front but is the only version of support that reduces future load. The goal is a team that needs the Architect only for new problems.",
+     "mnemonic": "Teach once, pay once; fix alone, pay forever."
+    },
+    {
+     "id": "d7s4q09",
+     "concept": "gradual-quality-drop",
+     "type": "single",
+     "stem": "Dashboards stayed green for a quarter while answer quality slid; the retrieval index had not kept pace with a growing corpus. What was the key gap?",
+     "options": [
+      "The escalation path listed too many people for each incident",
+      "The runbook had no entry tying gradual quality decline to retrieval drift",
+      "The model tier had been set too low for the workload",
+      "Rate limits were set far too high for the retrieval service"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "The symptoms were visible all along, but the runbook entry connecting gradual decline to model, prompt or retrieval drift was missing. With it, a first-line engineer could resolve it in an afternoon.",
+     "mnemonic": "No runbook entry for drift, so decay waits for review."
+    },
+    {
+     "id": "d7s4q10",
+     "concept": "drift-green-dashboards",
+     "type": "single",
+     "stem": "What is the biggest operational risk the green-dashboards scenario illustrates?",
+     "options": [
+      "Cost overruns hidden by caching that quietly masks real spend",
+      "Outages that page the team immediately and force a fast response",
+      "Excess alerting that gradually wears down the on-call engineers",
+      "A slow degradation no one links to a cause, running until a review"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "The biggest failure mode is slow degradation that no one links to a cause, so it persists until a scheduled review rather than being caught on day one.",
+     "mnemonic": "Quiet slide, green dashboards, caught a quarter late."
+    },
+    {
+     "id": "d7s4q11",
+     "concept": "latency-first-action",
+     "type": "multi",
+     "stem": "Which TWO are likely architecture causes of a latency spike? Select TWO.",
+     "options": [
+      "Authorization tokens expired",
+      "Context size per request has grown",
+      "A cache stopped hitting",
+      "The corpus is growing without index updates",
+      "The model tier crept up"
+     ],
+     "correct": [
+      1,
+      2
+     ],
+     "explanation": "Latency spikes trace to context growth, a slow tool, or a cache that stopped hitting. Retrieval drift affects quality, tier creep affects cost, and expired auth causes tool failures.",
+     "mnemonic": "Slow means big context, slow tool, or cold cache."
+    },
+    {
+     "id": "d7s4q12",
+     "concept": "cost-without-usage",
+     "type": "multi",
+     "stem": "Which TWO are likely causes when cost rises without a usage change? Select TWO.",
+     "options": [
+      "An unhandled error path in a tool call",
+      "The model tier crept up over time",
+      "Retrieval drift as the corpus grew",
+      "A new eval set was added to the suite",
+      "Caching regressed and hit rate fell"
+     ],
+     "correct": [
+      1,
+      4
+     ],
+     "explanation": "Cost increases with flat usage point to model tier creep or a caching regression. Error paths cause tool failures and retrieval drift causes quality decline.",
+     "mnemonic": "Cost up, usage flat: tier crept, cache failed."
+    },
+    {
+     "id": "d7s4q13",
+     "concept": "intermittent-tool-causes",
+     "type": "multi",
+     "stem": "A tool used by a production agent fails intermittently. Which THREE are the likely architecture causes? Select THREE.",
+     "options": [
+      "Retrieval drift as the indexed corpus kept growing",
+      "An authorization problem on the tool's credentials or scope",
+      "Rate limits on the tool being reached under load",
+      "The model tier creeping up across requests over time",
+      "An unhandled error path in the tool integration"
+     ],
+     "correct": [
+      1,
+      2,
+      4
+     ],
+     "explanation": "Intermittent tool failures usually trace to authorization, rate limits or an unhandled error path; the first action is to inspect auth and limits and trace one failed call end to end. Retrieval drift explains gradual quality decline, and tier creep explains cost rising without usage change.",
+     "mnemonic": "Flaky tool? Auth, limits, unhandled path: trace one failure."
+    }
+   ]
+  }
+ ]
+}

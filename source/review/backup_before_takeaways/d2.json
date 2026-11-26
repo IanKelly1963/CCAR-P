@@ -1,0 +1,1122 @@
+{
+ "domain": 2,
+ "subjects": [
+  {
+   "id": "d2s1",
+   "title": "Model selection and gating model changes",
+   "learn": [
+    "Opus, Sonnet and Haiku trade cost, latency and capability; Sonnet is the default start, with moves up or down made only on eval evidence.",
+    "A model swap is a release: it needs a curated test set, a grading function and a delta threshold set before the eval runs.",
+    "No eval set means no rollback signal: a regression discovered in production was never detected, because the user saw it first.",
+    "Not choosing a model tier is choosing the most expensive one; an eval set makes the tier decision defensible during design, not just at release.",
+    "Moving to Opus or Haiku is a deliberate decision with the same gate as any release: an eval set defining 'better' and a rollback criterion set before the swap.",
+    "Extended thinking bills thinking tokens as output and adds latency; enable it only for a measured accuracy gap. Adaptive thinking with effort is current; budget_tokens is removed on Sonnet 5 (400 error)."
+   ],
+   "traps": [
+    "Best-available reflex: defaulting to the most capable model without eval evidence is an unmeasured choice with a recurring cost.",
+    "Threshold after the data: setting the delta or rollback threshold after seeing results is writing acceptance criteria after the build.",
+    "Unrepresentative test set: a swap eval that does not cover the real distribution of work certifies behavior on inputs production will not send.",
+    "Thinking cannot hurt: extended thinking adds billed output tokens and latency on every call, so it needs a measured accuracy gap.",
+    "One-line swap: a model change looks like configuration but changes product behavior, so it is a release, not a tweak."
+   ],
+   "questions": [
+    {
+     "id": "d2s1q01",
+     "concept": "model-start-sonnet",
+     "type": "single",
+     "stem": "A new document-summarization service is being designed and no eval data exists yet. Which model starting point best matches sound practice?",
+     "options": [
+      "Begin on Opus because output quality is the hardest property to recover once users arrive.",
+      "Begin on whichever tier the partner demo used, then review the choice each quarter.",
+      "Begin on Haiku because cost overruns are the hardest problem to recover once volume grows.",
+      "Begin on Sonnet; move up or down only when an eval set shows the need."
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Sonnet is the default starting point; Opus is justified only when evals show Sonnet misses the quality bar, and Haiku only when evals confirm the trade-off is acceptable. Starting on Opus is a reflexive choice with no evidence behind it.",
+     "mnemonic": "Sonnet first; evals send you up or down."
+    },
+    {
+     "id": "d2s1q02",
+     "concept": "model-start-sonnet",
+     "type": "single",
+     "stem": "A stakeholder argues the team should ship on Opus 'to be safe' since nobody has measured Sonnet. What is the strongest architect response?",
+     "options": [
+      "Build an eval set first; move to Opus only if Sonnet misses the quality bar.",
+      "Agree, but also enable extended thinking so that quality is fully protected.",
+      "Agree, because Opus is the most capable tier and downgrading later is easy enough.",
+      "Disagree, and pick Haiku so that cost discipline is enforced from the very start."
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Model moves should be measured, not reflexive. Without an eval set the choice cannot be defended, and downgrading later carries change-management cost.",
+     "mnemonic": "No eval, no upgrade."
+    },
+    {
+     "id": "d2s1q03",
+     "concept": "eval-gate-three-parts",
+     "type": "multi",
+     "stem": "A team is preparing to gate a model swap like a code deployment. Which THREE elements are the minimum they need? Select THREE.",
+     "options": [
+      "A curated test set with known-good outputs covering the real work distribution",
+      "A grading function, either model-graded against a rubric or programmatic",
+      "A published vendor benchmark score for the candidate model",
+      "A delta threshold below which the change does not ship, set in advance",
+      "A one-week production canary with no predefined pass mark"
+     ],
+     "correct": [
+      0,
+      1,
+      3
+     ],
+     "explanation": "The minimum gate is a representative test set, a grading function and a pre-set delta threshold. Public benchmarks do not reflect your distribution, and a canary with no pass mark is just observation.",
+     "mnemonic": "Set, Grader, Threshold: three legs of the release stool."
+    },
+    {
+     "id": "d2s1q04",
+     "concept": "threshold-before-data",
+     "type": "single",
+     "stem": "When should the delta threshold for a model-swap eval be decided?",
+     "options": [
+      "After reviewing the first results so it reflects realistic model behavior.",
+      "After a pilot with real users, once complaints show what matters most.",
+      "Jointly with the vendor once both sets of scores are available.",
+      "Before the eval runs, so it is a standard rather than post-hoc acceptance criteria."
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "A threshold set after the data is writing acceptance criteria after the build. Setting it first makes it a standard, not a target that moves to fit the numbers.",
+     "mnemonic": "Draw the finish line before the race."
+    },
+    {
+     "id": "d2s1q14",
+     "concept": "no-eval-no-rollback",
+     "type": "single",
+     "stem": "A team plans to change the model behind a live assistant without building an eval set, intending to 'watch for complaints' after launch. What is the core risk in this plan?",
+     "options": [
+      "The only real risk is cost, since output quality is fixed by the system prompt.",
+      "There is no rollback signal; any regression is found by users rather than detected.",
+      "Complaint volume is a reliable rollback signal as long as it is triaged every day.",
+      "The risk is limited to latency, because a model swap is only a configuration change."
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "No eval set means no rollback signal: a regression discovered in production is one that was never detected, because by the time the team sees it the user already has. Complaint triage is not a substitute, and a swap changes product behavior, not just cost or latency.",
+     "mnemonic": "No eval, no alarm: users find the regression first."
+    },
+    {
+     "id": "d2s1q15",
+     "concept": "eval-gate-three-parts",
+     "type": "single",
+     "stem": "A team gates a model change using a few dozen hand-picked showcase prompts, a rubric-based model grader, and a delta threshold agreed before the run. Which part of this gate is weakest?",
+     "options": [
+      "The grader, because a rubric-based model grader cannot be used to gate a swap.",
+      "The threshold, because it should be tuned once the first results are available.",
+      "The test set, because showcase prompts do not cover the real distribution of work.",
+      "The process, because a published vendor benchmark should replace the eval."
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "The minimum gate needs a curated test set with known-good outputs that covers the real distribution of work the system sees, and hand-picked showcase prompts do not. A model-graded rubric is an accepted grading function, and setting the threshold in advance is correct, not a weakness.",
+     "mnemonic": "Test what production sends, not what the showcase shows."
+    },
+    {
+     "id": "d2s1q16",
+     "concept": "tier-decision-explicit",
+     "type": "multi",
+     "stem": "Which TWO statements about an eval set's role in choosing a model tier are accurate? Select TWO.",
+     "options": [
+      "It is only needed after launch, once real traffic reveals the cost",
+      "It makes the tier choice defensible during design, not only at release",
+      "A public vendor benchmark can stand in for it when choosing a tier",
+      "Without one, a proposal to use the top tier cannot be challenged with evidence",
+      "It is only needed when moving down a tier, never when moving up"
+     ],
+     "correct": [
+      1,
+      3
+     ],
+     "explanation": "Evals are defined before production code is written, so they ground the tier choice during design, and a move up or down a tier is made only when an eval set says so. Without one, a push for the top tier has nothing to be weighed against. Moves in both directions need the same gate, and a vendor benchmark does not reflect your own workload.",
+     "mnemonic": "Evals win the design argument, not just the release gate."
+    },
+    {
+     "id": "d2s1q17",
+     "concept": "tier-decision-explicit",
+     "type": "single",
+     "stem": "A team leaves model choice unmanaged: nobody decides which tier each call should use, and developers pick whatever model they like. What is the most likely cost consequence?",
+     "options": [
+      "Work quietly drifts to a more capable, more expensive tier than tasks need.",
+      "The API assigns the cheapest suitable tier to each step automatically at runtime.",
+      "Nothing is decided until the first eval runs, so the omission stays neutral.",
+      "Each step falls back to Haiku, because no tier was requested explicitly."
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Leaving model choice unmanaged can quietly route work to a more capable, more expensive tier than the task requires, so model defaults and allowlists should be set deliberately. The default start is Sonnet, moving up or down only on eval evidence; the API does not pick tiers for you, and an unmade choice is not neutral.",
+     "mnemonic": "Unmanaged model choice drifts upmarket: set the default deliberately."
+    },
+    {
+     "id": "d2s1q18",
+     "concept": "swap-is-release",
+     "type": "single",
+     "stem": "An engineer wants to change the model ID in a configuration file and push it without review, calling it 'a one-line change'. What is the best architect response?",
+     "options": [
+      "Approve it, since no application code changes and config edits can be reverted.",
+      "Approve it if median latency improves during the first day of live traffic.",
+      "Treat it as a release gated by an eval, because it changes product behavior.",
+      "Approve it now and add the new model to a quarterly review of settings."
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "A model swap looks like a one-line configuration change but rewrites how the whole product behaves, so it is treated as a release: a representative test set, a grading function and a threshold set in advance. Watching latency after launch is not a gate, and any regression it misses reaches users first.",
+     "mnemonic": "One line of config, a whole new product: gate it."
+    },
+    {
+     "id": "d2s1q10",
+     "concept": "thinking-billing",
+     "type": "single",
+     "stem": "Which statement about extended thinking is accurate?",
+     "options": [
+      "Thinking tokens are billed at a discounted rate because they are internal.",
+      "Thinking is free when only a summary of the reasoning is returned.",
+      "Thinking adds latency only; billing covers just the visible answer.",
+      "Thinking tokens are billed as output tokens and add latency to the call."
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Thinking tokens bill at the model's output rate for the tokens actually consumed, regardless of how short the returned summary is, and generating them adds latency.",
+     "mnemonic": "Think tokens are output tokens: you pay by the thought."
+    },
+    {
+     "id": "d2s1q11",
+     "concept": "thinking-budget-tokens",
+     "type": "single",
+     "stem": "A team sends a manual budget_tokens thinking configuration to Claude Sonnet 5 and gets an HTTP 400. What is the correct remediation?",
+     "options": [
+      "Raise budget_tokens above the model's minimum threshold.",
+      "Move the request to Haiku, which still accepts budget_tokens.",
+      "Retry with exponential backoff, since 400s are usually transient.",
+      "Switch to adaptive thinking and set the effort parameter instead."
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Manual budget_tokens is deprecated on the 4.6 generation and removed on Sonnet 5, where it errors. Adaptive thinking with effort is the recommended control. A 400 is a request error, not a transient one.",
+     "mnemonic": "Sonnet 5: effort in, budget_tokens out."
+    },
+    {
+     "id": "d2s1q12",
+     "concept": "thinking-measured-gap",
+     "type": "single",
+     "stem": "A product lead wants extended thinking on every call 'since it can't hurt'. What is the best architect response?",
+     "options": [
+      "Approve it, since it only improves accuracy and the added cost is negligible at scale.",
+      "Approve it on the classifier only, where added latency matters least to users.",
+      "Reject it permanently, since extended thinking is unsuitable for production workloads of any kind.",
+      "Run evals without it first; enable it only if a measured accuracy gap remains."
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Thinking is a cost and latency tradeoff paid on every call. The case should come from a measured gap, not an assumption.",
+     "mnemonic": "Prove the gap, then pay for the think."
+    },
+    {
+     "id": "d2s1q19",
+     "concept": "thinking-measured-gap",
+     "type": "single",
+     "stem": "An extraction step misses its accuracy target in evals run without extended thinking, and the prompt itself has not yet been revised. What should happen next?",
+     "options": [
+      "Enable extended thinking on every call so the target is met before launch.",
+      "Work on the prompt and re-run the eval; consider thinking only if a gap remains.",
+      "Move the step to Opus, since a missed target shows Sonnet lacks the capability.",
+      "Lower the accuracy target to the score the current prompt already reaches."
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Run evals without extended thinking first; if accuracy still misses requirements after the prompt itself has been worked on, then consider enabling it. Thinking tokens and latency are paid on every call, so thinking should close a measured gap that prompt work could not, and lowering the target after seeing results moves the goalposts.",
+     "mnemonic": "Fix the prompt first; think only for the gap left."
+    }
+   ]
+  },
+  {
+   "id": "d2s2",
+   "title": "Context window and context strategy",
+   "learn": [
+    "The context window is the model's only active attention space and resets between calls; continuity is application-managed via state, summaries or memory layers.",
+    "Retrieval augments the window; persistent state (orders, balances) needs a tool call. Budget for the largest realistic conversation: the window is a ceiling, not a target.",
+    "Measure with the usage field and token counting, not fixed characters-per-token ratios.",
+    "Monolithic, progressive, retrieval and compaction each earn a place and break down differently; production systems combine them.",
+    "Context strategy and context sizing are separate decisions that interact but do not determine each other; treating them as one is where most designs go wrong.",
+    "Compaction is largely one-way and can drop load-bearing detail such as exact identifiers, numbers and prior decisions."
+   ],
+   "traps": [
+    "Memory illusion: the model has no native memory between calls; anything that persists was stored and passed back in by your application.",
+    "Fill the window: designing towards the full window means hitting the working-memory cliff in production.",
+    "Silent creep: monolithic accumulation across turns inflates cost and latency with no visible signal until billing.",
+    "One strategy fits all: production systems almost always combine strategies, because each handles a different dimension of the context problem.",
+    "Lossy summary: compaction that drops a once-mentioned identifier or decision cannot be recovered later."
+   ],
+   "questions": [
+    {
+     "id": "d2s2q01",
+     "concept": "no-native-memory",
+     "type": "single",
+     "stem": "A support chatbot must remember a customer's earlier sessions. Which statement correctly describes where that continuity comes from?",
+     "options": [
+      "The model retains a session history between calls and reloads it automatically.",
+      "The context window persists across calls until it is explicitly cleared.",
+      "The application stores summaries and passes them back into each new call.",
+      "The model retrieves it from weights updated by earlier conversations."
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "The model has no native memory between calls. Continuity exists only because the application stored it and supplied it again, which makes it an architectural choice rather than a model capability.",
+     "mnemonic": "Models forget; your app remembers."
+    },
+    {
+     "id": "d2s2q02",
+     "concept": "state-needs-tool-call",
+     "type": "single",
+     "stem": "An assistant must report a customer's current order status and account balance. What is the correct design?",
+     "options": [
+      "Embed the records in the system prompt and refresh it nightly.",
+      "Expose a tool call that fetches the live records from the system of record.",
+      "Rely on the model's memory of earlier conversations about the account.",
+      "Index the records in a vector store and retrieve the closest chunk."
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Persistent application state is owned by your system, and the model has no inherent access to it; it needs a tool call. Retrieval and static prompt content risk stale answers for live values.",
+     "mnemonic": "Live state lives in the app: call the tool."
+    },
+    {
+     "id": "d2s2q03",
+     "concept": "working-memory-cliff",
+     "type": "single",
+     "stem": "Why is the context window described as having a 'working-memory cliff'?",
+     "options": [
+      "Quality declines gently and predictably as the window gradually fills with tokens.",
+      "Things work until the limit, then fail abruptly; outside the window nothing exists.",
+      "Cost drops sharply once the window passes a certain token count threshold.",
+      "The window shrinks automatically as the conversation history keeps on growing."
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Inside the window attention is available; outside it the model has no access at all. The edge is hard, so designs that creep towards the limit fail abruptly in production.",
+     "mnemonic": "Inside: seen. Outside: gone. The edge is a cliff."
+    },
+    {
+     "id": "d2s2q04",
+     "concept": "budget-ceiling",
+     "type": "single",
+     "stem": "How should an architect size the token budget for a multi-turn assistant?",
+     "options": [
+      "Allocate the full window so conversations never need any trimming or summarizing.",
+      "Size for the average conversation seen during the pilot phase of the project.",
+      "Size for the largest realistic conversation plus retrieval, prompt, scratch and margin.",
+      "Size for the system prompt alone, since conversation history is billed separately."
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "The window is a ceiling, not a target. Budget for the largest realistic case plus all other context components and margin; designing towards the ceiling means hitting it in production.",
+     "mnemonic": "Window is a ceiling, never a target."
+    },
+    {
+     "id": "d2s2q05",
+     "concept": "budget-ceiling",
+     "type": "single",
+     "stem": "A team plans to let conversations grow until the window is nearly full because 'we paid for the space'. What is the main flaw?",
+     "options": [
+      "Long windows cannot be combined with a system prompt in the same request.",
+      "Nearly full windows disable prompt caching altogether for the whole conversation.",
+      "Window space is billed per call regardless of how much of it is used.",
+      "It hits the cliff in production, and every token is billed on every call."
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "The window limit is a hard edge, and you are billed per token on every API call, so fill-level drives cost and risk. Plan margin below the ceiling.",
+     "mnemonic": "Aim below the ceiling or crash through it."
+    },
+    {
+     "id": "d2s2q06",
+     "concept": "measure-usage",
+     "type": "single",
+     "stem": "How should a team find out how many tokens a request really consumed?",
+     "options": [
+      "Read the actual token counts in the API response usage field.",
+      "Use a tokenizer from an older model generation as a close approximation.",
+      "Divide the character count by a fixed characters-per-token ratio.",
+      "Estimate from the word count of the longest prompt in the test set."
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Characters per token varies by model generation, tokenizer and language. Measured counts in the usage field are what the limit and billing apply to.",
+     "mnemonic": "Count it, do not guess it: usage field."
+    },
+    {
+     "id": "d2s2q07",
+     "concept": "measure-usage",
+     "type": "multi",
+     "stem": "Which TWO practices correctly handle token measurement in a production sizing exercise? Select TWO.",
+     "options": [
+      "Treat any fixed characters-per-token ratio as a rough illustration only",
+      "Count only the user message, since other content is not billed",
+      "Record measured usage and use it for limit and cost planning",
+      "Apply the English-text ratio to all languages for consistency",
+      "Assume tokenizer behavior is identical across model generations"
+     ],
+     "correct": [
+      0,
+      2
+     ],
+     "explanation": "System prompt, history, retrieved documents, tool outputs and responses all count as tokens, and ratios vary by model generation, tokenizer and language. Measured counts are authoritative.",
+     "mnemonic": "Everything enters as tokens; measure, never assume."
+    },
+    {
+     "id": "d2s2q18",
+     "concept": "strategies-combine",
+     "type": "multi",
+     "stem": "When designing a context system, which TWO pairings of design question and context layer are correct? Select TWO.",
+     "options": [
+      "'What does the model need at the start?' drives the compaction policy",
+      "'What might it need to fetch on demand?' drives the retrieval layer",
+      "'What does it need from the latest steps?' drives the monolithic baseline",
+      "'What can be compressed without losing decision detail?' drives the compaction policy",
+      "'What might it need to fetch on demand?' drives the progressive window"
+     ],
+     "correct": [
+      1,
+      3
+     ],
+     "explanation": "Each layer answers its own question: start needs drive the monolithic baseline, recent steps drive the progressive window, on-demand needs drive the retrieval layer, and material that can be compressed without losing decision-relevant detail drives the compaction policy. Asking these questions separately is how the layers get combined deliberately.",
+     "mnemonic": "Start, recent, fetch, compress: monolithic, progressive, retrieval, compaction."
+    },
+    {
+     "id": "d2s2q19",
+     "concept": "strategies-combine",
+     "type": "single",
+     "stem": "A design review asks a team to name 'the one context strategy' for a new production assistant. What is the strongest architect response?",
+     "options": [
+      "Layer strategies deliberately, since each handles a different dimension of the problem.",
+      "Choose monolithic context, since one stable prompt is simplest to cache and debug.",
+      "Choose retrieval, since it scales to any corpus and keeps every call small.",
+      "Choose whichever strategy the largest available context window comfortably allows."
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Production systems almost always combine strategies, because each handles a different dimension of the context problem; a well-designed system layers them deliberately rather than picking one. Monolithic context alone grows towards the working-memory cliff, and window size is a sizing decision, not a strategy.",
+     "mnemonic": "Layer the strategies; no single one carries production."
+    },
+    {
+     "id": "d2s2q20",
+     "concept": "monolithic-creep",
+     "type": "single",
+     "stem": "A multi-turn tool loop resends its entire growing history on every call. Per-call spend climbs steadily as conversations get longer, with no code change and no errors. What is the most likely cause?",
+     "options": [
+      "The platform moved the workload to a larger model tier automatically.",
+      "Each turn pays a fresh cache write surcharge on the system prompt.",
+      "Retrieval returns more chunks as the indexed corpus keeps growing.",
+      "Monolithic accumulation is silently inflating the input sent on each call."
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Monolithic context that accumulates across turns grows per-call cost and latency with the conversation, and there is no visible signal until it shows up in billing. Progressive context or compaction limits what is carried forward; nothing in the scenario points to a tier change or retrieval.",
+     "mnemonic": "Resend it all, pay for it all, every turn."
+    },
+    {
+     "id": "d2s2q11",
+     "concept": "retrieval-earns-place",
+     "type": "multi",
+     "stem": "For which TWO situations is retrieval (RAG) the strongest context strategy? Select TWO.",
+     "options": [
+      "Sources that change faster than the prompt is redeployed",
+      "Queries that need synthesis across every document at once",
+      "A small, fixed policy that every request needs",
+      "Knowledge bases too large to fit in context",
+      "Tasks whose key detail is split across many chunks"
+     ],
+     "correct": [
+      0,
+      3
+     ],
+     "explanation": "Retrieval earns its place for large corpora, fast-changing sources, small query slices and citation needs. It breaks down on cross-document synthesis and chunking that splits units, and a small fixed policy fits a stable prefix.",
+     "mnemonic": "Too big or too fresh: retrieve."
+    },
+    {
+     "id": "d2s2q12",
+     "concept": "compaction-lossy",
+     "type": "single",
+     "stem": "A long-running agent compacts its transcript, and later a decision depends on an exact order number mentioned once early on. What is the most likely issue?",
+     "options": [
+      "The context window has silently reset between the two model calls.",
+      "The summary dropped the load-bearing identifier; compaction is largely one-way.",
+      "Retrieval scored the identifier chunk too low and missed the top-k.",
+      "Extended thinking truncated the earlier turns in the stored transcript."
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Summaries can drop exact identifiers, numeric values, prior decisions and edge cases mentioned once. Because compaction is largely one-way, the original detail is not recoverable from the summary.",
+     "mnemonic": "Summaries shed detail; the shed detail stays shed."
+    },
+    {
+     "id": "d2s2q13",
+     "concept": "compaction-lossy",
+     "type": "single",
+     "stem": "Which risk is specific to compaction as a context strategy?",
+     "options": [
+      "Chunking splits tables and code blocks across several retrieved results.",
+      "Cost and latency scale with every turn of the full transcript.",
+      "Prompt caching becomes harder when carried context mutates every turn.",
+      "The summarizer is a model call, and its fidelity is hard to measure."
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "The summarizer adds latency, cost and failure modes, and measuring summary fidelity against the original transcript is an unsolved evaluation problem. The other options describe retrieval, monolithic and progressive risks.",
+     "mnemonic": "Summarizer is a model too: fidelity unmeasured."
+    },
+    {
+     "id": "d2s2q14",
+     "concept": "strategy-vs-sizing",
+     "type": "multi",
+     "stem": "A design review conflates context strategy with context sizing. Which TWO statements correctly separate them? Select TWO.",
+     "options": [
+      "Choosing retrieval as the strategy fixes how large the token budget should be",
+      "Sizing sets how much window to use; strategy sets how context arrives",
+      "Large windows make the strategy choice unnecessary for most production workloads",
+      "The two decisions interact but do not determine each other",
+      "A progressive strategy guarantees the window will not fill during long sessions"
+     ],
+     "correct": [
+      1,
+      3
+     ],
+     "explanation": "Strategy and sizing are separate decisions that interact; treating them as one is where most context designs go wrong. A big window does not remove the need for strategy.",
+     "mnemonic": "How context arrives is not how much fits."
+    },
+    {
+     "id": "d2s2q15",
+     "concept": "progressive-breakdown",
+     "type": "single",
+     "stem": "A support agent uses a progressive context strategy that carries forward only a rolling summary of recent turns. Engineers investigating a bad answer at turn 14 cannot rebuild what the model actually received. Which known weakness of progressive context is this?",
+     "options": [
+      "Cost and latency scale linearly with total input length on every single turn",
+      "The correct source document never enters the top-k retrieved results for the query",
+      "The exact input at a given step is no longer reconstructable, which complicates debugging",
+      "The output contract stops validating because the summary drops all formatting rules"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "In progressive context the carried-forward material changes every turn, so the exact input the model saw at step N cannot be rebuilt, which makes debugging harder. Linear growth in cost and latency is the monolithic failure, and top-k misses belong to retrieval.",
+     "mnemonic": "Progressive moves on; step N's input is gone."
+    },
+    {
+     "id": "d2s2q16",
+     "concept": "progressive-breakdown",
+     "type": "multi",
+     "stem": "Which TWO tasks are poor fits for a purely progressive context strategy? Select TWO.",
+     "options": [
+      "An agent loop where each step depends mainly on the most recent state",
+      "A review whose verdict needs long-range coherence across the full history",
+      "A workflow decomposed into stages with narrow, well-defined handoffs",
+      "A decision that hinges on a detail dropped several turns earlier",
+      "Multi-turn iterative refinement of a single draft document"
+     ],
+     "correct": [
+      1,
+      3
+     ],
+     "explanation": "Progressive context fails when a task needs long-range coherence across the whole history, or when a decision depends on detail dropped in an earlier turn. Agent loops driven by recent state, staged workflows and iterative refinement are where progressive context earns its place.",
+     "mnemonic": "Progressive forgets the far past: long-range or dropped detail breaks it."
+    },
+    {
+     "id": "d2s2q17",
+     "concept": "monolithic-attention-degrade",
+     "type": "single",
+     "stem": "A team loads a 150-page contract set into one prompt. Token counts show it fits well inside the context window, so they mark the working-memory risk as closed. What does this overlook?",
+     "options": [
+      "The window limit applies only to output tokens, so inputs are never truncated",
+      "Attention quality can degrade on very long contexts well before the hard limit",
+      "Monolithic prompts cannot use prompt caching, so the prefix is rewritten each call",
+      "Contracts must be chunked into a retrieval index before the model can read them"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Fitting under the hard limit does not guarantee quality, because attention can degrade on very long contexts before the limit is reached. Monolithic prompts with a stable prefix actually benefit from caching, so that distractor reverses the guidance.",
+     "mnemonic": "Fits in the window is not focused in the window."
+    }
+   ]
+  },
+  {
+   "id": "d2s3",
+   "title": "System prompts, templates and technique selection",
+   "learn": [
+    "An enterprise system prompt states role and scope, constraints (must and must not), and an output contract naming the response shape.",
+    "A template is fixed scaffolding plus parameterized slots, so filling a slot cannot remove a constraint and the safe path is the default.",
+    "Description competency: name the scope, the format and the constraints; underspecification makes the model improvise differently each time.",
+    "An underspecified guardrail is worse than none because it creates the appearance of a control without the substance.",
+    "Technique progression is zero-shot, then few-shot, then chain-of-thought; each step adds tokens and latency, so use the lightest that works.",
+    "Prompts do not transfer unchanged across models, so a model swap needs an eval; leading phrasing, unbalanced and stale few-shot examples bias outputs."
+   ],
+   "traps": [
+    "Hope as spec: if a requirement is hoped for rather than stated, the model fills the gap differently on each request.",
+    "Decorative guardrail: a vague constraint the model can route around looks like a control but is not one.",
+    "Heavy by habit: chain-of-thought on a task that does not need it is a recurring token and latency tax.",
+    "Prompt portability: a prompt tuned for one model is only a starting point for another; the prompt-model pairing is what ships.",
+    "Invisible bias: leading phrasing and one-sided examples bias outputs in aggregate, and stale few-shot examples quietly steer wrongly."
+   ],
+   "questions": [
+    {
+     "id": "d2s3q01",
+     "concept": "system-prompt-structure",
+     "type": "single",
+     "stem": "Which structure best describes a system prompt designed for enterprise reuse?",
+     "options": [
+      "A short persona line, with details left to the model's judgment",
+      "A long list of examples with no explicit rules",
+      "A role and scope statement, constraints, and an output contract",
+      "A copy of the user manual, with formatting left optional"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "A reusable system prompt states role and scope, the constraints the model must hold, and an output contract naming the response shape. At scale, ambiguity is a defect multiplied across every request.",
+     "mnemonic": "Role, rules, result shape."
+    },
+    {
+     "id": "d2s3q02",
+     "concept": "template-safe-default",
+     "type": "single",
+     "stem": "What is the main design goal of a prompt template with fixed scaffolding and parameterized slots?",
+     "options": [
+      "Filling a slot cannot remove a constraint, so the safe path is default.",
+      "Every slot can be rewritten by users so that teams keep complete flexibility.",
+      "Fixed scaffolding lowers token count enough that caching can be skipped entirely.",
+      "Slots let each team replace the output contract to suit local needs."
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "The scaffolding carries the consistency and safety guarantees, so users supply variable content and inherit the guardrails without re-authoring them. Templates also concentrate complexity where it can be governed.",
+     "mnemonic": "Fixed frame, free slots, safe by default."
+    },
+    {
+     "id": "d2s3q03",
+     "concept": "description-competency",
+     "type": "multi",
+     "stem": "Applying the Description competency to prompt design, which THREE things should a production prompt name? Select THREE.",
+     "options": [
+      "The scope: what is in and out of bounds",
+      "The exact output format or contract",
+      "The expected temperature value",
+      "The constraints that must never be violated",
+      "The name of the model that wrote the prompt"
+     ],
+     "correct": [
+      0,
+      1,
+      3
+     ],
+     "explanation": "Description covers scope, format and constraints. That is what separates a prompt that holds in production from one that works in a demo.",
+     "mnemonic": "Scope, Format, Constraints: describe before you deploy."
+    },
+    {
+     "id": "d2s3q04",
+     "concept": "underspecification-improvises",
+     "type": "single",
+     "stem": "A reused prompt says 'summarize the ticket' and the summaries vary in length and structure from call to call. What is the underlying failure?",
+     "options": [
+      "The model has insufficient capability for the task and needs a larger tier.",
+      "The prompt is underspecified, so the model fills gaps with different assumptions each time.",
+      "The context window is too small to hold the whole ticket text reliably.",
+      "Few-shot examples are missing, which always causes variation in output length."
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Where the prompt is silent the model improvises, and improvisation is the non-determinism you do not want in a reused asset. The fix is to state the format, scope and constraints explicitly.",
+     "mnemonic": "Silence in the prompt becomes guessing in the output."
+    },
+    {
+     "id": "d2s3q05",
+     "concept": "underspecification-improvises",
+     "type": "single",
+     "stem": "A reviewer asks, for each requirement the output must meet, whether the prompt states it or merely hopes for it. What is this diagnosis for?",
+     "options": [
+      "Choosing between a prompt library and a Skill for the team",
+      "Estimating the token budget for the system prompt and history",
+      "Deciding where to place the cache breakpoint in the prompt",
+      "Finding underspecification gaps the model will fill differently each time"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Reading a prompt for what it fails to say reveals gaps. The fix is to make the implicit explicit by restating the goal, naming the format and bounding the constraints.",
+     "mnemonic": "State it or lose it."
+    },
+    {
+     "id": "d2s3q06",
+     "concept": "guardrail-underspecified",
+     "type": "single",
+     "stem": "A prompt includes the line 'be careful with sensitive data'. Why might this be worse than having no guardrail at all?",
+     "options": [
+      "It looks like a control but has no substance; the model can route around it.",
+      "It consumes tokens that would otherwise have been available for prompt caching.",
+      "It forces the model into chain-of-thought reasoning on every single call.",
+      "It prevents the output contract from being applied to the final response."
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "An underspecified guardrail looks like a control and invites false confidence, but a constraint the model can quietly route around is not a constraint. A missing guardrail at least is known to be missing.",
+     "mnemonic": "Vague guardrail: a lock painted on the door."
+    },
+    {
+     "id": "d2s3q07",
+     "concept": "guardrail-underspecified",
+     "type": "multi",
+     "stem": "Which TWO changes turn a vague guardrail into an enforceable one? Select TWO.",
+     "options": [
+      "Name exactly what must never appear in output, and under what conditions",
+      "Add a polite reminder to be careful at the end of the prompt",
+      "Place the rule in fixed template scaffolding so slot content cannot remove it",
+      "Rely on a larger model to infer the intent of the rule",
+      "Repeat the same vague wording in several places"
+     ],
+     "correct": [
+      0,
+      2
+     ],
+     "explanation": "A guardrail must state its bounds precisely, and living in fixed scaffolding means filling a slot cannot delete it. Politeness, repetition of vague wording, or hoping a larger model infers the intent add no substance.",
+     "mnemonic": "Name it exactly, nail it in scaffolding."
+    },
+    {
+     "id": "d2s3q08",
+     "concept": "technique-progression",
+     "type": "single",
+     "stem": "A team needs to extract structured fields from invoices and a first prompt has not been tried yet. Which approach follows the recommended progression?",
+     "options": [
+      "Start with chain-of-thought, then remove steps that look unnecessary.",
+      "Start with ten few-shot examples to anchor the format immediately.",
+      "Start zero-shot; add examples only if format or judgment needs showing.",
+      "Start with extended thinking and a long system prompt."
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "The progression is zero-shot, then few-shot, then chain-of-thought, adding each only if the task needs it. Each step adds tokens and latency, so use the lightest technique that meets the requirement.",
+     "mnemonic": "Zero, few, chain: climb only when needed."
+    },
+    {
+     "id": "d2s3q09",
+     "concept": "technique-progression",
+     "type": "single",
+     "stem": "Why is applying chain-of-thought to a simple classification task a design flaw?",
+     "options": [
+      "It makes the model less accurate on well-specified tasks of every kind.",
+      "It is a recurring token and latency tax with no gain.",
+      "It prevents the use of a stable cached prefix across requests.",
+      "It forces the model tier to be upgraded to the next level."
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Heavier techniques cost tokens and latency on every call. Chain-of-thought suits multi-step reasoning where the path matters, not simple tasks that already work.",
+     "mnemonic": "Needless reasoning is a tax on every call."
+    },
+    {
+     "id": "d2s3q10",
+     "concept": "prompt-model-pairing",
+     "type": "single",
+     "stem": "A team swaps a mature prompt from one model generation to a newer tier and finds output quality has shifted. What principle explains this?",
+     "options": [
+      "Prompts are portable, so the difference must be a bug in the new model.",
+      "Output quality depends only on the system prompt length.",
+      "Newer models always need more examples and more explicit steps.",
+      "The prompt-model pairing is what ships, so a swap needs an eval."
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "The same prompt does not behave identically across tiers or generations; a prompt tuned for one model is a starting point for another. That is why a model swap is treated as a release gated by an eval.",
+     "mnemonic": "Prompt plus model is the product."
+    },
+    {
+     "id": "d2s3q11",
+     "concept": "prompt-model-pairing",
+     "type": "multi",
+     "stem": "Which TWO statements about prompts across model tiers are accurate? Select TWO.",
+     "options": [
+      "A more capable model may need less scaffolding to reach the same quality",
+      "A prompt tuned for one model is guaranteed to work on a cheaper tier",
+      "A less capable model may need more examples or explicit steps",
+      "Prompts transfer unchanged, so no eval is needed after a swap",
+      "Few-shot examples behave identically across all generations"
+     ],
+     "correct": [
+      0,
+      2
+     ],
+     "explanation": "Scaffolding needs vary with capability: capable models need less, weaker ones more. Because behavior differs, the swap itself must be gated with an evaluation.",
+     "mnemonic": "Stronger model, lighter scaffolding; weaker, heavier."
+    },
+    {
+     "id": "d2s3q12",
+     "concept": "bias-unbalanced-examples",
+     "type": "multi",
+     "stem": "A few-shot classifier over-predicts 'approve' in aggregate. Which TWO prompt-construction faults are most likely responsible? Select TWO.",
+     "options": [
+      "Examples that show mostly approvals and few other cases",
+      "An output contract that names the response shape",
+      "A neutral instruction that lists the possible labels",
+      "Leading phrasing that presumes the answer is 'approve'",
+      "A system prompt that states the role and scope"
+     ],
+     "correct": [
+      0,
+      3
+     ],
+     "explanation": "Unbalanced examples and leading phrasing steer the output toward one answer, and bias like this is invisible in any single output, only appearing in aggregate. Neutral phrasing and balanced examples are design requirements.",
+     "mnemonic": "Lopsided examples, loaded wording, lopsided outputs."
+    },
+    {
+     "id": "d2s3q13",
+     "concept": "stale-few-shot",
+     "type": "single",
+     "stem": "Six months after launch, a few-shot extraction prompt starts mishandling a new document layout even though nothing in the code changed. What is the most likely first thing to review?",
+     "options": [
+      "The retry policy for handling transient API errors under load",
+      "The few-shot examples, which may be stale against the evolved task",
+      "The cache TTL setting configured on the system prompt prefix",
+      "The output token limit set for each individual response"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Few-shot examples are content to maintain; as the task evolves, stale examples quietly steer the model wrong. They should be reviewed and rebalanced like any other asset.",
+     "mnemonic": "Examples age; stale shots steer wrong."
+    }
+   ]
+  },
+  {
+   "id": "d2s4",
+   "title": "Prompt caching, modular prompts and Skills",
+   "learn": [
+    "Caching works on a stable prefix: static content first, dynamic content after the cache breakpoint; cache_control markers are explicit.",
+    "Cache writes cost more than standard input and reads cost less (verify current rates on the pricing page); the default TTL is 5 minutes, so infrequent calls do not amortize.",
+    "Caching is not worth it for small fixed portions or rarely called prompts; model call frequency and prefix size before committing.",
+    "What is cached is the prompt prefix, and the response is identical to an uncached call; cached live state creates a consistency window risk.",
+    "A prompt library is for one team or codebase with light governance; a Skill (SKILL.md with instructions and scripts) suits repeatable, distributed, governed procedures.",
+    "Ungoverned copy-pasted prompts drift into many slightly different versions; versioned reuse with approval and rollback is the control."
+   ],
+   "traps": [
+    "Unstable prefix: caching matches only a stable prefix, so anything variable placed before the breakpoint stops hits; static before dynamic, always.",
+    "Cache everywhere: caching has a write cost, so rarely called or small prefixes can cost more than they save.",
+    "Slow cadence: a request frequency lower than the TTL means no consistent savings, because the cache expires between calls.",
+    "Stale cached state: caching content that must reflect live state creates a consistency window that may violate requirements.",
+    "Copy-paste reuse: prompts shared by copying drift apart, each with quietly different behavior and no rollback."
+   ],
+   "questions": [
+    {
+     "id": "d2s4q01",
+     "concept": "cache-stable-prefix",
+     "type": "single",
+     "stem": "On what basis does prompt caching match a request to a stored entry?",
+     "options": [
+      "A stable, identical prefix of the prompt",
+      "The semantic similarity of the user message to earlier messages",
+      "The model's earlier response to the same question",
+      "The hash of the most recent user message only"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Caching preserves the processed prompt prefix so the API does not reprocess those tokens. It matches on a stable prefix, which is why the fixed part must stay genuinely fixed.",
+     "mnemonic": "Cache the prefix, not the question."
+    },
+    {
+     "id": "d2s4q17",
+     "concept": "cache-ttl-frequency",
+     "type": "multi",
+     "stem": "Which TWO factors should drive the choice of cache lifetime (TTL) for a reusable prompt? Select TWO.",
+     "options": [
+      "The expected length of the model's response to each request",
+      "The number of few-shot examples included in the prompt",
+      "How often the fixed content of the prompt actually changes",
+      "The model tier the prompt is currently being sent to",
+      "How frequently the prompt is called by the application"
+     ],
+     "correct": [
+      2,
+      4
+     ],
+     "explanation": "Match the cache lifetime to how often the fixed content actually changes and how frequently the prompt is called: a constantly called prompt benefits from a longer-lived cache, while one called rarely may never amortize the write. Response length, example count and tier do not decide how long the prefix should live.",
+     "mnemonic": "TTL tracks two clocks: how often it changes, how often it is called."
+    },
+    {
+     "id": "d2s4q03",
+     "concept": "static-before-dynamic",
+     "type": "single",
+     "stem": "An application sends the same 8,000-token system prompt and policy document on every request, followed by a short varying user message. Which optimization most directly reduces both latency and cost?",
+     "options": [
+      "Truncate the policy document to its first 1,000 tokens to cut input size.",
+      "Move the policy document into a few-shot example block in the user turn.",
+      "Switch to the smallest available model, regardless of how well it fits the task.",
+      "Put static prompt and policy before dynamic content, and enable prompt caching."
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "A long, stable prefix reused across requests is the ideal caching case. Truncation loses content, and a smaller model regardless of fit risks quality without addressing the repeated prefix.",
+     "mnemonic": "Long stable prefix up front: cache it."
+    },
+    {
+     "id": "d2s4q04",
+     "concept": "cache-breakpoint",
+     "type": "single",
+     "stem": "What is the purpose of a cache breakpoint?",
+     "options": [
+      "To mark where the fixed cacheable prefix ends and variable content begins",
+      "To split the response into cached and uncached portions after generation",
+      "To set the maximum number of cache hits allowed per hour",
+      "To flag prompts that should skip the safety guardrails entirely"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "A breakpoint marks the boundary between the fixed part of the prompt and the variable part. Caching requires explicit cache_control markers, and the fixed part must remain genuinely fixed.",
+     "mnemonic": "Breakpoint: where fixed ends and variable begins."
+    },
+    {
+     "id": "d2s4q05",
+     "concept": "cache-ttl-frequency",
+     "type": "single",
+     "stem": "The default cache TTL is 5 minutes. A workload calls the same long prompt once every 20 minutes. What is the likely outcome?",
+     "options": [
+      "Consistent savings, because the prefix is long and stable enough to cache.",
+      "No consistent savings, because entries expire between calls and writes repeat.",
+      "Savings on output tokens only, since input tokens are reprocessed.",
+      "Savings that grow over time because idle periods keep the cache warm."
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Request frequency lower than the TTL means the cache will not give consistent savings, since each call pays the write cost. Match the cache lifetime to call frequency and how often the fixed content changes.",
+     "mnemonic": "Gap longer than TTL, write forever."
+    },
+    {
+     "id": "d2s4q18",
+     "concept": "cache-economics",
+     "type": "single",
+     "stem": "Cache writes cost more than standard input and cache reads cost less. Which workload produces the largest caching savings?",
+     "options": [
+      "A short prefix used a handful of times a week",
+      "A prefix reused only once after the initial write",
+      "A prefix that changes on every request but is very long",
+      "A long, stable prefix reused across many requests within the TTL"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Savings scale with both the length of the cached prefix and how often it is reused within the TTL. The first use pays the higher write cost, which is amortized across many cheaper reads, while a prefix that changes every request never hits. Verify current cache rates on the pricing page.",
+     "mnemonic": "Pay once to write, save on every read."
+    },
+    {
+     "id": "d2s4q07",
+     "concept": "cache-not-worth",
+     "type": "multi",
+     "stem": "In which TWO situations is enabling prompt caching likely to cost more than it saves? Select TWO.",
+     "options": [
+      "The fixed portion of the prompt is small",
+      "The prompt is called constantly with a large fixed prefix",
+      "The prompt is called infrequently, so the write is rarely amortized",
+      "The fixed instruction block is 8,000 tokens and reused each minute",
+      "The static content is placed first and dynamic content last"
+     ],
+     "correct": [
+      0,
+      2
+     ],
+     "explanation": "Caching has its own write cost, so a small fixed portion or rarely called prompt may never recoup it. Caching is a design decision, not a default to enable everywhere.",
+     "mnemonic": "Small or seldom: skip the cache."
+    },
+    {
+     "id": "d2s4q08",
+     "concept": "cache-response-identical",
+     "type": "single",
+     "stem": "A stakeholder worries that prompt caching will return stale or altered model answers. Which statement is accurate?",
+     "options": [
+      "Caching stores the final response and replays it for matching requests later.",
+      "Caching returns a cheaper, abbreviated answer with the same overall meaning.",
+      "Caching stores the prompt prefix; the response matches an uncached call.",
+      "Caching changes the response only when the user message is very short."
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "What is stored is the processed prompt prefix, not the response. The response is identical to what you would get without caching.",
+     "mnemonic": "Cache the prompt, not the answer."
+    },
+    {
+     "id": "d2s4q09",
+     "concept": "consistency-window",
+     "type": "single",
+     "stem": "A team caches a prefix that includes a live inventory snapshot, and answers sometimes reflect outdated stock levels. What risk was overlooked?",
+     "options": [
+      "The cache write cost exceeded the cost of the original request.",
+      "The model rewrote the cached state during generation.",
+      "Caching created a consistency window where cached content lags live state.",
+      "The breakpoint was placed after the dynamic content."
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "If cached content must reflect live state, caching introduces a consistency window that may violate the use case requirements. Live values belong in dynamic content or a tool call.",
+     "mnemonic": "Cached prefix freezes the facts inside it."
+    },
+    {
+     "id": "d2s4q10",
+     "concept": "library-vs-skill",
+     "type": "single",
+     "stem": "A procedure must run the same way across several products, with versioning, approval and rollback. Which reuse approach best fits?",
+     "options": [
+      "A shared document of prompt tips that teams copy when needed",
+      "A Skill, packaged as a versioned self-contained unit",
+      "A modular prompt library assembled in each team's own code",
+      "A longer system prompt copied into each product"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Lean toward a Skill when the procedure is stable, distributed across teams or products, and needs versioning, approval and rollback. A library suits an often-tweaked prompt within one team or codebase.",
+     "mnemonic": "Many teams, one governed procedure: Skill."
+    },
+    {
+     "id": "d2s4q11",
+     "concept": "library-vs-skill",
+     "type": "single",
+     "stem": "An engineering team within one codebase assembles and frequently tweaks prompt fragments, with light governance. Which approach is the better fit?",
+     "options": [
+      "A modular prompt library owned by the engineers",
+      "A Skill with formal approval workflow for every tweak",
+      "A cached monolithic prompt that nobody edits",
+      "A copy of the prompt in each service repository"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "A modular prompt library is a shared collection of fragments and templates that engineers assemble in their own code. It fits within one codebase and light governance, whereas Skills suit stable, distributed, governed procedures.",
+     "mnemonic": "One codebase, often tweaked: library."
+    },
+    {
+     "id": "d2s4q12",
+     "concept": "skill-packaging",
+     "type": "single",
+     "stem": "What does a Skill package together?",
+     "options": [
+      "Only a system prompt and a list of few-shot examples",
+      "A SKILL.md with instructions, optional scripts and version management",
+      "A cache breakpoint configuration and a TTL",
+      "A model selection rule and an eval threshold"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "A Skill is a versioned, self-contained unit: SKILL.md packages the instructions, optional executable scripts and version management so the whole procedure travels as one governed artifact.",
+     "mnemonic": "SKILL.md: instructions, scripts, version, one unit."
+    },
+    {
+     "id": "d2s4q13",
+     "concept": "ungoverned-drift",
+     "type": "single",
+     "stem": "A prompt is copy-pasted across five teams, each adjusting it slightly. Which risk does this most directly create?",
+     "options": [
+      "The shared prefix becomes so stable that caching stops working for any team.",
+      "The model refuses prompts that appear in several products at once.",
+      "Token counts fall below the minimum length that can be cached.",
+      "Many slightly different versions drift apart, each with quietly different behavior."
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "An ungoverned prompt copied across teams drifts into many versions. Versioned reuse, as a Skill provides, is the control, because a sprawl of copy-pasted prompts cannot be reviewed or rolled back.",
+     "mnemonic": "Copy, paste, drift apart."
+    },
+    {
+     "id": "d2s4q14",
+     "concept": "cache-ttl-frequency",
+     "type": "multi",
+     "stem": "With the default 5-minute TTL, which TWO workloads will realize consistent caching savings? Select TWO.",
+     "options": [
+      "A long stable prefix called several times every minute",
+      "A long stable prefix called once every thirty minutes",
+      "A long prefix that is rebuilt differently on every call",
+      "A long stable prefix called steadily every few seconds",
+      "A short fixed block called twice during each working day"
+     ],
+     "correct": [
+      0,
+      3
+     ],
+     "explanation": "Savings need requests more frequent than the TTL against a prefix that stays fixed. Calls spaced beyond the TTL expire the cache and repeat the write cost, and a prefix that changes each call never hits.",
+     "mnemonic": "Call faster than five minutes or pay the write again."
+    },
+    {
+     "id": "d2s4q15",
+     "concept": "cache-economics",
+     "type": "single",
+     "stem": "Why must a caching cost model include the first request on a new prefix?",
+     "options": [
+      "The first request is always rejected and must be retried at full price.",
+      "Cache writes carry a higher per-token cost than standard input on first use.",
+      "The first request returns a lower quality answer while the cache warms.",
+      "Cached prefixes are billed at the output token rate on every later read."
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Writing to the cache costs more than standard input, while reads are cheaper (verify current rates on the pricing page). Savings only appear once the write is amortized over enough reads.",
+     "mnemonic": "Pricey write once, cheap reads after."
+    },
+    {
+     "id": "d2s4q16",
+     "concept": "consistency-window",
+     "type": "single",
+     "stem": "Which prompt is the riskiest candidate for caching in its entirety?",
+     "options": [
+      "A prompt whose prefix embeds an hourly-changing price table that answers must always reflect",
+      "A prompt whose prefix holds a stable 8,000-token policy document used for all customers",
+      "A prompt whose prefix holds fixed role, scope and output-contract instructions only",
+      "A prompt whose prefix contains an unchanging style guide reused across all requests"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "If cached content must reflect live state, caching creates a consistency window that may violate the use case. Stable policy and instructions are ideal cacheable content; live values belong after the breakpoint or behind a tool call.",
+     "mnemonic": "Cache the constants, never the changing numbers."
+    }
+   ]
+  }
+ ]
+}

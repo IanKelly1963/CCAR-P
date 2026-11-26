@@ -1,0 +1,2039 @@
+{
+ "domain": 5,
+ "subjects": [
+  {
+   "id": "d5s1",
+   "title": "Layered safety: what training enforces versus what you own",
+   "learn": [
+    "Claude is trained against a constitution; the priority order is broadly safe, ethical, guideline-compliant, then helpful, applied holistically rather than as a strict sequence.",
+    "Training-time alignment reduces broad classes of harm but is general by design and does not know your domain policy, data rules or authorization model.",
+    "Four layers: trained behaviour (Anthropic), system prompt instruction, runtime screening and authorisation (all architect-owned), each with its own coverage and blind spot.",
+    "Inference-time control means system instructions, input and output checks, tool permissions and human review gates; instructions steer but are not enforcement.",
+    "Each added layer costs latency and engineering; four layers are four places to design, version and test, and the system prompt and screening logic drift apart if not governed together."
+   ],
+   "traps": [
+    "Strict ordering: the priority order is holistic, so higher goals generally win but are weighed together with the rest.",
+    "Red-team confidence: passing every harmful-prompt test shows broad-harm handling, not that your partner's policy is enforced.",
+    "Prompt as control: a system prompt rule is an instruction an adversarial input can talk around, not enforcement.",
+    "Silent assumption: the dangerous failure is believing Claude enforces a rule it was never given, since nothing then prevents violation."
+   ],
+   "questions": [
+    {
+     "id": "d5s1q01",
+     "concept": "priority-order-holistic",
+     "type": "single",
+     "stem": "When goals conflict, which priority order does Claude's constitution set for the model's behaviour?",
+     "options": [
+      "Genuinely helpful first, then guideline-compliant, then ethical, then broadly safe for operators in each conflict",
+      "Broadly safe first, then ethical, then guideline-compliant, then genuinely helpful to operators and users",
+      "Ethical first, then broadly safe, then genuinely helpful, then compliant with operator guidelines",
+      "Guideline-compliant first, then broadly safe, then ethical, then genuinely helpful to all users"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "The constitution orders goals as broadly safe, ethical, guideline-compliant, then helpful, because a helpful answer is sometimes unsafe. Putting helpfulness first inverts the ordering and is the strongest distractor.",
+     "mnemonic": "Safe, Ethical, Guideline, Helpful: S-E-G-H, safety leads."
+    },
+    {
+     "id": "d5s1q02",
+     "concept": "priority-order-holistic",
+     "type": "single",
+     "stem": "An architect claims the constitution's priority order is a strict sequence, so lower goals are ignored whenever a higher one is touched. What is the correct correction?",
+     "options": [
+      "The ordering is strict for safety only, and every other goal is applied holistically by the model and then rank them",
+      "The ordering is a default that operators override per deployment through the system instructions they write",
+      "The ordering is holistic: higher priorities generally win in a conflict, but the model weighs all goals together",
+      "The ordering applies only at training time and has no influence on the responses Claude produces"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "The notes describe the ordering as holistic rather than strict: higher goals generally take precedence but are weighed together with the others. Treating it as operator-overridable is not supported.",
+     "mnemonic": "Priorities lean, they do not lock: weighed together, not ranked rigidly."
+    },
+    {
+     "id": "d5s1q03",
+     "concept": "general-by-design",
+     "type": "single",
+     "stem": "Why does training-time alignment not know a partner's data-handling or authorization policy?",
+     "options": [
+      "It is set before any deployment exists, so it is general by design rather than tailored to one domain",
+      "It is deliberately disabled whenever an operator supplies a system prompt describing deployment-specific rules",
+      "It only covers consumer applications, and enterprise integrations fall outside the scope of the constitution",
+      "It is refreshed only when a partner submits its policy, which has not happened for this deployment"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Because alignment is shaped before deployment, it reduces broad harm for everyone but cannot know your domain rules. The distractors invent switches or scopes that the notes never describe.",
+     "mnemonic": "Trained before you existed, so general by design."
+    },
+    {
+     "id": "d5s1q17",
+     "concept": "draw-layer-boundary",
+     "type": "single",
+     "stem": "Before adding any controls to a new Claude deployment, why should the architect first establish what the model's training already covers?",
+     "options": [
+      "Because training can be tuned per deployment, so the boundary shows which trained behaviours to switch off",
+      "Because the system prompt replaces trained behaviour, so the boundary marks what the prompt must restate",
+      "Because once training is mapped, input and output screening become unnecessary for the domain policy",
+      "To avoid duplicate protections and to avoid assuming the model enforces a rule it never saw"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Drawing the boundary between trained behaviour and the layers you build stops you duplicating protections and stops the silent failure of assuming Claude enforces a rule it was never given. Training is general by design and is not tuned per deployment, and mapping it never removes the need to enforce your own domain policy.",
+     "mnemonic": "Map what training covers first: no double guards, no imaginary rules."
+    },
+    {
+     "id": "d5s1q05",
+     "concept": "four-layer-blind-spots",
+     "type": "multi",
+     "stem": "Which TWO pairings of layer and blind spot are correct? Select TWO.",
+     "options": [
+      "Trained behaviour does not cover your domain policy, data rules or authorization model",
+      "System prompt instruction cannot be talked out of its constraints by unusual or adversarial input",
+      "Runtime screening authorizes side-effecting actions for a specific caller in a specific context",
+      "Authorisation is the layer that judges content quality and fairness of the model's output",
+      "Runtime screening misses novel attacks that its classifier was not built to detect"
+     ],
+     "correct": [
+      0,
+      4
+     ],
+     "explanation": "Trained behaviour is general, and screening can miss novel attacks and does not authorize actions. Instructions can be talked out of (not enforcement), and authorisation does not judge content quality.",
+     "mnemonic": "Each layer's blind spot is the next layer's job."
+    },
+    {
+     "id": "d5s1q18",
+     "concept": "instructions-not-enforcement",
+     "type": "single",
+     "stem": "Only verified account holders may change a delivery address through an assistant's update_address tool. Which control actually enforces this rule?",
+     "options": [
+      "A system prompt sentence telling Claude never to change addresses for unverified users",
+      "A deterministic identity and scope check that runs before the update_address tool executes",
+      "Reliance on Claude's trained refusals, which already decline requests that look unsafe",
+      "An output tone guideline that keeps Claude polite and inside the approved support script"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Whether a side-effecting action is permitted for this caller in this context is the authorisation layer's job, and that check should be deterministic. A system prompt sentence steers Claude but is not enforcement, and training never saw this deployment's rule.",
+     "mnemonic": "Instructions ask; an identity check before the tool enforces."
+    },
+    {
+     "id": "d5s1q07",
+     "concept": "silent-failure-risk",
+     "type": "multi",
+     "stem": "Which TWO statements correctly describe the silent-failure risk in a layered safety design? Select TWO.",
+     "options": [
+      "The rule exists in no layer, so nothing prevents a violation when the request arrives",
+      "Assuming training covers a domain rule leads the team to skip building any enforcement control",
+      "The failure shows up as loud errors in the logs, so it is caught before users are affected",
+      "The risk only arises in systems that stack more than four layers of controls on one path",
+      "A longer system prompt removes the risk by moving the rule into the trained behaviour layer"
+     ],
+     "correct": [
+      0,
+      1
+     ],
+     "explanation": "The most dangerous failure is silent: Claude is assumed to enforce a rule that lives in no layer. The risk is not loud, not tied to layer count, and a longer prompt does not move a rule into training.",
+     "mnemonic": "Silent means no alarm: a missing rule looks like a safe system."
+    },
+    {
+     "id": "d5s1q08",
+     "concept": "authorisation-layer",
+     "type": "single",
+     "stem": "Which layer covers the blind spot that runtime input and output screening leave open for actions with side effects?",
+     "options": [
+      "Trained behaviour, which refuses dangerous requests before any tool in the deployment is called",
+      "Authorisation, which decides whether a specific action is permitted for this caller in this context",
+      "System prompt instruction, which states the role and constraints Claude follows inside one request",
+      "A second screening classifier on the output, which scores whether the generated text was acceptable"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Screening does not authorize actions; authorisation does. A second output classifier still judges text, not the side effect.",
+     "mnemonic": "Screening reads text; authorization gates actions."
+    },
+    {
+     "id": "d5s1q09",
+     "concept": "cannot-enforce-unseen-rule",
+     "type": "single",
+     "stem": "A reviewer says Claude passed every red-team prompt, so the partner's data policy is covered. What is the best response?",
+     "options": [
+      "Agree, because the constitution includes guidelines that automatically extend to each partner's own policy",
+      "Agree, but add a stronger system prompt sentence so the model remembers the policy during long sessions",
+      "Red-team refusals show broad-harm handling, so the partner policy still needs an enforcement layer you build",
+      "Disagree, and ask Anthropic to retrain the model on the partner policy before the deployment goes live"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Training covers broad harm, not deployment-specific rules. A stronger prompt is still only an instruction, not enforcement.",
+     "mnemonic": "Passing red-team proves general safety, not your policy."
+    },
+    {
+     "id": "d5s1q10",
+     "concept": "general-by-design",
+     "type": "single",
+     "stem": "Which request is most likely to satisfy Claude's general alignment while still violating a deployment-specific rule?",
+     "options": [
+      "A request for step-by-step help creating a dangerous weapon through the support assistant",
+      "A request that asks the assistant to ignore its role and produce clearly hateful content",
+      "A request that is plainly crafted to trigger a refusal in a streaming classifier category",
+      "An in-domain request asking for another customer's order information from a support assistant"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Nothing in a cross-customer lookup looks generally harmful, so trained behaviour would not block it, yet it breaks a deployment rule. The other requests are broad harms that training addresses.",
+     "mnemonic": "Normal-looking and out-of-policy: training can't see it."
+    },
+    {
+     "id": "d5s1q11",
+     "concept": "inference-time-controls",
+     "type": "multi",
+     "stem": "Which TWO are inference-time controls that the architect configures for a deployment? Select TWO.",
+     "options": [
+      "Tool permissions limiting which actions the model may take",
+      "A human review gate on high-stakes decisions",
+      "Using the constitution to rank candidate responses during training",
+      "Steering Claude to refuse dangerous requests by default",
+      "Revising the published constitution over time"
+     ],
+     "correct": [
+      0,
+      1
+     ],
+     "explanation": "Tool permissions and human review gates are runtime guardrails the architect configures. The other three are training-time activities owned by Anthropic.",
+     "mnemonic": "Runtime is yours: permissions and reviewers; training is theirs."
+    },
+    {
+     "id": "d5s1q12",
+     "concept": "instructions-not-enforcement",
+     "type": "single",
+     "stem": "An unusual adversarial input talked Claude out of a constraint written in the system prompt. What is the correct interpretation?",
+     "options": [
+      "The prompt wording was too brief, and a longer and more emphatic version would have enforced the constraint",
+      "Trained alignment failed on this request, and the model should be replaced by one with stronger refusals",
+      "Instructions shape behaviour but are not enforcement, so the rule needs pairing with screening, authorization or review",
+      "The constraint belonged in the trained behaviour layer, which Anthropic owns and the architect cannot change"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "System instructions steer a single request but can be talked around; deployment policy is enforced only with runtime controls. More emphatic wording is still only an instruction.",
+     "mnemonic": "A prompt is a request, not a lock."
+    },
+    {
+     "id": "d5s1q13",
+     "concept": "constitution-shapes-not-catches",
+     "type": "single",
+     "stem": "A stakeholder argues that because Claude is trained against a constitution, harmful outputs will be caught before they reach users, so no output check is needed. What is the most accurate correction?",
+     "options": [
+      "The constitution shapes how the model responds, but it does not necessarily catch bad outputs",
+      "The constitution catches bad outputs only for requests that fall inside a partner's own domain",
+      "The constitution is applied at inference time, so a system prompt can switch it off",
+      "The constitution catches bad outputs reliably, but only on the most recent model release"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "The constitution is used during training to shape how Claude responds to ambiguous or sensitive requests, but it does not necessarily catch bad outputs, so runtime checks are still yours to build. It is not an inference-time filter that a system prompt toggles, and it knows nothing of a partner's domain.",
+     "mnemonic": "Constitution steers the driver; it is not the brakes on the car."
+    },
+    {
+     "id": "d5s1q14",
+     "concept": "constitution-shapes-not-catches",
+     "type": "single",
+     "stem": "How is Claude's constitution used, and what follows for the architect's control design?",
+     "options": [
+      "It is enforced as a runtime filter on every response, so output screening becomes redundant",
+      "It is loaded into each system prompt, so editing the prompt changes the priority order",
+      "It generates training examples and ranks candidate responses, so runtime checks remain yours",
+      "It defines each partner's domain rules in advance, so deployment policy is already covered"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "The constitution is used in training to generate examples and rank candidate responses. That shapes behaviour before deployment but is not a runtime filter, so screening, authorization and review remain the architect's job. Treating it as a runtime filter is the trap, because it never inspects a live response.",
+     "mnemonic": "Trained to rank, not stationed to check: runtime guards are on you."
+    },
+    {
+     "id": "d5s1q15",
+     "concept": "layer-owners",
+     "type": "multi",
+     "stem": "In the four-layer safety view (trained behaviour, system prompt, runtime screening, authorisation), which TWO statements about ownership and coverage are correct? Select TWO.",
+     "options": [
+      "Anthropic owns runtime screening, since its classifiers run on every request by default",
+      "Anthropic owns trained behaviour, while the architect owns prompt, screening and authorisation",
+      "The system prompt layer is owned by Anthropic, as it forms part of trained behaviour",
+      "Authorisation does not cover content quality or fairness, which other controls must address",
+      "Authorisation covers content quality and fairness because it checks every caller's action"
+     ],
+     "correct": [
+      1,
+      3
+     ],
+     "explanation": "Only trained behaviour is Anthropic's; the system prompt, runtime screening and authorisation are all architect-owned. Authorisation decides whether a side-effecting action is permitted for this caller, but it says nothing about content quality or fairness. Runtime screening is a layer you build, not an Anthropic default.",
+     "mnemonic": "Anthropic owns one layer, you own three; authorisation guards actions, not fairness."
+    },
+    {
+     "id": "d5s1q16",
+     "concept": "prompt-screening-drift",
+     "type": "single",
+     "stem": "Six months after launch, the system prompt was edited to allow a new topic, but the screening rules were never updated, so the two layers now contradict each other. Which risk of the layered design does this show?",
+     "options": [
+      "Trained behaviour has overridden the system prompt, so the classifier must be retrained",
+      "Authorisation has failed open, so screening is compensating for missing access checks",
+      "System prompt and screening logic drift independently when they are not governed together",
+      "Runtime screening is model-based, so it cannot be versioned or tested like other layers"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Four layers mean four places to design, version and test, and the system prompt and screening logic drift independently unless they are governed together. Nothing here involves an authorisation failure, and screening can be versioned and tested like any other layer.",
+     "mnemonic": "Four layers, four versions: govern prompt and screen together or they drift apart."
+    }
+   ]
+  },
+  {
+   "id": "d5s2",
+   "title": "Risk categories and the guarded request path",
+   "learn": [
+    "Five risk categories: direct injection, indirect injection via retrieved content or tool outputs, token-budget exhaustion, tool and action abuse, and data exposure.",
+    "Risk assessment is a written artifact: category, component, likelihood and impact, mitigation control with owner and evidence.",
+    "Three control points (input screening, output screening, tool-call authorization) answer different questions; authorization must be deterministic, auditable and replayable.",
+    "Chain model-based and deterministic checks in series; screen retrieved content and tool outputs before they enter context.",
+    "Fail open versus fail closed applies to operator-built components; stop_reason \"refusal\" with stop_details needs tolerant handling and a context reset."
+   ],
+   "traps": [
+    "Single end filter: an output classifier judges text, so a side-effecting tool can run before anything checks it.",
+    "User-input-only screening: retrieved documents and tool outputs inject instructions after input screening has passed.",
+    "Default behaviour: an undecided guardrail error usually lets traffic through, giving the look of protection without the function.",
+    "Wrong fail scope: Anthropic's built-in controls are not operator-configurable and do not fail open; the choice applies to what you build.",
+    "Model for authorization: classifiers are evadable and not replayable, so authorization belongs to deterministic allowlist, identity and scope checks."
+   ],
+   "questions": [
+    {
+     "id": "d5s2q01",
+     "concept": "indirect-injection",
+     "type": "single",
+     "stem": "A malicious instruction hidden in a retrieved document reached the model after the user's request passed input screening. Which risk category is this?",
+     "options": [
+      "Indirect prompt injection via retrieved content, which input screening on the user's message does not catch",
+      "Direct prompt injection, because the user's own message must have contained the hidden instruction",
+      "Token-budget exhaustion, because the retrieved document padded the context with oversized content in the retrieval step",
+      "Data exposure, because sensitive fields from the document entered the context window unintentionally"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Instructions arriving through retrieved content or tool outputs are indirect injection, after user input screening already passed. Direct injection is crafted by the user in their own input.",
+     "mnemonic": "Direct comes from the user; indirect comes from the data."
+    },
+    {
+     "id": "d5s2q02",
+     "concept": "indirect-injection",
+     "type": "single",
+     "stem": "In a RAG and agentic deployment, which control addresses the dominant enterprise injection vector that user-input screening misses?",
+     "options": [
+      "Run the same user-input screen again on the final model output before it reaches the user",
+      "Screen retrieved content and tool outputs with a classifier before they are appended to the model's context",
+      "Lengthen the system prompt with a warning that retrieved documents may contain hostile instructions",
+      "Rely on Claude's trained refusals to ignore instructions found inside tool responses and documents in every response"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "The source differs, so the blind spot differs: screen retrieved content and tool responses before they enter context. Output screening acts too late, after the model has already been influenced.",
+     "mnemonic": "Screen what you fetch before it enters the context."
+    },
+    {
+     "id": "d5s2q03",
+     "concept": "three-control-points",
+     "type": "multi",
+     "stem": "Which TWO pairings of control point and the question it answers are correct? Select TWO.",
+     "options": [
+      "Input screening decides whether the request should reach the model at all",
+      "Output screening decides whether this caller may perform this side-effecting action",
+      "Tool-call authorization decides whether this caller may perform this action in this context",
+      "Input screening decides whether the response the model produced is safe to return",
+      "Tool-call authorization decides whether the retrieved context is free of hostile instructions"
+     ],
+     "correct": [
+      0,
+      2
+     ],
+     "explanation": "Each control sits at a different point and answers a different question; input screening gates the request, authorization gates the action, and output screening judges the response. Mixing them is the trap.",
+     "mnemonic": "In, out, act: three gates, three different questions."
+    },
+    {
+     "id": "d5s2q04",
+     "concept": "authorization-deterministic",
+     "type": "single",
+     "stem": "Which kind of check should tool-call authorization almost always use, and why?",
+     "options": [
+      "A judge model scoring each call, because language understanding is needed to weigh the caller's intent",
+      "A lightweight classifier, because it adapts to novel phrasing that fixed rules would otherwise miss",
+      "Deterministic allowlist, identity and scope checks, because the decision must be auditable and replayable",
+      "A sampled human review, because deterministic rules cannot be trusted with actions that have side effects"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Authorization must be a decision you can prove and replay, so it should be deterministic: allowlist, identity and scope validation. A classifier can be evaded and is not replayable.",
+     "mnemonic": "Authorization you cannot replay, you cannot prove."
+    },
+    {
+     "id": "d5s2q28",
+     "concept": "guarded-path-order",
+     "type": "single",
+     "stem": "Which sequence describes the full guarded request path?",
+     "options": [
+      "Model call, then output screening, then input screening of the next turn, with tool calls authorized after the response returns",
+      "Input screening, output screening, then the model call, with tool calls authorized only when output screening flags the reply",
+      "Model call, then tool execution, then input screening of the tool result, with only passed gates logged for later audit",
+      "Input screening, model call, output screening, with each tool call authorized before it runs and blocked or failed gates logged"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "A request arrives, input screening decides whether it reaches the model, the model responds, output screening decides whether the response is returned, and any tool call passes authorization before it runs. Every blocked or failed gate is logged so an incident can be reconstructed. Authorizing a tool after it runs, or logging only passed gates, leaves both the side effect and the record unguarded.",
+     "mnemonic": "Screen in, call, screen out; authorize before acting; log every block and fail."
+    },
+    {
+     "id": "d5s2q06",
+     "concept": "fail-open-default",
+     "type": "single",
+     "stem": "A screening service errors under load and the team never decided how it should behave. What does the system most likely do?",
+     "options": [
+      "It falls back to the unprotected path, because the surrounding code usually lets requests through by default",
+      "It blocks every request until the service is healthy, because failing closed is the usual default",
+      "It routes each request to human review, because errors automatically trigger the review gate and keeps retrying quietly",
+      "It retries until success, because guardrails are wrapped in the same retry logic as model calls"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "If the choice is not made explicitly, the code decides, and the default is almost always to let requests through. A failing guardrail can still look healthy.",
+     "mnemonic": "Undecided means open: errors default to let-through."
+    },
+    {
+     "id": "d5s2q07",
+     "concept": "fail-open-scope",
+     "type": "single",
+     "stem": "A reviewer asks whether Anthropic's built-in model safety controls might fail open under load. How should the architect answer?",
+     "options": [
+      "They can fail open, so the architect should add an operator-built wrapper that mirrors the same controls",
+      "They are not operator-configurable and do not fail open; the fail-open risk applies to components your team builds",
+      "They fail closed only when the architect sets the policy through a flag in the system prompt",
+      "They share the failure behaviour of operator classifiers, so one fail direction covers every component"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "The fail open versus closed choice belongs to the architect for operator-built components. Anthropic's controls are outside the operator's configuration and do not fail open.",
+     "mnemonic": "Fail direction is yours only for what you build."
+    },
+    {
+     "id": "d5s2q08",
+     "concept": "refusal-handling",
+     "type": "multi",
+     "stem": "A Messages API response returns stop_reason \"refusal\". Which TWO handling practices does the guidance support? Select TWO.",
+     "options": [
+      "Read the stop_details category and route refusal classes differently, tolerating an absent object on older models",
+      "Reset the context by removing or rephrasing the triggering turn before sending the next request",
+      "Resend the same conversation unchanged, since a second attempt usually clears the classifier",
+      "Hardcode the category list at build time so routing never depends on current documentation",
+      "Treat every refusal as one undifferentiated event and show a generic error without reading any fields"
+     ],
+     "correct": [
+      0,
+      1
+     ],
+     "explanation": "The category and explanation may be null or absent, so handlers must tolerate that, and the next request on a refused context returns further refusals. Hardcoding categories is discouraged; re-check at publish time.",
+     "mnemonic": "Read the category, tolerate null, then reset the context."
+    },
+    {
+     "id": "d5s2q09",
+     "concept": "chain-in-series",
+     "type": "single",
+     "stem": "Why are model-based and deterministic checks deployed in series rather than choosing the single best one?",
+     "options": [
+      "Running them in series halves latency, because the cheaper deterministic check always runs first and decides",
+      "The strongest judge model catches everything, so the deterministic check only provides a fallback record",
+      "Each fails differently, with classifiers evadable and rules brittle, so each gap is covered by a different control",
+      "Deterministic rules are always brittle while classifiers are never evaded, so combining them is redundant"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "No single control catches everything: a classifier can be phrased around, a rule only blocks what it anticipated. Chaining means each blind spot is deliberately covered.",
+     "mnemonic": "Every check has a hole; stack them so holes don't line up."
+    },
+    {
+     "id": "d5s2q10",
+     "concept": "risk-assessment-artifact",
+     "type": "single",
+     "stem": "Which set of fields should each entry in a written risk assessment record?",
+     "options": [
+      "Category, model version, token cost, and a description of the mitigation written by the vendor for the audit",
+      "Component, severity colour, date of discovery, and the name of the engineer who found the issue",
+      "Category, likelihood only, a design diagram, and a sign-off from the product manager on scope",
+      "Category, affected component, likelihood and impact, and a mitigation control with an owner and an evidence artifact"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "The assessment is the artifact a security reviewer signs off on, so each risk needs category, component, likelihood-and-impact, and mitigation with owner and evidence. A diagram or sign-off does not prove a control.",
+     "mnemonic": "Category, component, odds, control, owner, evidence."
+    },
+    {
+     "id": "d5s2q11",
+     "concept": "single-filter-coverage",
+     "type": "single",
+     "stem": "A design review shows one output classifier at the end of the path and the reviewer calls the design complete. What is missing?",
+     "options": [
+      "A second output classifier from another vendor so that two models score every generated response",
+      "Input screening before the model and deterministic tool-call authorization before any side-effecting action",
+      "A longer system prompt so that Claude refuses to call tools unless the output classifier approves",
+      "Logging of passed responses only, since blocked gates do not need to be reconstructed later"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "One filter at the end is not a guarded path; the three control points answer different questions. A second output classifier still leaves input and actions uncontrolled.",
+     "mnemonic": "One filter at the end guards nothing upstream."
+    },
+    {
+     "id": "d5s2q12",
+     "concept": "deterministic-vs-model-check",
+     "type": "single",
+     "stem": "For input screening, when is a deterministic check preferable to a model-based one?",
+     "options": [
+      "When the rule is clear and defined, such as a blocklist, regex, or length or format check",
+      "When intent is ambiguous and you must catch jailbreak patterns that rules cannot exhaustively list across the whole request path",
+      "When you must judge qualities such as toxicity that need language understanding to evaluate",
+      "When a side-effecting action needs approval, because only a deterministic check can approve it"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Defined rules are faster, predictable and cannot be talked out of a decision. Ambiguous intent and language-quality judgements need a model-based check.",
+     "mnemonic": "Clear rule, plain check; fuzzy intent, model check."
+    },
+    {
+     "id": "d5s2q13",
+     "concept": "risk-categories",
+     "type": "multi",
+     "stem": "Which TWO scenarios are correctly matched to a risk category? Select TWO.",
+     "options": [
+      "Oversized, padded inputs consume the context or output budget, which is token-budget exhaustion",
+      "Sensitive fields appear in logs independent of model behaviour, which is data exposure",
+      "A user message that overrides instructions is indirect prompt injection",
+      "A tool response carrying hostile instructions is direct prompt injection",
+      "The model induced to call a side-effecting tool is data exposure"
+     ],
+     "correct": [
+      0,
+      1
+     ],
+     "explanation": "Token-budget exhaustion and data exposure are matched correctly. Overriding user input is direct injection, tool-carried instructions are indirect, and induced tool calls are tool and action abuse.",
+     "mnemonic": "Padding burns budget; logs leak data."
+    },
+    {
+     "id": "d5s2q14",
+     "concept": "log-every-gate",
+     "type": "single",
+     "stem": "Which logging practice supports reconstructing an incident on the guarded request path?",
+     "options": [
+      "Log only the final responses returned to users, since they are the only visible output",
+      "Log failed gates only, since a blocked request has already been stopped safely",
+      "Log every blocked or failed gate so the incident can be reconstructed from the record",
+      "Log gate decisions at the end of each week, since real-time records are costly to keep"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Each gate can pass, block or fail, and every blocked or failed gate is logged for reconstruction. Logging only successes loses the evidence.",
+     "mnemonic": "Blocked or failed, it gets logged."
+    },
+    {
+     "concept": "fail-open-default",
+     "type": "single",
+     "stem": "An operator-built input classifier times out under load. Which design choice is more dangerous?",
+     "options": [
+      "Blocking requests until the classifier recovers, with each block written to the log",
+      "Passing requests through unscreened without logging, so traffic flows and the control seems healthy",
+      "Routing requests to a deterministic blocklist while the classifier is unreachable",
+      "Failing closed for harmful decisions and alerting the owning team about the outage"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "A guardrail that silently passes traffic when it errors gives reassurance of control with none of the protection, which is worse than blocking. The choice must be made explicitly rather than inherited.",
+     "mnemonic": "Silent pass-through: the control looks alive and does nothing.",
+     "id": "d5s2q15"
+    },
+    {
+     "concept": "authorization-deterministic",
+     "type": "single",
+     "stem": "An auditor wants to replay exactly why a refund tool call was permitted last month. Which design supports this?",
+     "options": [
+      "A judge model that scored each call, with its raw scores retained",
+      "A lightweight classifier whose threshold the team tuned after the incident",
+      "A deterministic allowlist with identity and scope checks, giving a provable and replayable decision",
+      "An output validator that inspected the text of each response before release"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Authorization must be a decision you can prove and replay, which only a deterministic allowlist, identity and scope check gives. Retained scores from a model are not a replayable rule.",
+     "mnemonic": "Same inputs, same verdict: only rules replay.",
+     "id": "d5s2q16"
+    },
+    {
+     "id": "d5s2q17",
+     "concept": "output-check-type",
+     "type": "single",
+     "stem": "Responses must never contain an internal account-number field, and they must also comply with a nuanced tone policy. Which output-screening design fits each requirement?",
+     "options": [
+      "A judge model for the forbidden field and a deterministic validator for the tone policy",
+      "A deterministic validator for the forbidden field and a judge model for the tone policy",
+      "A judge model for both, since output screening always needs language understanding",
+      "A deterministic validator for both, since output checks must be auditable and replayable"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "A known forbidden field is something a validator catches with certainty, while tone or policy compliance needs language understanding, so a judge model scores it. Requiring auditable, replayable decisions is the rule for tool-call authorization, not for every output check.",
+     "mnemonic": "Known string? Validator. Needs nuance? Judge."
+    },
+    {
+     "id": "d5s2q18",
+     "concept": "output-check-type",
+     "type": "multi",
+     "stem": "Which TWO pairings of output-screening need and check type are well matched? Select TWO.",
+     "options": [
+      "Detecting a known forbidden string: a judge model scoring the response",
+      "Assessing policy compliance in free text: a regex blocklist on the reply",
+      "Detecting a schema violation in the response: a deterministic validator",
+      "Checking a response for toxicity: a length and format check on the reply",
+      "Scoring a response for toxicity: a judge model that understands language"
+     ],
+     "correct": [
+      2,
+      4
+     ],
+     "explanation": "Schema violations, known strings and forbidden fields are certain catches for a deterministic validator. Toxicity and policy compliance need language understanding, so a judge model scores them. A regex or a length check cannot judge nuanced compliance, and a judge is unnecessary for an exact string.",
+     "mnemonic": "Schema to the validator, toxicity to the judge."
+    },
+    {
+     "id": "d5s2q19",
+     "concept": "choose-fail-direction",
+     "type": "single",
+     "stem": "An architect is setting the failure behaviour of an operator-built output screener for a payments assistant, where a wrong pass would cause harm. What is the recommended decision?",
+     "options": [
+      "Fail open, so customers are not blocked while the screener recovers under load",
+      "Leave it to the surrounding code, which handles errors consistently across services",
+      "Fail closed, and decide it explicitly, since a wrong pass here causes real harm",
+      "Fail open but log the error, since logging makes an unscreened pass acceptable"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Control errors should fail closed for decisions where a wrong pass causes harm, and the direction must be chosen explicitly. Leaving it to surrounding code usually means falling back to the unprotected path. Logging an unscreened pass records the gap but does not close it.",
+     "mnemonic": "Harm if wrong? Shut the door when the guard faints."
+    },
+    {
+     "id": "d5s2q20",
+     "concept": "choose-fail-direction",
+     "type": "single",
+     "stem": "Why should a guardrail's behaviour under failure be decided explicitly, in the same way retries and circuit breakers are designed around model calls?",
+     "options": [
+      "A failing dependency should degrade deliberately rather than inherit whatever keeps requests flowing",
+      "Anthropic's built-in safety controls can fail open, so the architect must cover them",
+      "Circuit breakers on model calls also shield the screening service from its own errors",
+      "Failing closed always adds less latency than failing open under heavy production load"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "A guardrail is a dependency that can time out or error, and if no choice is made the surrounding code usually lets requests through. Deciding the direction deliberately follows the same reasoning as circuit breakers. Anthropic's built-in controls are not operator-configurable and do not fail open.",
+     "mnemonic": "Guardrails are dependencies too: choose how they break, or code chooses for you."
+    },
+    {
+     "id": "d5s2q21",
+     "concept": "control-point-spec",
+     "type": "multi",
+     "stem": "A guarded request path is more to build and test than a single filter. Which THREE elements must be specified for each of its control points? Select THREE.",
+     "options": [
+      "Its check type, model-based or deterministic",
+      "A confidence score the model reports for itself",
+      "Its fail direction when the control errors",
+      "A separate system prompt for that control point",
+      "A log line recording blocked or failed gates"
+     ],
+     "correct": [
+      0,
+      2,
+      4
+     ],
+     "explanation": "Each of the three control points has a check type, a fail direction and a log line, which is why the path is materially more to build than one filter. Confidence scores belong to human-review routing, and control points do not each need their own system prompt.",
+     "mnemonic": "Every gate: Type, Tilt, Trail (check type, fail direction, log line)."
+    },
+    {
+     "id": "d5s2q22",
+     "concept": "refusal-category-null",
+     "type": "single",
+     "stem": "A refusal handler reads stop_details on a response with stop_reason \"refusal\". On one refusal, the category and the explanation are both null. What does this indicate, and how should it be handled?",
+     "options": [
+      "The model lacks stop_details support, so the same request should be retried unchanged",
+      "The streaming classifier failed open, so the response can be treated as safe to return",
+      "The category list has changed, so the handler should fall back to the cyber category",
+      "The refusal maps to no named category, so it should go through generic refusal handling"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Both fields are null when a refusal does not map to a named category, so the handler falls back to generic handling. An unsupported model would omit the object, not null its fields, and resending on the refused context brings further refusals. Verify current behaviour against platform.claude.com at publish time.",
+     "mnemonic": "Null category means no named class: route it to the generic refusal path."
+    },
+    {
+     "id": "d5s2q23",
+     "concept": "refusal-category-null",
+     "type": "single",
+     "stem": "A developer hardcodes the refusal categories currently returned in stop_details (cyber, bio, frontier_llm, reasoning_extraction) as a fixed enum. What is the best guidance?",
+     "options": [
+      "Keep the enum, since the category set is fixed by the Messages API contract",
+      "Verify the category set against the stop-reasons documentation at publish time, not hardcode it",
+      "Replace the enum with one refusal path, since categories carry no routing value",
+      "Map every unknown category to bio, the most restrictive class, so it fails safe"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "The category set is enumerated in the stop-reasons documentation and may change, so re-check it at publish time rather than hardcoding it. Categories do carry routing value: different refusal classes should be routed differently rather than collapsed into one path.",
+     "mnemonic": "Refusal categories move: read the docs at publish time, never freeze the enum."
+    },
+    {
+     "id": "d5s2q24",
+     "concept": "vulnerability-walk",
+     "type": "single",
+     "stem": "An architect is running a system vulnerability assessment for a RAG assistant with tools. Which approach is prescribed?",
+     "options": [
+      "Red-team the user prompt only, since that is where adversaries interact with the system",
+      "Review the model's published safety evaluations, since training covers broad attack classes",
+      "Audit the output filter, since it is the last point before a response reaches the user",
+      "Walk the request and data paths together, checking each entry point for an attack and its control"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "The assessment walks the request and data paths together. At each entry point it asks what an adversary could do and which control stands in the way, looking for places with a plausible attack and no control. Testing only the user prompt misses retrieved content, tool outputs and logs.",
+     "mnemonic": "Walk every door on the path; any door with no guard is a finding."
+    },
+    {
+     "id": "d5s2q25",
+     "concept": "vulnerability-walk",
+     "type": "multi",
+     "stem": "During a system vulnerability assessment, which THREE are entry points to examine along the request and data paths? Select THREE.",
+     "options": [
+      "The model provider's training data",
+      "Retrieved content entering the context",
+      "Tool outputs returned to the model",
+      "The published constitution document",
+      "The logs the system writes"
+     ],
+     "correct": [
+      1,
+      2,
+      4
+     ],
+     "explanation": "The named entry points are user input, retrieved content, tool outputs, the model's own output and the logs. The provider's training data and the constitution sit upstream in a layer Anthropic owns, so they are not entry points in your request and data paths.",
+     "mnemonic": "Inputs, retrievals, tool returns, outputs, logs: five doors to walk."
+    },
+    {
+     "id": "d5s2q26",
+     "concept": "risk-categories",
+     "type": "single",
+     "stem": "An agent is manipulated into calling a side-effecting tool outside policy. Which risk category is this, and which control exists to stop it?",
+     "options": [
+      "Tool and action abuse, stopped by the action-authorization control",
+      "Direct prompt injection, stopped by output screening of generated text",
+      "Data exposure, stopped by minimizing fields in logs and the context",
+      "Token-budget exhaustion, stopped by length checks on the input"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Inducing the model to call a side-effecting tool outside policy is tool and action abuse, the failure the action-authorization control exists to stop. Output screening judges text, not actions, so it cannot stop a tool that has already run.",
+     "mnemonic": "Abused tool? Authorization is the lock on the action."
+    },
+    {
+     "id": "d5s2q27",
+     "concept": "screening-cost",
+     "type": "single",
+     "stem": "A team adds a judge model to screen every output turn. What cost effect should the architect plan for?",
+     "options": [
+      "A negligible increase, since judge models reuse the cached prompt prefix",
+      "A one-time setup cost, since screening runs only when a request is flagged",
+      "Roughly double the model cost for each screened turn, plus added latency",
+      "Lower total cost, since screening reduces refusals and retries downstream"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Each screening point adds a call or rule evaluation to every request, and a judge model on output roughly doubles the model cost for that turn while adding latency. It runs on every turn it screens, not only on flagged requests, so it is a recurring cost.",
+     "mnemonic": "A judge on every reply means two model bills per turn."
+    }
+   ]
+  },
+  {
+   "id": "d5s3",
+   "title": "Skill supply-chain security",
+   "learn": [
+    "Skills are distributable code plus instructions, so they are a supply-chain risk; hidden malicious instructions evade input filters because the threat is upstream in the bundle.",
+    "Audit the bundle for anomalous calls (network, shell, file system, credential reads) and out-of-scope operations measured against the skill's stated purpose.",
+    "A clean audit is not proof of safety because a skill can fetch code at runtime; use least privilege and a sandbox with limited file and network access and no standing credentials.",
+    "Trusted-source policy: vetted internal registry, verified publishers, signed releases; do not assume the platform screens skills, verify its scope.",
+    "Every audit ends in a recorded verdict: approve, reject, or remediate (strip the call, sandbox it, pin a safer version, re-audit)."
+   ],
+   "traps": [
+    "Output monitoring: it catches effects only after the skill's code has run, so it is too late as the main defence.",
+    "Clean audit equals safe: the audit shows the bundle you read, not code fetched later at runtime.",
+    "Platform trust: assuming the platform screens skills without verifying the scope of the scanning leaves a gap.",
+    "Sandbox instead of audit: confinement contains misses but audit decides what gets in; you need both.",
+    "Unrecorded review: an informal 'looks fine' is not a verdict; approve, reject or remediate must be written down."
+   ],
+   "questions": [
+    {
+     "id": "d5s3q01",
+     "concept": "supply-chain-risk",
+     "type": "single",
+     "stem": "Why are skills treated as a supply-chain risk?",
+     "options": [
+      "They are reusable, distributable code paired with instructions, so an untrusted bundle can run commands or reach the network",
+      "They are always hosted on public registries, so every skill inherits the weaknesses of its publisher on the host",
+      "They replace the system prompt entirely, so a skill can disable the trained behaviour layer of the model",
+      "They run only after output monitoring completes, so any exploit is detected before it can execute"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "A skill is distributed code plus instructions dropped into your environment, and may execute commands, network calls or file access when invoked. It does not replace the system prompt.",
+     "mnemonic": "Skills are code you import: treat them like packages."
+    },
+    {
+     "id": "d5s3q02",
+     "concept": "defence-earlier",
+     "type": "single",
+     "stem": "A skill carries hidden malicious instructions baked into its bundle. Why do input filters and prompt screening fail to see them?",
+     "options": [
+      "They only screen the model's output, so instructions inside the bundle are never examined at all and therefore stay silent",
+      "They watch the conversation, but the threat was embedded in the bundle upstream before any conversation began",
+      "They are disabled for skills by default, because the platform has already screened the bundle",
+      "They detect only direct injection, and hidden instructions are always classed as indirect injection"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Filters and prompt screening observe the conversation; the bundle's contents sit upstream, so the defence must move earlier to auditing. The platform is not to be assumed to screen skills.",
+     "mnemonic": "Filters watch chat; the threat sits in the bundle."
+    },
+    {
+     "id": "d5s3q03",
+     "concept": "audit-anomalous-calls",
+     "type": "multi",
+     "stem": "When auditing a skill bundle for anomalous calls, which TWO are on the list of things to look for? Select TWO.",
+     "options": [
+      "Shell execution of commands on the host",
+      "Reads of stored credentials or secrets",
+      "A README longer than the skill's code",
+      "A version number that has been incremented",
+      "Instruction text written in a formal tone"
+     ],
+     "correct": [
+      0,
+      1
+     ],
+     "explanation": "The audit looks for network requests, shell execution, file-system access and credential reads. Documentation length, version numbers and tone are not anomalous calls.",
+     "mnemonic": "Network, shell, files, credentials: the four red flags."
+    },
+    {
+     "id": "d5s3q04",
+     "concept": "out-of-scope-baseline",
+     "type": "single",
+     "stem": "What serves as the baseline for deciding whether a skill's behaviour is out of scope?",
+     "options": [
+      "The publisher's reputation score, since trusted publishers are permitted wider behaviour than others",
+      "The skill's stated purpose: anything beyond the job it claims to perform is a finding to investigate",
+      "The permissions the sandbox already grants, since any allowed operation counts as in scope",
+      "The average behaviour of similar skills in the registry, since outliers are the only real concern"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "The stated purpose is the audit baseline: any operation beyond the job a skill claims to perform, such as an unexpected network call or file write, is a finding to investigate. Sandbox permissions and publisher reputation are not the baseline.",
+     "mnemonic": "Stated purpose is the yardstick."
+    },
+    {
+     "id": "d5s3q05",
+     "concept": "audit-plus-sandbox",
+     "type": "single",
+     "stem": "A skill passes the bundle audit clean but later fetches code at runtime that was never in the package reviewed. Which compensating control addresses this?",
+     "options": [
+      "Repeat the audit more often, since a clean first audit proves the skill cannot change at runtime",
+      "Add an output filter on the skill's text, since fetched code always surfaces in generated responses",
+      "Pin the skill to its current version, since a pinned bundle cannot fetch any code at runtime",
+      "Run skills with least privilege in a sandbox: limited file access, limited network and no standing credentials"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "An audit tells you what is in the bundle, not what it fetches later, so runtime confinement contains what the audit misses. Output filters see text, not executed code, and pinning does not stop runtime fetches.",
+     "mnemonic": "Audit decides what gets in; sandbox contains what slips."
+    },
+    {
+     "id": "d5s3q06",
+     "concept": "trusted-source",
+     "type": "single",
+     "stem": "Which policy shrinks the surface you must audit and stops untrusted bundles before they reach review?",
+     "options": [
+      "A trusted-source policy: a vetted internal registry, verified publishers and signed releases only",
+      "A policy of auditing only skills that users report as suspicious after they have been invoked",
+      "A policy of accepting any skill whose description matches the task described by the requesting team",
+      "A policy of trusting skills installed from the platform because it screens every bundle for you"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Restricting origin to a vetted registry, verified publishers and signed releases reduces what needs auditing. Matching descriptions and platform trust are not substitutes.",
+     "mnemonic": "Vetted registry, verified publisher, signed release."
+    },
+    {
+     "id": "d5s3q07",
+     "concept": "verify-platform-screening",
+     "type": "single",
+     "stem": "A colleague says skills are safe because the platform screens them. What should the architect do?",
+     "options": [
+      "Accept the statement, since platform screening removes the need for a bundle audit or sandbox",
+      "Ask the publisher for a written assurance, since publishers know the contents of their own bundles",
+      "Verify what automated vetting exists by reading the documentation and confirming the scope of any scanning",
+      "Run a single output test on the skill, since a passing result confirms the platform screened it"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "The notes say not to assume the platform screens skills; verify the scope of any scanning and what it does and does not catch. Publisher assurances and one test are not verification.",
+     "mnemonic": "Don't assume screening; read the docs and check."
+    },
+    {
+     "id": "d5s3q08",
+     "concept": "remediate-actions",
+     "type": "multi",
+     "stem": "An audit finds a fixable problem in a skill. Which TWO actions belong to the remediate verdict? Select TWO.",
+     "options": [
+      "Strip the offending call from the bundle",
+      "Pin a safer version of the skill and re-audit it",
+      "Approve the skill now and rely on output monitoring afterwards",
+      "Reject the skill and omit the decision from the record",
+      "Grant the skill standing credentials so it can finish its work"
+     ],
+     "correct": [
+      0,
+      1
+     ],
+     "explanation": "Remediate means fix and re-audit: strip the call, sandbox the operation or pin a safer version. Approving on the strength of later monitoring is too late, and standing credentials add risk.",
+     "mnemonic": "Strip, sandbox, pin, re-audit."
+    },
+    {
+     "id": "d5s3q09",
+     "concept": "defence-earlier",
+     "type": "single",
+     "stem": "Why is output monitoring an insufficient defence against a malicious skill?",
+     "options": [
+      "It cannot read generated text, so it has no visibility into anything that a skill produces",
+      "It can catch a downstream effect only after the fact, by which time the skill's code has already run",
+      "It blocks the skill before execution, which stops the skill from completing its legitimate work",
+      "It only monitors the platform's own components, which leaves operator-installed bundles out of scope"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Monitoring sits downstream, so the harm may have occurred already; the defence must move earlier into audit and confinement. It can read text, but that is the problem: it is too late.",
+     "mnemonic": "Monitoring sees the crime after the code has run."
+    },
+    {
+     "id": "d5s3q10",
+     "concept": "recorded-verdict",
+     "type": "single",
+     "stem": "A team reviewed a skill informally and said it looked fine, with no written outcome. What is missing?",
+     "options": [
+      "A second model-based classifier scoring the skill's instruction text for hostile phrasing",
+      "A user acceptance test run in production, since only live traffic proves the skill is safe",
+      "A summary of the skill's popularity, since adoption data is the audit's formal evidence",
+      "An explicitly recorded verdict of approve, reject or remediate for the audit"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Every audit must end in a recorded verdict. Approve means cleared, reject means it never enters the environment, and remediate means fix and re-audit.",
+     "mnemonic": "Every audit ends in a recorded verdict."
+    },
+    {
+     "id": "d5s3q15",
+     "concept": "out-of-scope-baseline",
+     "type": "single",
+     "stem": "During an audit, a skill advertised as a unit converter is found reading files in the user's home directory and a stored credential file. How should this be classified?",
+     "options": [
+      "As acceptable once the skill runs in a sandbox, since confinement removes the need to investigate",
+      "As normal behaviour, because converters commonly cache reference data in user directories",
+      "As a prompt injection issue, because file reads always originate from hostile user-supplied input",
+      "As an out-of-scope finding, because reading files and credentials goes beyond its stated purpose"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "A skill's stated purpose is the audit baseline, and file-system access and credential reads are anomalous calls; anything beyond the claimed job is a finding to investigate. A sandbox contains what an audit misses but does not excuse an out-of-scope operation.",
+     "mnemonic": "A converter reading your keys has left its job description: finding."
+    },
+    {
+     "id": "d5s3q12",
+     "concept": "trusted-source",
+     "type": "single",
+     "stem": "A team wants to install a skill from an unsigned public download because it matches their task. Which response best follows the supply-chain guidance?",
+     "options": [
+      "Decline it under the trusted-source policy and obtain it from a vetted internal registry or verified publisher",
+      "Install it in a sandbox and skip the audit, since sandboxing alone covers the bundle's contents",
+      "Install it and watch the output closely, since monitoring will flag any harmful behaviour",
+      "Accept it if the description matches, since the audit only applies to skills that fail testing for convenience"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Untrusted bundles should be stopped before review by a trusted-source policy. Sandboxing without an audit and relying on monitoring both skip the gate.",
+     "mnemonic": "Unsigned and unvetted never reaches review."
+    },
+    {
+     "id": "d5s3q13",
+     "concept": "least-privilege-sandbox",
+     "type": "single",
+     "stem": "Which configuration best expresses least privilege for running an approved skill?",
+     "options": [
+      "Full file access and open network access, but with every credential rotated at the end of each day",
+      "Limited file access, limited network access, and no standing credentials that the skill does not need",
+      "Read-only file access and open network access, because writes are the only real risk to the host",
+      "Limited network access with the team's standing credentials, so that the skill can authenticate quickly"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Least privilege in a sandbox means limited file access, limited network and no unneeded standing credentials. Rotating credentials or leaving the network open does not confine the skill.",
+     "mnemonic": "Little file, little network, no standing keys."
+    },
+    {
+     "concept": "audit-plus-sandbox",
+     "type": "single",
+     "stem": "Which statement correctly relates the bundle audit to runtime confinement for skills?",
+     "options": [
+      "Audit decides what gets in, and confinement contains it if the audit misses something, so use both",
+      "A thorough audit makes confinement unnecessary, because it shows everything a skill can ever do",
+      "Confinement makes the audit unnecessary, because a sandbox removes any harm from a hostile bundle",
+      "The audit applies to internal skills and confinement to third-party skills, so each skill needs one"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "The notes say no single control works perfectly without the other: the audit gates entry, runtime confinement contains what slips through, for example code fetched at runtime.",
+     "mnemonic": "Audit is the door; sandbox is the room.",
+     "id": "d5s3q14"
+    }
+   ]
+  },
+  {
+   "id": "d5s4",
+   "title": "Fairness, transparency and decision logging",
+   "learn": [
+    "Fairness is architectural: unequal outcomes enter via the retrieval corpus, prompt framing, few-shot examples and downstream routing, each inspectable.",
+    "Three audiences need different slices: affected user (inputs and reason), regulator (queryable record), build team (full trace).",
+    "Decision logging captures inputs, retrieved context, model output and routing, and reuses the production observability with a different retention and query path.",
+    "If you cannot reconstruct a decision you cannot reliably explain it; Discernment is the AI Fluency competency of judging outputs, and a transparency record lets a reviewer spot a skewed outcome.",
+    "The decision log is itself in scope for compliance: apply minimization, retention limits and access controls and map it as a named control."
+   ],
+   "traps": [
+    "Vendor owns fairness: provider bias evaluations cannot see your own corpus, prompt framing, few-shot examples or routing.",
+    "Healthy aggregate: the overall metric can look fine while harm concentrates in a subgroup.",
+    "One log for all: users, regulators and builders need different slices of the same record.",
+    "Log versus privacy: transparency and compliance are not in conflict; the same log is governed with minimization and access controls.",
+    "No reconstruction: if you cannot replay a decision, you cannot reliably explain it or rule out where a skew entered."
+   ],
+   "questions": [
+    {
+     "id": "d5s4q01",
+     "concept": "fairness-architectural",
+     "type": "single",
+     "stem": "What does it mean to say fairness is an architectural property rather than only a model property?",
+     "options": [
+      "Unequal outcomes enter at identifiable points you control, so each can be inspected and instrumented",
+      "The model provider's bias evaluations transfer fully to any system built around the model",
+      "Fairness can be set by a single system prompt line that instructs Claude to treat all users equally",
+      "Fairness is checked once at launch against an aggregate metric and then assumed to hold afterwards"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Fairness enters at specific points in your system, such as corpus, framing, examples and routing, which is what makes it designable. A provider's evaluations cannot see your corpus.",
+     "mnemonic": "Skew has addresses: find the entry points."
+    },
+    {
+     "id": "d5s4q02",
+     "concept": "four-entry-points",
+     "type": "multi",
+     "stem": "Which TWO are among the four common entry points where unequal outcomes enter a Claude system? Select TWO.",
+     "options": [
+      "A retrieval corpus that over-represents some groups of cases",
+      "Downstream routing that sends some groups down different paths",
+      "The stop_reason handler that resets context after a refusal",
+      "The token-budget limit applied to oversized inputs",
+      "The constitution's priority order for conflicting goals"
+     ],
+     "correct": [
+      0,
+      1
+     ],
+     "explanation": "The four entry points are the retrieval corpus, prompt framing, few-shot examples and downstream routing. The refusal handler, token budget and priority order are not listed as fairness entry points.",
+     "mnemonic": "Corpus, framing, few-shot, routing: four doors for skew."
+    },
+    {
+     "id": "d5s4q03",
+     "concept": "audience-slices",
+     "type": "single",
+     "stem": "Which audience needs a durable, queryable record of inputs, outputs and decision path to show comparable cases are treated consistently?",
+     "options": [
+      "A regulator, who needs evidence of consistent treatment and the ability to reconstruct a decision on demand",
+      "An affected user, who needs the complete trace including every internal routing step",
+      "The build team, who need a digest in terms an affected user can act on without technical detail",
+      "The reviewer on the queue, who needs the full log of every historical decision in the system"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "The regulator needs queryable evidence of consistency and reconstruction. The affected user needs an actionable explanation, and the build team needs the full trace.",
+     "mnemonic": "User: why. Regulator: prove it. Builder: full trace."
+    },
+    {
+     "id": "d5s4q04",
+     "concept": "decision-log-contents",
+     "type": "single",
+     "stem": "To replay and explain a single automated decision, what should the decision log capture?",
+     "options": [
+      "The final response text and the timestamp, since these are what the user saw and can dispute",
+      "The inputs that drove it, the retrieved context, the model output, and the routing it went through",
+      "The system prompt and model name only, since the rest can be regenerated by rerunning the request",
+      "The aggregate fairness metric and the outcome rate, since individual decisions need not be replayed"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Replay needs inputs, retrieved context, output and routing. Outputs alone cannot be reconstructed, and aggregate metrics cannot explain one decision.",
+     "mnemonic": "Inputs, context, output, routing: replay needs all four."
+    },
+    {
+     "id": "d5s4q05",
+     "concept": "aggregate-hides-subgroup",
+     "type": "single",
+     "stem": "The overall outcome metric looks healthy after launch. What risk does the guidance warn about?",
+     "options": [
+      "A healthy aggregate proves every subgroup is treated comparably, so no further checks are needed in every group",
+      "Aggregate metrics are inflated by logging, so they overstate fairness for every subgroup measured",
+      "Harm can be concentrated in one subgroup while the aggregate looks fine, especially at an unmeasured injection point",
+      "Healthy aggregates cause regulators to request more logs, which raises the cost of the system"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "The outcome metric can look fine overall while harm concentrates in a subgroup, and an unmeasured entry point can hide unfairness until someone outside the team finds it.",
+     "mnemonic": "Fine on average can still hurt one group."
+    },
+    {
+     "id": "d5s4q17",
+     "concept": "four-entry-points",
+     "type": "multi",
+     "stem": "A team rebalanced its retrieval corpus, yet outcomes still lean toward one group. Which TWO remaining entry points could still carry the skew? Select TWO.",
+     "options": [
+      "The fail-closed setting chosen for the operator-built input classifier",
+      "The framing of the prompt, which can encode a skewed assumption",
+      "The toxicity threshold configured on the output-screening judge model",
+      "The few-shot examples, which can repeat the corpus's original skew",
+      "The context reset performed after a stop_reason refusal response"
+     ],
+     "correct": [
+      1,
+      3
+     ],
+     "explanation": "The four entry points are the retrieval corpus, prompt framing, few-shot examples and downstream routing, so rebalancing the corpus still leaves framing, examples and routing to inspect. Screening thresholds, fail direction and refusal handling govern safety controls, not where unequal outcomes enter.",
+     "mnemonic": "Fixed the corpus? Framing and few-shot can still tilt the scale."
+    },
+    {
+     "id": "d5s4q07",
+     "concept": "log-compliance-scope",
+     "type": "single",
+     "stem": "Logged inputs and retrieved context contain sensitive personal data in HIPAA or GDPR contexts. How should the decision log be treated?",
+     "options": [
+      "As a named control in the compliance register, with minimization, retention limits and access controls applied",
+      "As exempt from compliance, since logs are operational telemetry rather than regulated records",
+      "As a store to be deleted immediately after each request, since logging conflicts with compliance",
+      "As freely shareable with the build team, since the team needs the full trace for debugging"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "The log is itself in scope: map it as a named control and govern minimization, retention and access. Logging for transparency and governing it for compliance use the same log.",
+     "mnemonic": "The audit log is itself audited."
+    },
+    {
+     "id": "d5s4q08",
+     "concept": "discernment",
+     "type": "single",
+     "stem": "Which AI Fluency competency is about judging whether a model output is acceptable, needs revision or needs override, including spotting unequal treatment?",
+     "options": [
+      "Diligence, which maintains explicit human accountability checkpoints in deployed workflows",
+      "Discernment, which evaluates AI outputs and behaviours rather than accepting them",
+      "Delegation, which decides which tasks to hand to the model and which tasks to keep",
+      "Description, which communicates the task and constraints to the model in precise terms"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Discernment is evaluating outputs, and a transparency record is what makes recognizing a skewed outcome possible. Diligence is the competency behind human review checkpoints.",
+     "mnemonic": "Discernment discerns the output; Diligence guards the gate."
+    },
+    {
+     "id": "d5s4q18",
+     "concept": "cant-reconstruct",
+     "type": "single",
+     "stem": "A team wants to give affected users explanations for automated decisions, but it stores only each final response. What is the gap?",
+     "options": [
+      "Without inputs, retrieved context and routing, it cannot reconstruct a decision or reliably explain it",
+      "None, because the stored response already states the reason for each decision it made",
+      "Aggregate outcome metrics would cover it, since explanations rely on overall approval rates",
+      "The vendor's bias evaluations can supply the explanation, since they cover every decision"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "To replay and explain a single decision you need the inputs that drove it, the retrieved context, the model output and the routing it went through; if you cannot reconstruct a decision you cannot reliably explain it. Aggregate metrics and vendor evaluations cannot account for one specific decision.",
+     "mnemonic": "Output alone is a verdict without evidence: log inputs, context and routing too."
+    },
+    {
+     "id": "d5s4q10",
+     "concept": "audience-slices",
+     "type": "single",
+     "stem": "Which slice of the record does the build team need to find why a flagged decision went wrong?",
+     "options": [
+      "A plain-language summary of the main inputs and the reason in terms an affected user can act on",
+      "A queryable aggregate showing that comparable cases were decided consistently across groups",
+      "A signed attestation from the model provider confirming its fairness evaluation results",
+      "The full trace: prompt, retrieved context, model output and every routing step, tied to existing observability"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Each audience needs a different slice of the same record; the build team needs the full trace. The summary suits the affected user and the aggregate suits the regulator.",
+     "mnemonic": "Builders need the whole trace."
+    },
+    {
+     "id": "d5s4q19",
+     "concept": "fairness-architectural",
+     "type": "single",
+     "stem": "Input and output screening pass every response a system produces. Why does that not show the system treats people fairly?",
+     "options": [
+      "Screening is disabled for fairness-related topics, so those outputs are never checked at all",
+      "Screening runs only on tool calls, so text responses are never compared across user groups",
+      "An output can pass every check yet produce different outcomes for different people, looking normal",
+      "Passing screens does prove comparable treatment, provided the aggregate outcome metric is healthy"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Runtime controls stop disallowed outputs from leaving the system, but they do not account for an output that passes every check yet produces different outcomes for different people. Because that failure looks like a normal output, it is harder to detect and attribute. A healthy aggregate can also hide harm concentrated in one subgroup.",
+     "mnemonic": "Clean screens, unequal outcomes: fairness failures look like normal output."
+    },
+    {
+     "id": "d5s4q12",
+     "concept": "log-compliance-scope",
+     "type": "single",
+     "stem": "Which statement about logging for transparency and data minimization for compliance is correct?",
+     "options": [
+      "They conflict, so the team must choose between full decision logs and compliance with privacy rules",
+      "They are not in conflict: they require the same log, governed with minimization, retention limits and access controls",
+      "They are resolved by logging only outputs, because inputs are never regulated personal data for the build team",
+      "They are resolved by keeping logs indefinitely, since retention limits would defeat the purpose of the log"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "The notes say logging everything for transparency and pinning data for compliance use the same log, governed differently. Indefinite retention violates retention limits.",
+     "mnemonic": "One log, governed tightly, serves both."
+    },
+    {
+     "id": "d5s4q20",
+     "concept": "audience-slices",
+     "type": "single",
+     "stem": "A person affected by an automated decision asks why it went against them. What must the system have captured to answer well?",
+     "options": [
+      "The full raw routing trace for every step, delivered unedited to the person who asked",
+      "An aggregate query showing that comparable cases were decided consistently over the past year",
+      "The model provider's bias evaluation results, showing the model passed its fairness testing",
+      "The decision's driving inputs and its reason, in terms the person can act on"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "An affected user needs a clear explanation of why the decision was made, in terms they can act on, which requires capturing the inputs that drove it and the reason in a digestible form. The full trace is the build team's slice, and the consistency query is what a regulator needs.",
+     "mnemonic": "User asks why: give the inputs and the reason they can act on."
+    },
+    {
+     "id": "d5s4q21",
+     "concept": "discernment",
+     "type": "multi",
+     "stem": "Which TWO statements about Discernment applied to fairness are correct? Select TWO.",
+     "options": [
+      "It means approving any output that has already passed input and output screening checks",
+      "It replaces decision logging, since a discerning reviewer can judge outputs without records",
+      "A transparency record is what makes recognising a skewed outcome possible in the first place",
+      "It is the competency for maintaining explicit human accountability checkpoints in workflows",
+      "It means recognising a skewed or unjustified outcome, not only confirming a value was produced"
+     ],
+     "correct": [
+      2,
+      4
+     ],
+     "explanation": "Discernment is the AI Fluency competency of evaluating outputs; applied to fairness it lets a reviewer recognise a skewed or unjustified outcome instead of only confirming a value was produced, and a transparency record makes that possible. Maintaining accountability checkpoints is Diligence, and discernment depends on the record rather than replacing it.",
+     "mnemonic": "Discernment spots the skew, but only if the record shows it."
+    },
+    {
+     "id": "d5s4q15",
+     "concept": "decision-log-vs-observability",
+     "type": "single",
+     "stem": "A team already runs production observability that tells them whether the system is healthy. They now need decision logging for fairness and explainability. What changes?",
+     "options": [
+      "Nothing changes, since health dashboards already explain individual decisions to regulators",
+      "A separate instrumentation stack is needed, because fairness signals cannot share traces",
+      "Only aggregate metrics are kept longer, since individual decisions cannot be reconstructed",
+      "Same instrumentation, but different retention and query path, to explain why one decision happened"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Decision logging applies the same instrumentation to a different question: why a specific decision happened rather than whether the system is healthy. The retention and query path differ. A separate stack is unnecessary, and aggregates alone cannot reconstruct a single decision.",
+     "mnemonic": "Same wires, new question: health asks 'is it OK?', decisions ask 'why this?'"
+    },
+    {
+     "id": "d5s4q16",
+     "concept": "decision-log-vs-observability",
+     "type": "multi",
+     "stem": "Which TWO statements about the cost and complexity of decision-level logging are correct? Select TWO.",
+     "options": [
+      "Its cost stays fixed once the log schema is defined, regardless of request volume",
+      "Storage and query cost grows with traffic rather than staying fixed",
+      "One audit-log slice serves users, regulators and the build team without changes",
+      "Retention can stay at platform defaults, since decision logs are out of compliance scope",
+      "The retention policy must itself be governed, since decision data is held longer for a purpose"
+     ],
+     "correct": [
+      1,
+      4
+     ],
+     "explanation": "Capturing decision-level logs on every request adds storage and a query path whose cost grows with traffic. Because decision data is held longer for a specific purpose, its retention policy must be governed. Each audience needs a different slice of the record, and the log is in scope for the compliance register.",
+     "mnemonic": "Decision logs scale with traffic and need their own retention rules."
+    }
+   ]
+  },
+  {
+   "id": "d5s5",
+   "title": "Human-in-the-loop routing by stakes",
+   "learn": [
+    "Human review is a budget; stakes come from reversibility and the cost of a wrong decision, while confidence is a third variable useful only if calibrated.",
+    "Routing rule: low confidence and irreversible or high cost goes to a human; confident, reversible, low-cost decisions run; when variables conflict weight cost and reversibility.",
+    "Placement tradeoffs: pre-action approval is safe but slow, post-action audit suits reversible work, sampled review monitors quality without guarding each outcome.",
+    "Reviewers must see inputs, output and the reason for the flag; consent fatigue motivates plan-level review rather than per-step approval.",
+    "Diligence is the competency behind human review; gate before irreversible agent actions and sample lower-stakes ones."
+   ],
+   "traps": [
+    "Volume routing: sending everything to review overwhelms reviewers until they click through without reading.",
+    "Half a fix: volume and missing context fail independently, so route by stakes and also show the inputs and flag reason; either fix alone still leaves review failing.",
+    "Trusting confidence: a model can be confidently wrong, so confidence helps only if calibrated.",
+    "Wrong placement: post-action audit or sampling on an irreversible action lets harm take effect before it is caught.",
+    "Per-step approval: sign-off on every action adds friction without safety gain and causes consent fatigue."
+   ],
+   "questions": [
+    {
+     "id": "d5s5q01",
+     "concept": "stakes-definition",
+     "type": "single",
+     "stem": "Which two variables set the stakes of a decision when deciding whether a person should review it?",
+     "options": [
+      "Reversibility and the cost of a wrong decision; hard to undo and expensive when wrong means high stakes",
+      "Confidence and request volume; a low confidence score on a large queue alone makes any decision high stakes",
+      "Model size and token cost; larger models make higher-cost decisions that always need human review",
+      "Latency and reviewer availability; stakes rise whenever a reviewer is free to examine the decision"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Reversibility and the cost of a wrong decision set the stakes. Confidence sits on top and estimates how likely the output is wrong; it does not change the stakes.",
+     "mnemonic": "Stakes = undo-ability plus price of error."
+    },
+    {
+     "id": "d5s5q02",
+     "concept": "confidence-calibrated",
+     "type": "single",
+     "stem": "When is a confidence score a reliable input to a routing rule?",
+     "options": [
+      "Always, because the score is produced by the model about its own output and so reflects its accuracy",
+      "Only to the degree it is calibrated, because a model can be confidently wrong",
+      "Whenever it exceeds a fixed threshold, because high scores guarantee a decision is correct",
+      "Only when the decision is irreversible, because reversible decisions make confidence irrelevant"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Confidence is useful only if calibrated; confirming calibration is a task of its own. A high score can still be confidently wrong.",
+     "mnemonic": "Uncalibrated confidence is just confident noise."
+    },
+    {
+     "id": "d5s5q03",
+     "concept": "routing-rule",
+     "type": "single",
+     "stem": "Which decisions does the routing rule send to a person?",
+     "options": [
+      "All decisions above a volume threshold, since the busiest paths carry the greatest aggregate risk",
+      "All low-confidence decisions regardless of cost, since confidence alone sets the stakes of any decision",
+      "Low-confidence decisions that are irreversible or high cost; confident, reversible, low-cost ones run without a human",
+      "All decisions that touch personal data, since privacy risk replaces reversibility and cost in the rule"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "The rule combines confidence with reversibility and cost: low confidence plus irreversible or high-cost goes to a person. Routing by volume or confidence alone ignores stakes.",
+     "mnemonic": "Unsure and unrecoverable? Send it to a human."
+    },
+    {
+     "id": "d5s5q04",
+     "concept": "conflict-weighting",
+     "type": "single",
+     "stem": "A decision is high cost but easily reversed, while confidence is low. Which variables should weigh more when they conflict?",
+     "options": [
+      "Confidence, because the score is the only variable the system itself measures about its output",
+      "Volume, because the review budget is fixed and busier paths should be reviewed first",
+      "Reviewer preference, because the reviewer decides which decisions deserve extra attention",
+      "Cost and reversibility, since they set the consequences of a mistake; confidence sets unreviewed volume"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "When variables conflict, give greater weight to cost and reversibility. Confidence then decides how much of the high-stakes volume can safely pass unreviewed.",
+     "mnemonic": "Consequences trump confidence."
+    },
+    {
+     "id": "d5s5q05",
+     "concept": "post-action-audit",
+     "type": "single",
+     "stem": "Which placement suits reversible, lower-cost decisions where throughput must stay high?",
+     "options": [
+      "Post-action audit: the action runs immediately and a person reviews it afterward",
+      "Pre-action approval: nothing takes effect until a person approves each routed decision",
+      "Sampled review as the only guard: a fraction is checked, so every individual outcome is protected",
+      "Pre-action approval for all traffic: since it scales to high volume when staffed with enough reviewers"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Post-action audit keeps throughput high but the action has already taken effect when caught, so it only suits reversible, lower-cost decisions.",
+     "mnemonic": "Act first, audit later only when you can undo."
+    },
+    {
+     "id": "d5s5q06",
+     "concept": "pre-action-cost",
+     "type": "single",
+     "stem": "What is the main cost of pre-action approval?",
+     "options": [
+      "It lets a wrong action take effect before it is caught, so it suits only reversible decisions",
+      "It adds latency to every routed decision and needs an available person, so it does not scale to high volume",
+      "It samples a fraction of decisions, so a bad decision can slip through unreviewed",
+      "It removes the reviewer's access to inputs, so approval becomes a blind click on the output"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Pre-action approval is safest but slow and needs reviewer availability. The other options describe post-action audit, sampled review and a context failure.",
+     "mnemonic": "Safest placement, slowest queue."
+    },
+    {
+     "id": "d5s5q07",
+     "concept": "sampled-review",
+     "type": "single",
+     "stem": "What is sampled review best described as?",
+     "options": [
+      "A way to guard each irreversible action, since sampling guarantees no bad decision passes",
+      "A replacement for pre-action approval on high-stakes actions, since it is cheaper to run on any single decision",
+      "A way to monitor system quality, not to guard individual outcomes, since unsampled bad decisions can slip through",
+      "A way to review every decision after the fact, since the sample covers the full queue"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Sampled review monitors the system without slowing the process, but a bad decision can slip through unsampled. It does not guard individual outcomes.",
+     "mnemonic": "Sampling watches the system, not each decision."
+    },
+    {
+     "id": "d5s5q08",
+     "concept": "reviewer-context",
+     "type": "multi",
+     "stem": "What must a reviewer see for the review to be accurate? Select THREE.",
+     "options": [
+      "The inputs that drove the decision being reviewed",
+      "The model's output on that decision",
+      "The reason the item was flagged for review",
+      "The reviewer's own approval rate from the previous week",
+      "The token count consumed by the request"
+     ],
+     "correct": [
+      0,
+      1,
+      2
+     ],
+     "explanation": "Without inputs the reviewer cannot tell whether the output is correct, and without the flag reason cannot tell an edge case from routine traffic. Approval rate and token count do not inform the judgement.",
+     "mnemonic": "Inputs, output, flag reason: the reviewer's three."
+    },
+    {
+     "id": "d5s5q09",
+     "concept": "consent-fatigue",
+     "type": "single",
+     "stem": "What problem does plan-level review address, as used in Claude Code, where a person approves the plan rather than each step?",
+     "options": [
+      "Latency in the model, where each step approval adds a call that doubles the cost of the turn",
+      "Calibration of confidence, where scores drift away from actual accuracy over a long session",
+      "Credential exposure, where each approval prompt reveals secrets to the reviewing person",
+      "Consent fatigue, where dozens of approvals in a row lead reviewers to click through without reading"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Requiring sign-off on every action adds friction without meaningful safety gain, so review moves to higher-value checkpoints such as plan review or exception handling.",
+     "mnemonic": "Approve the plan, not every step."
+    },
+    {
+     "id": "d5s5q21",
+     "concept": "volume-routing-risk",
+     "type": "single",
+     "stem": "To save reviewer time, a team sends only its highest-volume workflow to human review, while a low-volume workflow that closes customer accounts irreversibly runs with no gate. Which risk does this show?",
+     "options": [
+      "Consent fatigue from plan-level review, since reviewers approve whole plans without reading",
+      "Miscalibrated confidence, since the low-volume workflow produces scores the team cannot trust",
+      "Over-reliance on post-action audit, which suits the account closures because they are rare",
+      "Routing by volume rather than stakes, which leaves a high-stakes, irreversible action with no gate"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Routing by volume rather than stakes fails two ways: it overwhelms reviewers, or it lets a high-stakes, irreversible action through with no gate at all. Stakes come from reversibility and cost, so irreversible closures need a gate however rare they are. Post-action audit only suits reversible, lower-cost decisions.",
+     "mnemonic": "Rare but irreversible still needs a gate: route by stakes, not by volume."
+    },
+    {
+     "id": "d5s5q11",
+     "concept": "gate-before-irreversible",
+     "type": "single",
+     "stem": "How should an agent workflow place human checkpoints across actions of different risk?",
+     "options": [
+      "Gate every action equally, since uniform gating is the easiest control to defend to an auditor for every action",
+      "Gate before any irreversible or high-stakes action and sample the lower-stakes actions instead of gating each one",
+      "Sample the irreversible actions and gate the low-stakes ones, since errors in low stakes are costly",
+      "Remove gates entirely once confidence is high, since confident agents rarely take wrong actions"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "A gate pauses execution for review based on the task's risk and reversibility; lower-stakes actions are sampled. Uniform gating recreates the volume problem.",
+     "mnemonic": "Gate the irreversible; sample the rest."
+    },
+    {
+     "id": "d5s5q12",
+     "concept": "volume-routing-risk",
+     "type": "single",
+     "stem": "A team routes every model output to review as the conservative default. Why does this approach undermine oversight?",
+     "options": [
+      "It lets irreversible actions run unreviewed, since routing everything bypasses the gate on high-stakes items",
+      "It produces miscalibrated confidence scores, since the score is retrained on every reviewer approval",
+      "Oversight that covers everything reviews nothing, because reviewers disengage to keep up with the volume",
+      "It reduces reviewer cost, since a larger queue means fewer separate review sessions are needed"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Routing everything feels safe because it avoids drawing the line, but volume above what a person can read collapses review into approval. Routing should be by stakes.",
+     "mnemonic": "Review everything and you review nothing."
+    },
+    {
+     "id": "d5s5q13",
+     "concept": "confidence-calibrated",
+     "type": "single",
+     "stem": "A model reports 97 percent confidence on a refund decision, but earlier checks show its high-confidence answers are often wrong. What is the correct design response?",
+     "options": [
+      "Let all high-confidence decisions through, since the score is the model's own estimate of correctness",
+      "Route every decision to a human, since any confidence score is meaningless in a routing rule",
+      "Raise the confidence threshold to 99 percent, since a stricter cutoff repairs an uncalibrated signal",
+      "Do not trust the score alone: confirm calibration and weigh cost and reversibility when routing"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Confidence is only as useful as it is calibrated, and a model can be confidently wrong. A stricter threshold on an uncalibrated score does not fix it.",
+     "mnemonic": "Confidently wrong is still wrong."
+    },
+    {
+     "id": "d5s5q14",
+     "concept": "reviewer-context",
+     "type": "single",
+     "stem": "A reviewer approves flagged items quickly because they cannot tell edge cases from routine traffic. Which change best addresses the specific cause?",
+     "options": [
+      "Show the reason the item was flagged alongside the inputs and the output",
+      "Add a second reviewer to each item so that errors are caught by the other person",
+      "Hide the model's output so that the reviewer judges the inputs independently",
+      "Shorten the queue by sampling, with no change to the reviewer's view of each item"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Without the flag reason a reviewer cannot distinguish an edge case from routine traffic; showing it plus the inputs fixes the context failure. Sampling fixes volume only.",
+     "mnemonic": "Show why it was flagged."
+    },
+    {
+     "id": "d5s5q15",
+     "concept": "routing-rule",
+     "type": "single",
+     "stem": "A confident, easily reversed, low-cost classification decision arrives. What should the routing rule do?",
+     "options": [
+      "Let it through without a human, since confident, reversible, low-cost decisions can usually run unreviewed",
+      "Send it to pre-action approval, since every automated decision needs a person before it takes effect",
+      "Send it to a human because of the model's own limitations, regardless of how the decision scores",
+      "Hold it until a sampled review confirms it, since sampling is required before release"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Confident, reversible, low-cost decisions can usually run without a human. Reviewer attention is a budget to spend on high-stakes items.",
+     "mnemonic": "Confident, reversible, cheap: let it run."
+    },
+    {
+     "id": "d5s5q16",
+     "concept": "diligence",
+     "type": "single",
+     "stem": "Which AI Fluency competency is about maintaining explicit human accountability checkpoints and auditing workflows for gaps where AI acts without review?",
+     "options": [
+      "Discernment, which evaluates whether outputs are acceptable, need revision or need override",
+      "Diligence, which keeps explicit human accountability checkpoints as automation scales up",
+      "Delegation, which decides which tasks should be given to the model in the first place",
+      "Description, which sets out the task and constraints so the model understands the goal"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Diligence is the competency behind human review: checkpoints, spotting oversight erosion under automation pressure, and auditing for review gaps. Discernment judges outputs.",
+     "mnemonic": "Diligence keeps humans accountable as automation grows."
+    },
+    {
+     "concept": "placement-tradeoffs",
+     "type": "multi",
+     "stem": "Which TWO statements about where the human sits in the flow are correct? Select TWO.",
+     "options": [
+      "Pre-action approval means nothing irreversible happens unreviewed, at the cost of latency",
+      "Sampled review monitors quality rather than guarding individual outcomes",
+      "Post-action audit is the right placement for irreversible, high-cost decisions",
+      "Pre-action approval scales well to high volume because reviewers work in parallel",
+      "Sampled review guarantees that no bad decision passes through unreviewed"
+     ],
+     "correct": [
+      0,
+      1
+     ],
+     "explanation": "Pre-action approval is safest but adds latency and needs available people; sampled review monitors the system. Post-action audit only suits reversible, lower-cost decisions.",
+     "mnemonic": "Approve before, audit after, sample to monitor.",
+     "id": "d5s5q17"
+    },
+    {
+     "id": "d5s5q18",
+     "concept": "log-vs-routing-rule",
+     "type": "single",
+     "stem": "A team says its decision log already makes high-stakes automated decisions safe, because every one can be explained afterwards. What is missing?",
+     "options": [
+      "A longer retention period so explanations stay available to regulators",
+      "A routing rule that stops wrong decisions before they take effect",
+      "A sampled review of logged decisions, which guards each individual outcome",
+      "Re-instrumentation of the system, since logs cannot feed a reviewer view"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "A log explains decisions after the fact, but it does not decide which decisions a person should weigh in on before they take effect. A routing rule does that. Sampled review monitors the system rather than guarding individual outcomes, and the existing log can feed the reviewer view without re-instrumenting.",
+     "mnemonic": "The log explains the crash; the routing rule stops the car first."
+    },
+    {
+     "id": "d5s5q19",
+     "concept": "log-vs-routing-rule",
+     "type": "single",
+     "stem": "When designing the reviewer's view for routed decisions, how should the architect relate it to the decision log already in place?",
+     "options": [
+      "Replace the log, since reviewer screens need their own separate instrumentation",
+      "Ignore the log, since reviewers should judge only the model's final output",
+      "Treat the log as raw material and decide what to surface from it and when",
+      "Rely on the log alone, since any logged decision can be explained afterwards"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "The decision log is the raw material for the reviewer view, so the work is deciding what to surface and when, not instrumenting again from the start. Showing only the output fails reviewers, who also need the inputs and the flag reason.",
+     "mnemonic": "Don't rewire: mine the log you already have for the reviewer's screen."
+    },
+    {
+     "id": "d5s5q20",
+     "concept": "autonomy-checkpoints",
+     "type": "multi",
+     "stem": "Anthropic's research on agent autonomy (verify the current framing at publish time) found that sign-off on every action adds friction without meaningful safety gain. Which TWO practices does it favour instead? Select TWO.",
+     "options": [
+      "Keep approval on every step, but give reviewers faster approve buttons",
+      "Have a person monitor what is happening and step in when needed",
+      "Remove the human role entirely once per-step sign-off has been dropped",
+      "Move review to higher-value checkpoints such as plan or exception review",
+      "Replace every pre-action gate, including irreversible ones, with sampled audit"
+     ],
+     "correct": [
+      1,
+      3
+     ],
+     "explanation": "The research favours a person monitoring what happens and stepping in when needed, with per-step approvals reduced and review moved to higher-value checkpoints such as plan review or exception handling. That does not remove the human, and the exact design still depends on the workflow's risk.",
+     "mnemonic": "Watch and step in; review the plan and the exceptions, not every click."
+    }
+   ]
+  },
+  {
+   "id": "d5s6",
+   "title": "Compliance obligations as controls with evidence",
+   "learn": [
+    "Choosing a route that survives HIPAA, GDPR or FedRAMP is a pre-filter, not proof; a regulation states an outcome and you supply the control.",
+    "Every obligation needs three things: a technical control, a named owner and an evidence artifact (the most-missed element).",
+    "Mappings: HIPAA to BAA, admin setting and eligible features (security lead); FedRAMP to authorized route and record (platform owner); residency to regional config and data-flow record (data owner); transparency to decision log and sample reconstruction (architect).",
+    "Training use and retention are different claims; data excluded from training may still be retained or monitored.",
+    "Reviewers accept proof a control is live, not design documents; revalidate on a cadence because configurations drift."
+   ],
+   "traps": [
+    "Route equals compliance: a compliant entry point is only a prerequisite for the controls, owners and evidence.",
+    "Design document as proof: reviewers accept a signed agreement, config screen, authorization record or log query, not a plan.",
+    "Training equals retention: excluded from training does not mean not stored, logged or monitored.",
+    "One-time mapping: configurations drift, so unrevalidated artifacts go stale and controls silently fail.",
+    "Residency copies: pinning processing to a region is not enough; validate that logs, caches, monitoring and retention paths stay inside the approved boundary."
+   ],
+   "questions": [
+    {
+     "id": "d5s6q01",
+     "concept": "prefilter-not-proof",
+     "type": "single",
+     "stem": "A team chose a delivery route that survives HIPAA constraints and considers compliance settled. What is wrong with that conclusion?",
+     "options": [
+      "The route is a prerequisite, not proof; each obligation still needs a control, a named owner and an evidence artifact",
+      "The route must be re-chosen yearly, since regulations replace the permitted routes each year",
+      "Compliance is the vendor's responsibility, so the team's only task is to keep the contract on file",
+      "Design documents are sufficient evidence once the route is chosen, so the register can be skipped"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Surviving the pre-filter yields an allowed route, but reviewers also ask who owns the control and what evidence shows it holding in practice.",
+     "mnemonic": "Route is the ticket, not the proof."
+    },
+    {
+     "id": "d5s6q02",
+     "concept": "regulation-outcome",
+     "type": "single",
+     "stem": "GDPR, HIPAA and FedRAMP state what must be true. What does the architect own as a result?",
+     "options": [
+      "A policy statement, a project sponsor, and a risk rating for the quarterly steering meeting for the executives",
+      "A specific technical control, an accountable owner, and an evidence artifact showing the control is live",
+      "A vendor attestation, a legal reviewer, and a design document describing the intended controls",
+      "A model configuration, an escalation contact, and a training record for the engineering team"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Regulations state outcomes and leave the technical control to you, so each obligation becomes control, owner and evidence. Documents and attestations alone are not evidence of a live control.",
+     "mnemonic": "Control, owner, evidence: the compliance trio."
+    },
+    {
+     "id": "d5s6q03",
+     "concept": "evidence-most-missed",
+     "type": "single",
+     "stem": "Which element of the control, owner, evidence triple is most often missed?",
+     "options": [
+      "The technical control itself, since teams rarely implement anything for an obligation in each project",
+      "The named owner, since owners are always assigned only after the first audit finding",
+      "The evidence artifact that shows the control is live, which is what the reviewer checks",
+      "The framework reference, since teams rarely record which regulation applies to a control"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "The notes stress always including the evidence artifact; a control no one can demonstrate is indistinguishable from one that is not running.",
+     "mnemonic": "No evidence, no control, as far as an auditor knows."
+    },
+    {
+     "id": "d5s6q04",
+     "concept": "hipaa-mapping",
+     "type": "multi",
+     "stem": "Which TWO items are evidence a reviewer accepts for the HIPAA obligation? Select TWO.",
+     "options": [
+      "The signed Business Associate Agreement",
+      "The admin setting showing HIPAA compliance enabled, plus the eligible-feature list",
+      "A design document describing the intended HIPAA architecture",
+      "A statement that the model was trained without the data",
+      "The residency configuration showing the approved region"
+     ],
+     "correct": [
+      0,
+      1
+     ],
+     "explanation": "For HIPAA the evidence is the signed BAA and the admin setting showing compliance enabled, plus the eligible-feature list; the owner is the security lead. Residency evidence belongs to a different obligation.",
+     "mnemonic": "BAA plus the switch plus the feature list."
+    },
+    {
+     "id": "d5s6q05",
+     "concept": "fedramp-mapping",
+     "type": "single",
+     "stem": "For a US government workload at the required impact level, what do the technical control and evidence consist of?",
+     "options": [
+      "Any compliant-looking entry point, plus the vendor's marketing statement on certification coverage",
+      "A regional configuration for the approved boundary, plus a data-flow record covering logs and caches",
+      "The decision log retained for the required period, plus a sample reconstruction of one decision in the register",
+      "An Anthropic-documented authorized route, plus its authorization record and confirmation that the workload runs exclusively on it"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "FedRAMP maps to delivery through an authorized route with an authorization record and confirmation of exclusive use; the owner is the platform owner. The other options are residency and transparency evidence.",
+     "mnemonic": "Authorized route, authorization record, exclusive use."
+    },
+    {
+     "id": "d5s6q06",
+     "concept": "residency-dataflow",
+     "type": "single",
+     "stem": "Which evidence best supports a data-residency obligation?",
+     "options": [
+      "The residency configuration alone, since pinning processing to the approved region covers all copies",
+      "The residency configuration and a data-flow record showing where every copy lives, including logs, caches and monitoring",
+      "A signed Business Associate Agreement, since it states where data can be processed and stored",
+      "An authorization record for the delivery route, since the route determines where every copy lands"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Residency needs regional configuration and validation that logs, caches, monitoring and retention paths stay within the boundary; the owner is the data owner. Configuration alone misses secondary copies.",
+     "mnemonic": "Prove every copy, not just the main store."
+    },
+    {
+     "id": "d5s6q07",
+     "concept": "training-vs-retention",
+     "type": "single",
+     "stem": "A vendor says data is excluded from model training by default. What follows for the retention claim?",
+     "options": [
+      "Retention is also off, since excluding data from training means that nothing is stored at all to the contract",
+      "Retention is limited to 30 days, since training exclusion implies a fixed short retention window",
+      "Nothing automatically; data may still be retained or monitored for logging, abuse prevention, legal compliance or audit",
+      "Retention is irrelevant to compliance, since only training use of data is regulated by the frameworks"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Training use and retention are two distinct claims and must not be collapsed. The notes give no fixed retention window.",
+     "mnemonic": "Not trained on is not the same as not kept."
+    },
+    {
+     "id": "d5s6q08",
+     "concept": "evidence-live",
+     "type": "single",
+     "stem": "A security and legal reviewer asks for proof of a control. Which artifact do they accept?",
+     "options": [
+      "A signed agreement, a configuration screen, an authorization record or a returned log query showing the control is live",
+      "A design document that names the control but lists no owner and no operating evidence",
+      "A diagram of the compliant entry point, annotated with the framework clause it addresses",
+      "A statement that the team intends to enable the control before the next scheduled audit"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Reviewers accept proof that a control is live, not design documents; a control no one can demonstrate looks the same as one that is not running.",
+     "mnemonic": "Show it live, not on paper."
+    },
+    {
+     "id": "d5s6q09",
+     "concept": "revalidate-cadence",
+     "type": "single",
+     "stem": "Why must the compliance register be revalidated on a regular cadence?",
+     "options": [
+      "Frameworks are rewritten annually, so each control must be redesigned to match the new text",
+      "Configurations drift and artifacts go stale, so a control true at design time can be false in production",
+      "Evidence artifacts expire automatically after one audit, so they must be regenerated every cycle",
+      "Owners change role regularly, so control ownership must be reassigned on each cycle"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Producing and maintaining evidence is ongoing work because configurations drift and artifacts go stale, so a control that was real at design time can become silently false in production. Annual framework rewrites and automatic evidence expiry are not the reason for revalidation.",
+     "mnemonic": "Configs drift; evidence must be re-proved."
+    },
+    {
+     "id": "d5s6q18",
+     "concept": "unowned-control-risk",
+     "type": "single",
+     "stem": "A compliance register lists a control for every obligation, but none has a named owner or an evidence artifact. What is the main risk?",
+     "options": [
+      "The delivery route becomes unauthorized, so the workload must move to a different entry point",
+      "A control can stop operating with no one accountable, and the gap surfaces only at audit",
+      "The register must be rewritten for each framework every year, so mappings are always out of date",
+      "Liability for any failed control passes to the model provider, since no internal owner is named"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "A control with no owner and no evidence is invisible at the audit: it can stop operating with no one accountable, and the gap surfaces in review rather than in design, the most expensive place to find it. Missing owners do not change whether the route is authorized, and accountability does not pass to the provider.",
+     "mnemonic": "No owner, no evidence: the control dies quietly and the audit finds it."
+    },
+    {
+     "id": "d5s6q11",
+     "concept": "transparency-mapping",
+     "type": "single",
+     "stem": "For the transparency obligation, what is the technical control and the evidence a reviewer accepts?",
+     "options": [
+      "The retained, queryable decision log, with a sample reconstruction of one decision from the live log as evidence",
+      "The authorized delivery route, with an authorization record confirming exclusive use of that route",
+      "The regional configuration, with a data-flow record covering logs, caches and monitoring paths",
+      "The signed agreement, with an admin setting and a list of eligible features that remain in scope"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Transparency maps to decision logging retained for the required period, evidenced by a sample reconstruction; the owner is the architect.",
+     "mnemonic": "Reconstruct one decision from the live log."
+    },
+    {
+     "id": "d5s6q19",
+     "concept": "governance-spans-owners",
+     "type": "single",
+     "stem": "Why is turning each obligation into a control with an owner and a living evidence artifact more complex than choosing a compliant entry point?",
+     "options": [
+      "Each framework needs its own delivery route, so every obligation adds another entry point to run",
+      "The vendor must produce the evidence artifacts, so each one needs a separate contract negotiation",
+      "Owners can be assigned only after the first audit, so the mapping must be redone once it closes",
+      "It spans security, legal and platform owners, who must agree on who holds what for each obligation"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "A control, an owner and a living evidence artifact per obligation is more governance than an entry-point choice, and it spans security, legal and platform owners who must each agree on who holds what. The evidence is the team's to produce and keep current, and owners belong in the design rather than after an audit.",
+     "mnemonic": "One route is one choice; controls need security, legal and platform agreeing who holds what."
+    },
+    {
+     "id": "d5s6q20",
+     "concept": "transparency-mapping",
+     "type": "single",
+     "stem": "For the obligation that decisions be reconstructable on demand, a team offers a design document describing its decision log. What would a reviewer accept instead?",
+     "options": [
+      "A signed copy of the same design document, approved by the named control owner",
+      "A diagram of the logging pipeline, annotated with the retention period it targets",
+      "A sample reconstruction of one decision pulled from the live decision log",
+      "A written commitment that decision logging will be switched on before the audit"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Reviewers accept proof that a control is live, such as a returned log query, and for transparency the accepted evidence is a sample reconstruction of one decision from the live log. A signed or diagrammed design still only describes a control, and a control no one can demonstrate is indistinguishable from one that is not running.",
+     "mnemonic": "Don't describe the log; replay one decision from it."
+    },
+    {
+     "id": "d5s6q14",
+     "concept": "owner-mapping",
+     "type": "single",
+     "stem": "Which pairing of obligation and owner matches the mapping?",
+     "options": [
+      "HIPAA with the security lead, FedRAMP with the platform owner, and data residency with the data owner",
+      "HIPAA with the data owner, FedRAMP with the security lead, and data residency with the platform owner",
+      "HIPAA with the architect, FedRAMP with the data owner, and data residency with the security lead",
+      "HIPAA with the platform owner, FedRAMP with the architect, and data residency with the data owner"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "The mapping assigns HIPAA to the security lead, FedRAMP to the platform owner, data residency to the data owner, and transparency to the architect.",
+     "mnemonic": "HIPAA security, FedRAMP platform, residency data."
+    },
+    {
+     "id": "d5s6q15",
+     "concept": "revalidate-cadence",
+     "type": "single",
+     "stem": "Which practice best prevents a residency control from silently breaking after a configuration change?",
+     "options": [
+      "Re-read the original design document each quarter to confirm the intended region has not changed",
+      "Rely on the delivery route's authorization record to guarantee that all copies stay in the region",
+      "Disable logging in non-approved regions only once an auditor has raised a specific finding",
+      "Name an owner and revalidate the data-flow record on a regular cadence to detect drift"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Configurations drift, so an owner and a living, revalidated evidence artifact are what catch a change. A design document or route record does not track where data lands.",
+     "mnemonic": "Owner plus cadence catches drift."
+    },
+    {
+     "concept": "training-vs-retention",
+     "type": "multi",
+     "stem": "Which TWO statements about training use and retention are correct? Select TWO.",
+     "options": [
+      "They are two distinct claims that must not be collapsed into one",
+      "Data excluded from training by default may still be retained or monitored for abuse prevention or audit",
+      "Excluding data from training means the data is not stored or logged anywhere",
+      "Retention is regulated only when the retained data is also used for training",
+      "Retention is automatically capped at the same period as the training exclusion"
+     ],
+     "correct": [
+      0,
+      1
+     ],
+     "explanation": "Training use and retention differ; data excluded from training may still be retained or monitored for logging, abuse prevention, legal compliance or configured audit purposes.",
+     "mnemonic": "Not trained on is not the same as not kept.",
+     "id": "d5s6q16"
+    },
+    {
+     "id": "d5s6q17",
+     "concept": "owner-mapping",
+     "type": "single",
+     "stem": "In the mapping of compliance obligations to controls and owners, who owns the control that makes decisions reconstructable on demand?",
+     "options": [
+      "The security lead, who owns the HIPAA control",
+      "The data owner, who owns the residency data-flow record",
+      "The platform owner, who owns the authorized route",
+      "The architect, who owns the retained, queryable decision log"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "The cross-framework transparency obligation is met by the decision log from the fairness work, retained and queryable, and the architect owns it. The security lead owns HIPAA, the platform owner owns FedRAMP and the data owner owns residency.",
+     "mnemonic": "Who built the decision log owns its proof: the architect."
+    }
+   ]
+  }
+ ]
+}

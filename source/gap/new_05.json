@@ -1,0 +1,183 @@
+{
+  "gaps": [
+    {"subject": "d7s1", "area": "Distinguishing the spend guardrails", "source": "05.txt L33", "summary": "The bank tests when to set the spend posture but not what each control does: model default (starting model) vs allowlist/restrictions (models one may switch to) vs effort guidance vs spend, rate and per-user caps.", "question_count": 2},
+    {"subject": "d7s1", "area": "Mass switch-on rollout failure", "source": "05.txt L7-9", "summary": "The predicted failure of a single all-at-once rollout (spike of confused first-time prompts, quiet retreat to old habits) is not tested; only the champion plan itself is.", "question_count": 1},
+    {"subject": "d7s2", "area": "Per-asset distribution governance and selection criteria", "source": "05.txt L11, L38", "summary": "The mechanism is chosen by what the tool is, who uses it and who governs it, and who can reach, update and revoke each shared asset is decided per asset; neither is tested.", "question_count": 2},
+    {"subject": "d7s2", "area": "Org-provisioned Skill as simplest all-member path", "source": "05.txt L12, L19-21", "summary": "Bank tests toggling and re-upload for org Skills but not the selection rule that org-provisioning is the simplest path when a capability genuinely should reach everyone.", "question_count": 1},
+    {"subject": "d7s2", "area": "API Skill governance locus", "source": "05.txt L28-30", "summary": "Bank tests API Skill version pinning but not that its governance lives in the calling system and reuse is machine-to-machine, not human-facing.", "question_count": 1},
+    {"subject": "d7s3", "area": "Checklist versus automated gates", "source": "05.txt L62-63", "summary": "The checklist defines what must be true and is team-produced, while regression tests and evals turn checkable items into a repeatable gate on every change; d7s3q14 only touches review volume.", "question_count": 2},
+    {"subject": "d7s3", "area": "Diligence complexity is cultural", "source": "05.txt L68", "summary": "The hard part of diligence is cultural, not technical: holding generated code to the hand-written review standard when it ships faster and looks right.", "question_count": 1},
+    {"subject": "d7s4", "area": "Causes of intermittent tool failures", "source": "05.txt L86-88", "summary": "The first action for intermittent tool failures is tested, but the three likely architecture causes (authorization, rate limits, unhandled error path) are not.", "question_count": 1}
+  ],
+  "questions": [
+    {
+      "subject": "d7s1",
+      "concept": "spend-guardrail-controls",
+      "type": "single",
+      "stem": "An admin wants every new Claude Code session to begin on a mid-tier model, while still letting developers switch to a stronger model when a task needs it. Which spend guardrail sets the starting model?",
+      "options": [
+        "A per-user spend cap applied across the whole team",
+        "A model default, which fixes the model a session starts on",
+        "A model allowlist naming which models the team may use",
+        "Effort guidance setting how hard the model works per task"
+      ],
+      "correct": [1],
+      "explanation": "The model default decides which model a session starts on. An allowlist or restriction governs which models the team may switch to, so it limits choice rather than setting the starting point; caps and effort guidance bound consumption and effort.",
+      "mnemonic": "Default is where you start; allowlist is where you may go."
+    },
+    {
+      "subject": "d7s1",
+      "concept": "spend-guardrail-controls",
+      "type": "multi",
+      "stem": "A team lead wants to stop developers switching to the most expensive model tier and to bound how much any single person can consume. Which TWO spend guardrails address these needs? Select TWO.",
+      "options": [
+        "Model allowlists and restrictions on which models the team may switch to",
+        "Per-user caps that keep each person's consumption within a set bound",
+        "A shared CLAUDE.md that asks developers to prefer cheaper models",
+        "A model default that sets which model each session starts on",
+        "Effort guidance describing how hard the model should work on a task"
+      ],
+      "correct": [0, 1],
+      "explanation": "Allowlists and restrictions control which models people may switch to, and per-user caps bound individual consumption. A model default only sets the starting model, so developers can still switch up; a CLAUDE.md request is guidance, not a guardrail.",
+      "mnemonic": "Allowlist fences the tiers; per-user cap fences the person."
+    },
+    {
+      "subject": "d7s1",
+      "concept": "mass-rollout-failure",
+      "type": "single",
+      "stem": "A director proposes enabling Claude Code for all four engineering departments on the same day through a single announcement email. What outcome does the rollout guidance predict?",
+      "options": [
+        "Faster standardization, because everyone starts from the same date",
+        "A spend overrun first, because model defaults have not been set",
+        "Confused first-time prompts spike, then people quietly retreat to old habits",
+        "Even adoption, since every developer receives the same instructions"
+      ],
+      "correct": [2],
+      "explanation": "A single all-hands switch-on tends to produce a spike of confused first-time prompts and a quiet retreat to old habits. Champions first, then batches, leaves each department with a working example, a local expert and a tuned CLAUDE.md before the broad rollout.",
+      "mnemonic": "Mass email, mass confusion, quiet retreat."
+    },
+    {
+      "subject": "d7s2",
+      "concept": "per-asset-distribution-governance",
+      "type": "single",
+      "stem": "An Architect is setting up distribution for a team's release-notes skill, a coding-conventions skill and a shared configuration. What is the hard part, and at what level should it be decided?",
+      "options": [
+        "Which single mechanism suits every asset, decided once for the team",
+        "How to write each skill's prompt, decided by the department champions",
+        "Which model each skill runs on, decided by the spend posture",
+        "Who can reach, update and revoke each asset, decided per asset"
+      ],
+      "correct": [3],
+      "explanation": "Distribution governance, meaning who can reach, update and revoke each shared asset, is the hard part and is decided on a per-asset basis. Picking one mechanism for everything ignores that assets differ in audience and in who should govern them.",
+      "mnemonic": "Reach, update, revoke: decide it asset by asset."
+    },
+    {
+      "subject": "d7s2",
+      "concept": "per-asset-distribution-governance",
+      "type": "multi",
+      "stem": "Which THREE considerations should drive the choice of distribution mechanism for a given team skill? Select THREE.",
+      "options": [
+        "What the tool is and what job it performs",
+        "Which model tier the skill author tested it on",
+        "Who will use it, whether everyone or one group",
+        "Who has access to govern, update and revoke it",
+        "How long the SKILL.md instructions file has grown"
+      ],
+      "correct": [0, 2, 3],
+      "explanation": "The mechanism should account for what the tool is, who uses it and who has access to govern it. The authoring model tier and the length of the instructions do not determine whether a skill should be org-wide, group-scoped, project-scoped or API-called.",
+      "mnemonic": "What, who uses, who governs: three questions pick the channel."
+    },
+    {
+      "subject": "d7s2",
+      "concept": "org-provisioned-best-when",
+      "type": "single",
+      "stem": "A security-awareness skill must reach every member of the organization, and its owner is comfortable managing updates by hand. Which distribution mechanism is the simplest fit?",
+      "options": [
+        "A Claude Code project Skill committed to each repository",
+        "An org-provisioned Skill uploaded under Organization settings > Skills",
+        "An API Skill pinned to an explicit version in a container",
+        "Server-managed settings pushed on the hourly polling cycle"
+      ],
+      "correct": [1],
+      "explanation": "An org-provisioned Skill becomes available to everyone in the organization at once, the simplest path when a capability genuinely should reach all members; updates require manual re-upload. Server-managed settings are a settings channel, not a Skills distribution path.",
+      "mnemonic": "Everyone, simply: upload it in Organization settings."
+    },
+    {
+      "subject": "d7s2",
+      "concept": "api-skill-governance",
+      "type": "single",
+      "stem": "A partner's billing product calls a document-classification Skill programmatically through the Messages API. Where does governance of that Skill primarily live?",
+      "options": [
+        "In the admin UI's install preferences for the group using it",
+        "In Organization settings, where users can toggle it off",
+        "In the calling system, with explicit version pinning, machine to machine",
+        "In the project repository's .claude/skills/ directory with the code"
+      ],
+      "correct": [2],
+      "explanation": "API Skills are governed in the calling system and support explicit version pinning; their reuse is machine-to-machine rather than human-facing. Install preferences belong to plugins, and toggling belongs to org-provisioned Skills.",
+      "mnemonic": "API Skill: the caller governs, the version is pinned."
+    },
+    {
+      "subject": "d7s3",
+      "concept": "checklist-vs-automated-gates",
+      "type": "single",
+      "stem": "A team has a written verification checklist for AI-generated changes, but reviewers re-derive correctness by hand on every pull request. Which improvement best follows the diligence guidance?",
+      "options": [
+        "Replace the checklist with Claude's own review flags on each pull request",
+        "Adopt a vendor-published checklist so the standard is not team-specific",
+        "Add a second human reviewer so two people re-check each change by hand",
+        "Automate checkable items as a regression suite and eval set gating every change"
+      ],
+      "correct": [3],
+      "explanation": "Wherever a check can be automatic it should be: a regression suite and eval set turn verification into a gate that runs on every change. The checklist is produced internally for the team's needs, and AI review flags are input, not a verdict.",
+      "mnemonic": "Checklist says what; tests and evals prove it every time."
+    },
+    {
+      "subject": "d7s3",
+      "concept": "checklist-vs-automated-gates",
+      "type": "multi",
+      "stem": "Which TWO statements correctly describe how a verification checklist relates to tests and evals? Select TWO.",
+      "options": [
+        "Once tests and evals exist, the checklist can be retired",
+        "The checklist defines what must be true before output reaches production",
+        "The checklist should be adopted unchanged from a standard template",
+        "Tests and evals prove those properties repeatably on every change",
+        "Evals remove the need for the author to understand the change"
+      ],
+      "correct": [1, 3],
+      "explanation": "The checklist defines what must be true; tests and evals are how the team proves it repeatably instead of by hand. The checklist is team-produced for specific needs, and human understanding remains one of its four dimensions.",
+      "mnemonic": "Checklist defines, gates prove: both stay."
+    },
+    {
+      "subject": "d7s3",
+      "concept": "diligence-cultural-complexity",
+      "type": "single",
+      "stem": "A team's AI-assisted coding tools are well configured, yet review standards keep slipping on generated changes. What is the hard part of diligence in this situation?",
+      "options": [
+        "Technical: configuring hooks so generated code cannot skip linting",
+        "Cultural: holding generated code to the hand-written review standard",
+        "Financial: the review budget cannot keep pace with the volume",
+        "Technical: choosing a model tier strong enough to skip review"
+      ],
+      "correct": [1],
+      "explanation": "The hard part is cultural rather than technical: holding AI-generated code to the same review standard as hand-written code, especially when it ships faster and looks right. Better tooling or a stronger model does not remove the need for that standard.",
+      "mnemonic": "Looks right, ships fast: culture, not tooling, holds the bar."
+    },
+    {
+      "subject": "d7s4",
+      "concept": "intermittent-tool-causes",
+      "type": "multi",
+      "stem": "A tool used by a production agent fails intermittently. Which THREE are the likely architecture causes? Select THREE.",
+      "options": [
+        "Retrieval drift as the indexed corpus kept growing",
+        "An authorization problem on the tool's credentials or scope",
+        "Rate limits on the tool being reached under load",
+        "The model tier creeping up across requests over time",
+        "An unhandled error path in the tool integration"
+      ],
+      "correct": [1, 2, 4],
+      "explanation": "Intermittent tool failures usually trace to authorization, rate limits or an unhandled error path; the first action is to inspect auth and limits and trace one failed call end to end. Retrieval drift explains gradual quality decline, and tier creep explains cost rising without usage change.",
+      "mnemonic": "Flaky tool? Auth, limits, unhandled path: trace one failure."
+    }
+  ]
+}

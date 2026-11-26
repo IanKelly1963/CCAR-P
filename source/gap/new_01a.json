@@ -1,0 +1,464 @@
+{
+  "gaps": [
+    {"subject": "d1s1", "area": "Token-limit oversized request (400) and pre-send checks", "source": "01.txt L12", "summary": "A prompt over the token limit is rejected before generation with a 400 invalid_request_error, and the usage field plus the token-counting API let you avoid the edge; the bank tests only the 413 and stop-reason cases.", "question_count": 2},
+    {"subject": "d1s1", "area": "Restate the goal alongside the instruction", "source": "01.txt L16-17", "summary": "When intent and literal instruction might diverge, the steerability mitigation is to restate the goal explicitly beside the instruction (plus system prompts, structured outputs, code execution); untested.", "question_count": 2},
+    {"subject": "d1s2", "area": "Subagents versus Agent Teams", "source": "01.txt L57-62", "summary": "Subagents take scoped sub-tasks in isolated or parallel contexts, while Agent Teams are coordinated peers each owning part of the goal; the bank never distinguishes them.", "question_count": 2},
+    {"subject": "d1s3", "area": "Delegation map categories and the Delegation competency", "source": "01.txt L86-91", "summary": "Decomposition yields a delegation map of AI-appropriate, human-retained and collaborative (Claude drafts, person decides) work, and this is the Delegation AI Fluency competency; untested.", "question_count": 2},
+    {"subject": "d1s4", "area": "Predictability and autonomy axes", "source": "01.txt L124, L132-136", "summary": "Patterns are placed on predictability and autonomy axes, with workflows in the middle band; untested.", "question_count": 1},
+    {"subject": "d1s4", "area": "Chaining sub-pattern", "source": "01.txt L143-146", "summary": "Chaining (each stage consumes the previous output, e.g. extract, classify, summarize) is the only workflow sub-pattern not tested.", "question_count": 1},
+    {"subject": "d1s4", "area": "Combine sub-patterns, start simplest, escalate on measurement", "source": "01.txt L159", "summary": "Sub-patterns are not mutually exclusive; choose the simplest meeting error tolerance and observability and escalate only when measurement shows it falling short.", "question_count": 2},
+    {"subject": "d1s4", "area": "Five-factor ratings per pattern", "source": "01.txt L162-191", "summary": "The per-factor ratings (agent observability reads like a transcript tooling cannot alert on, agent latency budgeted for worst case, workflow lowest error cost, augmented lowest token cost) are untested; only the sequential-walk rule is.", "question_count": 3},
+    {"subject": "d1s4", "area": "Agent cost is a design outcome, not a label", "source": "01.txt L210", "summary": "Agents do not automatically cost more; context accumulation and call count drive cost, so a poor workflow can cost more than a good agent.", "question_count": 2},
+    {"subject": "d1s4", "area": "Workflow versus agent failure diagnosability", "source": "01.txt L211-212", "summary": "A workflow fails at a code step; an agent fails on a model decision mid-sequence, which standard debugging tools catch less well.", "question_count": 1},
+    {"subject": "d1s4", "area": "Fine-tuning lock-in and availability (verify framing)", "source": "01.txt L198-204", "summary": "Fine-tuning locks you to a fixed model version, and its availability is limited and must be confirmed with the account team; untested.", "question_count": 2},
+    {"subject": "d1s4", "area": "Agent-specific audit gap and guardrails rebuilding a workflow", "source": "01.txt L218-224", "summary": "The failure the agent pattern itself added was no discrete auditable step, and piling guardrail tools into the loop rebuilt a workflow minus the logging; the bank tests only the version-pinning half.", "question_count": 2},
+    {"subject": "d1s5", "area": "Multi-agent failure design responses", "source": "01.txt L236-255", "summary": "The design responses for malformed results, conflicting results and orchestrator state (validate/retry/record gap, conflict-resolution rule or human escalation, idempotent retries, checkpointing) are untested.", "question_count": 3},
+    {"subject": "d1s5", "area": "Coding-agent two-phase shape and untested reference-architecture failures", "source": "01.txt L292-297", "summary": "The coding agent explores agentically then edits through deterministic steps; per-language regression tracking and deploying an agent before measuring the routed workflow are untested failure modes.", "question_count": 2},
+    {"subject": "d3s2", "area": "Semantic chunking", "source": "01.txt L335-337", "summary": "Semantic chunking fits prose where a chunk must be self-contained and reduces mid-idea cuts; never the correct answer in the bank.", "question_count": 1},
+    {"subject": "d3s2", "area": "Maintenance axis and sizing to actual query patterns", "source": "01.txt L356-364", "summary": "Maintenance is the third retrieval trade-off axis, pipelines degrade silently as documents are added, and the pipeline should be sized to actual query patterns; untested.", "question_count": 1}
+  ],
+  "questions": [
+    {
+      "subject": "d1s1",
+      "concept": "oversized-request-400",
+      "type": "single",
+      "stem": "A team sends one prompt whose token count exceeds the model's limit, although the raw request body is well under the byte limit. What should they expect?",
+      "options": [
+        "A 413 request_too_large error, because the request is too large to send",
+        "A 400 invalid_request_error saying the prompt is too long, before generation",
+        "A response that stops early with a model_context_window_exceeded stop reason",
+        "A truncated response in which the oldest turns are silently dropped first"
+      ],
+      "correct": [1],
+      "explanation": "A prompt over the model's token limit is an oversized request, rejected before generation with a 400 invalid_request_error saying the prompt is too long. A 413 request_too_large applies when the raw body exceeds the byte limit, and model_context_window_exceeded applies when the prompt fits but generation runs into the window ceiling.",
+      "mnemonic": "Too many tokens: 400. Too many bytes: 413. Fits but runs out: stop reason."
+    },
+    {
+      "subject": "d1s1",
+      "concept": "oversized-request-400",
+      "type": "multi",
+      "stem": "An architect wants to avoid hitting the context-window edge in production rather than learning about it from errors. Which TWO practices fit? Select TWO.",
+      "options": [
+        "Retry any 400 prompt-too-long error with exponential backoff",
+        "Check the usage field returned on every response",
+        "Raise the byte limit so that 413 errors stop occurring",
+        "Call the token-counting API before sending large requests",
+        "Wait for a model_context_window_exceeded reason, then trim"
+      ],
+      "correct": [1, 3],
+      "explanation": "To stay clear of the limit, check the usage field on every response and use the token-counting API before sending. Retrying an oversized request with backoff fails the same way every time, because the request itself is too large; backoff is for transient errors.",
+      "mnemonic": "Count before you send; read usage when it lands."
+    },
+    {
+      "subject": "d1s1",
+      "concept": "restate-goal-with-instruction",
+      "type": "single",
+      "stem": "A prompt tells Claude to keep every shift handover note under 80 words. The notes now meet the limit but sometimes drop the one allergy warning the next nurse needs. Which change best addresses this steerability risk?",
+      "options": [
+        "Raise the limit to 200 words so the model has room for every detail",
+        "Move the word limit into a hook so the model cannot exceed it",
+        "Restate the goal beside the limit: the note must let the next shift act safely",
+        "Add extended thinking so the model reasons longer about each note"
+      ],
+      "correct": [2],
+      "explanation": "The model followed the letter of the length instruction and missed its intent. When intent and literal instruction might diverge, restate the goal explicitly alongside the instruction. Enforcing the limit with a hook would make the letter even stricter, and a bigger limit still does not say what must never be dropped.",
+      "mnemonic": "Letter without intent? Say the goal out loud beside the rule."
+    },
+    {
+      "subject": "d1s1",
+      "concept": "restate-goal-with-instruction",
+      "type": "multi",
+      "stem": "Which TWO mitigations does the steerability property call for? Select TWO.",
+      "options": [
+        "Restate the goal explicitly whenever intent and the literal instruction could diverge",
+        "Rely on longer reasoning chains so the model checks its own arithmetic",
+        "Prefer abstract, open-ended instructions so the model can infer the intent",
+        "Use system prompts, structured outputs and code execution where logic must be precise",
+        "Route factual lookups of names and dates through retrieval or web search"
+      ],
+      "correct": [0, 3],
+      "explanation": "Steerability is mitigated with system prompts, structured outputs and code execution for logical precision, and by restating the goal alongside an instruction when intent and letter might diverge. Long reasoning chains and abstract instructions are listed as steerability limitations, and routing lookups through retrieval mitigates the knowledge and next-token properties.",
+      "mnemonic": "Steer with structure and say why: system prompt, schema, code, plus the goal."
+    },
+    {
+      "subject": "d1s2",
+      "concept": "subagents-vs-agent-teams",
+      "type": "single",
+      "stem": "A program runs three long-lived agents that each own one part of a product launch (pricing, legal review, messaging) and coordinate as equals toward a single goal. Which primitive describes this?",
+      "options": [
+        "Subagents, each handed a scoped sub-task in a separate context",
+        "Agent Teams, coordinated peers each owning part of a larger goal",
+        "Dynamic Workflows, which assemble the steps at runtime instead",
+        "Skills, versioned units that each package a repeatable procedure"
+      ],
+      "correct": [1],
+      "explanation": "Agent Teams are multiple agents working as coordinated peers, each owning part of a larger goal. Subagents are scoped sub-tasks handed to a separate context for isolation or parallelism; they return results to a parent rather than owning part of the goal as peers.",
+      "mnemonic": "Subagents take a ticket; teammates own a territory."
+    },
+    {
+      "subject": "d1s2",
+      "concept": "subagents-vs-agent-teams",
+      "type": "single",
+      "stem": "A parent agent must review 30 independent log files, each in a clean context, and simply combine the findings returned. A colleague proposes an Agent Team. What is the better fit?",
+      "options": [
+        "An Agent Team, since thirty files need peers that coordinate as equals",
+        "Hooks, since each file review must fire deterministically on an event",
+        "MCP, since every file reviewer needs to reach the same set of tools",
+        "Subagents, since the parent hands out scoped sub-tasks and combines results"
+      ],
+      "correct": [3],
+      "explanation": "Handing scoped sub-tasks to separate contexts to run in isolation or in parallel is the subagent job. Agent Teams are for peers each owning part of a goal, and reaching for a heavier primitive than the job requires costs latency, tokens and operational surface on every request.",
+      "mnemonic": "Fan-out of isolated chores: subagents. Peer ownership: teams."
+    },
+    {
+      "subject": "d1s3",
+      "concept": "delegation-map",
+      "type": "single",
+      "stem": "Decomposing a partner request produces a delegation map. Which three categories does it assign each part of the request to?",
+      "options": [
+        "AI-appropriate, human-retained, and collaborative work where Claude drafts and a person decides",
+        "Augmented calls, workflows and agents, chosen by how predictable each step is",
+        "Entry points, build-time interfaces and delivery routes, each chosen by a stakeholder",
+        "Low, medium and high stakes, assigned from the model's confidence score on each step"
+      ],
+      "correct": [0],
+      "explanation": "The delegation map sorts each part into AI-appropriate work, human-retained work, or collaborative work where Claude drafts and a person decides, justified by reversibility, stakes and accountability. Augmented call, workflow and agent are the patterns chosen afterwards, once ownership is settled.",
+      "mnemonic": "The map says: Claude's, human's, or draft-then-decide."
+    },
+    {
+      "subject": "d1s3",
+      "concept": "delegation-map",
+      "type": "single",
+      "stem": "Which AI Fluency competency is an architect exercising when deciding, part by part, whether Claude should own a piece of work, judged on reversibility, stakes and accountability?",
+      "options": [
+        "Discernment",
+        "Diligence",
+        "Delegation",
+        "Description"
+      ],
+      "correct": [2],
+      "explanation": "Delegation, the first of the four AI Fluency competencies, is deciding what Claude is trusted to own, producing the delegation map. Discernment judges whether outputs are acceptable, and Diligence maintains human accountability checkpoints.",
+      "mnemonic": "Delegation decides who does it; Discernment judges what came back."
+    },
+    {
+      "subject": "d1s4",
+      "concept": "predictability-autonomy-axes",
+      "type": "single",
+      "stem": "Use cases are plotted on two axes: how predictable the path is and how much autonomy the model is granted. Where does a workflow sit?",
+      "options": [
+        "High predictability and low autonomy, executing one bounded task once",
+        "High autonomy and low predictability, where the next move depends on the last",
+        "The middle band: a predictable overall shape with contained model judgment per step",
+        "Low predictability and low autonomy, since your code fixes every branch"
+      ],
+      "correct": [2],
+      "explanation": "Workflows occupy the middle band: the overall shape is predictable, but each step may involve contained model judgment. High predictability and low autonomy is the augmented LLM quadrant, and high autonomy with low predictability is the agent corner.",
+      "mnemonic": "Augmented: control corner. Workflow: middle band. Agent: freedom corner."
+    },
+    {
+      "subject": "d1s4",
+      "concept": "chaining-subpattern",
+      "type": "single",
+      "stem": "A pipeline first extracts every obligation and deadline from a contract, then classifies each one by risk level, then drafts a summary memo for the lawyer. Which workflow sub-pattern is this?",
+      "options": [
+        "Routing",
+        "Parallelization",
+        "Evaluator-optimizer",
+        "Chaining"
+      ],
+      "correct": [3],
+      "explanation": "Chaining is sequential: each stage has a defined output that the next stage consumes, such as extract, then classify, then summarize. Parallelization runs independent calls at once, and routing sends different kinds of input down different paths.",
+      "mnemonic": "Chain links: each stage eats the last stage's output."
+    },
+    {
+      "subject": "d1s4",
+      "concept": "simplest-pattern-first",
+      "type": "single",
+      "stem": "A team designing a support workflow wants to adopt routing, parallelization and evaluator-optimizer together from day one 'to be safe'. What is the recommended approach?",
+      "options": [
+        "Combine all three now, since production workflows usually mix several patterns",
+        "Choose the simplest pattern meeting error tolerance and observability; escalate on measured shortfall",
+        "Start with an agent, then extract sub-patterns once the traces reveal the paths",
+        "Use evaluator-optimizer everywhere, since a second check always raises quality"
+      ],
+      "correct": [1],
+      "explanation": "Sub-patterns can be combined, but the right choice is usually the simplest one that meets the task's error tolerance and observability requirements, revisited with production data and escalated only when measurement shows it falling short. That most workflows mix patterns does not justify adding them all up front.",
+      "mnemonic": "Start simple, measure, then climb: escalate on evidence, not anxiety."
+    },
+    {
+      "subject": "d1s4",
+      "concept": "simplest-pattern-first",
+      "type": "multi",
+      "stem": "Which TWO statements about workflow sub-patterns are correct? Select TWO.",
+      "options": [
+        "Each workflow must commit to exactly one sub-pattern to stay observable",
+        "They are not mutually exclusive; production workflows often combine several",
+        "Evaluator-optimizer should be the default because it guarantees quality",
+        "Parallelization fits best when each stage consumes the previous stage's output",
+        "Escalate to a heavier pattern only when measurement shows the simpler one falls short"
+      ],
+      "correct": [1, 4],
+      "explanation": "The four sub-patterns are not mutually exclusive and are often combined, and you escalate only when measurement shows the simpler pattern falling short. Stages consuming the previous output describe chaining, not parallelization, which suits independent sub-tasks.",
+      "mnemonic": "Mix patterns freely, but upgrade only on data."
+    },
+    {
+      "subject": "d1s4",
+      "concept": "five-factor-ratings",
+      "type": "single",
+      "stem": "In the five-factor comparison of patterns, why does an agent rate worst on observability?",
+      "options": [
+        "A single call is easy to log but stays opaque about what happened inside",
+        "Its steps log like ordinary code, so standard tooling records too much noise",
+        "Agents cannot emit token counts or stop reasons in their responses",
+        "Its trajectory reads like a transcript that most tooling cannot alert on"
+      ],
+      "correct": [3],
+      "explanation": "An agent's trajectory reads like a transcript, and most current observability tooling is not built to alert on it. A single call that is easy to log but opaque inside describes the augmented LLM, and steps logging like code is why workflows rate best.",
+      "mnemonic": "Agent logs read like a novel; dashboards can't alert on plot twists."
+    },
+    {
+      "subject": "d1s4",
+      "concept": "five-factor-ratings",
+      "type": "single",
+      "stem": "A user-facing feature has a strict response deadline. When weighing an agent against the latency-budget factor, how should its runtime be budgeted?",
+      "options": [
+        "Plan for the median run, since most agent trajectories finish quickly",
+        "Budget for the worst case, since agent runtime is open-ended",
+        "Treat it like a workflow: predictable and additive in duration",
+        "Assume single-call latency, adding time only for extended thinking"
+      ],
+      "correct": [1],
+      "explanation": "Agent runtime is open-ended, so the latency budget must cover the worst case, not the median. Predictable, additive duration describes a workflow, and single-call latency describes the augmented LLM.",
+      "mnemonic": "Agents have no finish line you can promise: budget the worst lap."
+    },
+    {
+      "subject": "d1s4",
+      "concept": "five-factor-ratings",
+      "type": "multi",
+      "stem": "In the five-factor comparison, which TWO pairings of pattern, factor and rating are correct? Select TWO.",
+      "options": [
+        "Agent on predictability: low, because the trajectory is fixed in advance",
+        "Workflow on error cost: low, because deterministic guards sit between steps",
+        "Workflow on observability: high, because steps produce a model transcript",
+        "Augmented LLM on error cost: low, because step-level guards wrap the call",
+        "Augmented LLM on cost: low, because it uses the fewest tokens per request"
+      ],
+      "correct": [1, 4],
+      "explanation": "Workflows rate low on error cost because deterministic guards sit between steps, and the augmented LLM rates low on cost because it uses the fewest tokens per request. The augmented LLM rates medium on error cost precisely because it has no step-level guards, and workflows log as code, not as a transcript.",
+      "mnemonic": "Guards between steps cut error cost; one call cuts token cost."
+    },
+    {
+      "subject": "d1s4",
+      "concept": "agent-cost-by-design",
+      "type": "single",
+      "stem": "A reviewer rejects an agent design solely because 'agents always cost more than workflows'. What is the most accurate response?",
+      "options": [
+        "Correct: agents carry a fixed premium per request regardless of design",
+        "Incorrect: workflows always cost more, because every step calls the model",
+        "Cost tracks accumulated context and call count; design matters more than the label",
+        "Correct: only augmented calls should be used wherever cost is a factor"
+      ],
+      "correct": [2],
+      "explanation": "Agents do not automatically cost more than workflows; what drives cost is how much context accumulates and how many model calls are made. Design matters more than the pattern label, so the claim is wrong in both directions, not reversed.",
+      "mnemonic": "Price the context and the calls, not the pattern's name tag."
+    },
+    {
+      "subject": "d1s4",
+      "concept": "agent-cost-by-design",
+      "type": "single",
+      "stem": "A workflow re-sends its full accumulated history to the model at each of twelve steps and costs more per request than a tightly bounded agent doing the same job. What does this illustrate?",
+      "options": [
+        "A poorly designed workflow can cost more than a well-designed agent",
+        "Workflows are inherently more expensive, so the agent should be the default",
+        "The agent must be hiding tokens, since agents always cost the most",
+        "Cost is set by the model tier alone, not by context or call count"
+      ],
+      "correct": [0],
+      "explanation": "Cost is driven by context accumulation and the number of calls, so a poorly designed workflow can cost more than a well-designed agent. That does not make agents the default; it means design, not the label, sets the bill.",
+      "mnemonic": "Bloated workflow, lean agent: the bill follows the design."
+    },
+    {
+      "subject": "d1s4",
+      "concept": "workflow-vs-agent-failure",
+      "type": "single",
+      "stem": "Why is an agent failure typically harder to spot and diagnose than a workflow failure?",
+      "options": [
+        "Workflows fail at a code step; agents fail on a model decision mid-sequence",
+        "Agents throw no errors at all, while workflows always raise exceptions",
+        "Workflows hide failures inside a single call that cannot be logged",
+        "Agents fail only when a tool is unavailable, which logs rarely show"
+      ],
+      "correct": [0],
+      "explanation": "A workflow fails when a step in your code fails, which standard debugging catches. An agent fails when the model makes a bad decision somewhere in a sequence of turns, which is harder to spot and which standard tools do not catch the same way.",
+      "mnemonic": "Workflow breaks at a line of code; agent breaks at a line of thought."
+    },
+    {
+      "subject": "d1s4",
+      "concept": "finetune-limits",
+      "type": "single",
+      "stem": "Prompting has not made a high-volume extractor follow a consistent output format, and the partner asks for fine-tuning on Claude. What should the architect do before recommending it?",
+      "options": [
+        "Proceed directly, since fine-tuning is broadly available on every delivery route",
+        "Switch delivery routes, since fine-tuning is guaranteed on all cloud providers",
+        "Confirm current fine-tuning access with the Anthropic account team, since availability varies",
+        "Skip the request, since a consistent format is never a valid fine-tuning reason"
+      ],
+      "correct": [2],
+      "explanation": "Fine-tuning Claude is not broadly available; access is limited and varies by model and delivery route, so verify current options with the Anthropic account team first. A consistent format that prompting has not fixed is one of the situations where fine-tuning can be justified.",
+      "mnemonic": "Fine-tuning: last rung, limited access; ask the account team first."
+    },
+    {
+      "subject": "d1s4",
+      "concept": "finetune-limits",
+      "type": "single",
+      "stem": "Outside the narrow situations that justify it, what is the main downside of fine-tuning?",
+      "options": [
+        "It locks you to a fixed model version and narrows your options",
+        "It always raises per-request inference cost above prompting",
+        "It removes the need for an eval set after deployment",
+        "It prevents any use of tools or retrieval at inference time"
+      ],
+      "correct": [0],
+      "explanation": "Fine-tuning locks you to a fixed model version and narrows your options without much to show for it, so treat it as the last step of a deliberate progression. Lower inference cost at very high volume is actually one of the reasons it can be justified.",
+      "mnemonic": "Fine-tune and you freeze the version."
+    },
+    {
+      "subject": "d1s4",
+      "concept": "agent-audit-gap",
+      "type": "single",
+      "stem": "An auditor asks which step approved a disbursement, and the team running an agent can only point to a model turn. Which failure was introduced specifically by the agent pattern?",
+      "options": [
+        "An unpinned model version that rolled forward without re-validation",
+        "No discrete, auditable step exists to answer for the decision",
+        "The disbursement rule was stored in an SQL table, not in the prompt",
+        "Traces were not retained long enough for the auditor to review"
+      ],
+      "correct": [1],
+      "explanation": "What the agent pattern added was the absence of a discrete, auditable step: the system could produce only a trajectory when an external party needed a deterministic answer. The unpinned model version is a governance gap that a workflow shipped the same way would have inherited too.",
+      "mnemonic": "Auditors want a step to point at; an agent only offers a trajectory."
+    },
+    {
+      "subject": "d1s4",
+      "concept": "agent-audit-gap",
+      "type": "single",
+      "stem": "A team chose an agent 'to avoid constraining it too early'. By month two it had added so many guardrail tools that it had effectively rebuilt a workflow inside the loop. What did it lack compared with a real workflow?",
+      "options": [
+        "The ability to call tools, since guardrail tools replaced the business tools",
+        "Access to extended thinking, which agents cannot use alongside guardrails",
+        "The logging and auditability that control flow in code would have provided",
+        "Model version pinning, which only workflows are able to support"
+      ],
+      "correct": [2],
+      "explanation": "The team rewrote the workflow inside the agent loop minus the logging: control flow in code can be logged, tested and audited, which the agent loop could not offer. Version pinning is a governance practice available under any pattern.",
+      "mnemonic": "Guardrail tools in a loop = a workflow minus the logs."
+    },
+    {
+      "subject": "d1s5",
+      "concept": "multi-agent-failure-responses",
+      "type": "single",
+      "stem": "Two subagents return conflicting findings on the same contract clause. What design response fits this failure?",
+      "options": [
+        "Keep whichever result arrived first, since later results are usually retries",
+        "Restart the whole run from scratch so both subagents produce fresh results",
+        "Let the orchestrator redo the clause review itself to break the tie",
+        "Give the orchestrator an explicit conflict-resolution rule, or escalate to a human"
+      ],
+      "correct": [3],
+      "explanation": "Conflicting results land at the synthesis step and are recoverable: give the orchestrator an explicit conflict-resolution rule or escalate the conflict to a human. The orchestrator owns delegation and synthesis and never does the sub-task work itself.",
+      "mnemonic": "Conflict at synthesis? Rule it, or refer it to a human."
+    },
+    {
+      "subject": "d1s5",
+      "concept": "multi-agent-failure-responses",
+      "type": "multi",
+      "stem": "Subagent failures are usually recoverable and orchestrator failures usually are not. Which TWO design choices follow from this asymmetry? Select TWO.",
+      "options": [
+        "Have the orchestrator do sub-task work itself to avoid failures",
+        "Make subagent work idempotent so failed units can be retried",
+        "Fail the whole run whenever any one subagent returns empty",
+        "Give every subagent the full goal and the synthesis state",
+        "Checkpoint orchestrator progress so a failed run can resume"
+      ],
+      "correct": [1, 4],
+      "explanation": "Design for the asymmetry: make subagent work idempotent and retryable, and protect orchestrator state by checkpointing so a failed run can resume rather than restart. Failing the whole run on one empty result turns a recoverable failure into an unrecoverable one.",
+      "mnemonic": "Subagents: retry freely. Orchestrator: checkpoint fiercely."
+    },
+    {
+      "subject": "d1s5",
+      "concept": "multi-agent-failure-responses",
+      "type": "single",
+      "stem": "One subagent in a 40-unit fan-out returns a malformed result. What is the recommended handling?",
+      "options": [
+        "Fail the entire run, since any malformed result invalidates the synthesis",
+        "Validate the result, retry or re-route the unit, and record any remaining gap",
+        "Accept the result as returned, since synthesis will smooth over it",
+        "Escalate the full run to a human before any other unit proceeds"
+      ],
+      "correct": [1],
+      "explanation": "A malformed or empty result is a recoverable failure at the subagent boundary: validate each result, retry or re-route the failed unit, and record the gap rather than failing the run. Accepting it silently is how a confident summary ends up built over incomplete work.",
+      "mnemonic": "Bad unit back? Validate, retry, and write down the hole."
+    },
+    {
+      "subject": "d1s5",
+      "concept": "coding-agent-two-phase",
+      "type": "single",
+      "stem": "Which shape does a well-built coding-agent reference architecture take?",
+      "options": [
+        "A single agent loop that explores, edits and commits in one open conversation",
+        "A fixed workflow for both phases, since codebase exploration can be scripted",
+        "Agentic investigation of the codebase, then deterministic parse, plan, propose, test and review steps",
+        "Retrieval over the repository first, then one augmented call that writes the patch"
+      ],
+      "correct": [2],
+      "explanation": "The work splits in two: agentic investigation, because the path through an unfamiliar codebase cannot be written in advance, then deterministic edit steps of parse, plan, propose, test and review. Treating the whole thing as one conversation rather than a structured pipeline is a named failure mode.",
+      "mnemonic": "Explore like an agent, edit like a pipeline."
+    },
+    {
+      "subject": "d1s5",
+      "concept": "coding-agent-two-phase",
+      "type": "multi",
+      "stem": "A team reviews a coding agent and a ticket-triage system against the reference architectures. Which TWO practices are named failure modes? Select TWO.",
+      "options": [
+        "Not tracking regression rates against an eval set per language or framework",
+        "Splitting the work into agentic investigation and deterministic edit steps",
+        "Routing high-consequence actions to a separate human approval layer",
+        "Deploying an agent variant before the simpler routed workflow is measured",
+        "Calling a transactional API for live state such as order status"
+      ],
+      "correct": [0, 3],
+      "explanation": "Coding agents go wrong when regression rates are not tracked against an eval set for each language or framework, and triage systems go wrong when an agent variant ships before the simpler routed workflow is properly measured. The other three options describe what good looks like.",
+      "mnemonic": "Track regressions per language; measure the router before buying the agent."
+    },
+    {
+      "subject": "d3s2",
+      "concept": "semantic-chunking",
+      "type": "single",
+      "stem": "A knowledge base of long explanatory articles keeps returning chunks that stop mid-argument, so answers miss the rest of the idea. Which chunking approach fits best?",
+      "options": [
+        "Fixed-size spans with overlap, since the text has weak natural boundaries",
+        "Hierarchical chunking that retrieves whole sections of contracts and manuals",
+        "Sparse BM25 indexing, so exact terms pull back the missing part",
+        "Semantic chunking on meaning boundaries so each chunk is self-contained"
+      ],
+      "correct": [3],
+      "explanation": "Semantic chunking splits on meaning boundaries such as topic shifts, which suits prose where a retrieved chunk must be self-contained and reduces mid-idea cuts. Fixed-size spans cut regardless of structure, and BM25 is an indexing choice, not a chunking one.",
+      "mnemonic": "Semantic cuts follow the thought, not the ruler."
+    },
+    {
+      "subject": "d3s2",
+      "concept": "retrieval-maintenance-sizing",
+      "type": "multi",
+      "stem": "Which TWO statements about the retrieval design trade-off are correct? Select TWO.",
+      "options": [
+        "Smaller chunks and hybrid indexing lower both latency and maintenance cost together",
+        "Maintenance as the corpus changes is an axis beside quality and latency",
+        "A pipeline that was correct at launch stays correct as new documents are added",
+        "Size the pipeline to your actual query patterns, not the most thorough one",
+        "Large chunks with dense-only indexing reliably handle exact-match identifier queries"
+      ],
+      "correct": [1, 3],
+      "explanation": "Retrieval trades off quality, latency and maintenance, and the pipeline should be sized to the query patterns you actually have. Smaller chunks and hybrid indexing raise latency, a pipeline correct at launch can degrade silently as documents are added, and dense-only designs miss exact-match queries.",
+      "mnemonic": "Quality, latency, upkeep: size to the queries you have."
+    }
+  ]
+}

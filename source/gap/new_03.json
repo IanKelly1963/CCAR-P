@@ -1,0 +1,340 @@
+{
+  "gaps": [
+    {"subject": "d5s1", "area": "Constitution shapes behaviour but does not catch outputs", "source": "03.txt L3", "summary": "The constitution generates training examples and ranks candidate responses, shaping behaviour without necessarily catching bad outputs; the bank tests only its priority order.", "question_count": 2},
+    {"subject": "d5s1", "area": "Layer ownership and the authorisation blind spot", "source": "03.txt L9-24", "summary": "Anthropic owns trained behaviour while the architect owns prompt, screening and authorisation, and authorisation does not cover content quality or fairness; owners and this blind spot are untested.", "question_count": 1},
+    {"subject": "d5s1", "area": "System prompt and screening drift", "source": "03.txt L25-27", "summary": "Four layers mean four places to design, version and test, and the system prompt and screening logic drift independently if not governed.", "question_count": 1},
+    {"subject": "d5s2", "area": "Output screening: judge model vs validator", "source": "03.txt L58-67", "summary": "Output screening uses a judge model for toxicity or policy compliance and a deterministic validator for known strings, forbidden fields or schema violations; only the input-side split is tested.", "question_count": 2},
+    {"subject": "d5s2", "area": "Choosing the fail direction deliberately", "source": "03.txt L51, L77, L245", "summary": "Fail direction must be decided explicitly, like retries and circuit breakers, and set to fail closed where a wrong pass causes harm; the bank tests only the fail-open default and its danger.", "question_count": 2},
+    {"subject": "d5s2", "area": "What each control point must specify", "source": "03.txt L90", "summary": "Each of the three control points needs a check type, a fail direction and a log line.", "question_count": 1},
+    {"subject": "d5s2", "area": "Null refusal categories and not hardcoding the list", "source": "03.txt L75", "summary": "stop_details category and explanation are both null when a refusal maps to no named category, and the category list must be re-checked at publish time rather than hardcoded (verify framing).", "question_count": 2},
+    {"subject": "d5s2", "area": "System vulnerability walk across entry points", "source": "03.txt L46-47", "summary": "The assessment walks request and data paths together, asking at each entry point (user input, retrieved content, tool outputs, model output, logs) what an adversary could do and which control blocks it.", "question_count": 2},
+    {"subject": "d5s2", "area": "Tool and action abuse risk category", "source": "03.txt L41-45", "summary": "Tool and action abuse (a side-effecting tool called outside policy) is the risk the action-authorization control exists to stop; existing risk-category questions cover only indirect injection, token-budget exhaustion and data exposure.", "question_count": 1},
+    {"subject": "d5s2", "area": "Cost of screening points", "source": "03.txt L26, L89", "summary": "Each screening point adds a call or rule to every request, and a judge model on output roughly doubles the model cost for that turn.", "question_count": 1},
+    {"subject": "d5s4", "area": "Decision logging vs health observability, and its cost", "source": "03.txt L127, L138-139", "summary": "Decision logging reuses the observability instrumentation but with a different retention and query path, its cost grows with traffic, and its retention policy must itself be governed.", "question_count": 2},
+    {"subject": "d5s5", "area": "Decision log vs routing rule", "source": "03.txt L152", "summary": "A log explains decisions after the fact while a routing rule stops wrong ones from taking effect, and the existing log is the raw material for the reviewer view, so there is no need to instrument again.", "question_count": 2},
+    {"subject": "d5s5", "area": "Monitor-and-step-in instead of per-action sign-off", "source": "03.txt L176", "summary": "Agent autonomy research favours a person who monitors and steps in, moving review to plan review or exception handling rather than per-action sign-off (verify framing); the bank tests only consent fatigue and plan-level review.", "question_count": 1},
+    {"subject": "d5s6", "area": "Owner of the transparency control", "source": "03.txt L220-223", "summary": "The architect owns the decision-reconstruction (transparency) control; the owner-mapping question covers only the HIPAA, FedRAMP and residency owners.", "question_count": 1}
+  ],
+  "questions": [
+    {
+      "subject": "d5s1",
+      "concept": "constitution-shapes-not-catches",
+      "type": "single",
+      "stem": "A stakeholder argues that because Claude is trained against a constitution, harmful outputs will be caught before they reach users, so no output check is needed. What is the most accurate correction?",
+      "options": [
+        "The constitution shapes how the model responds, but it does not necessarily catch bad outputs",
+        "The constitution catches bad outputs only for requests that fall inside a partner's own domain",
+        "The constitution is applied at inference time, so a system prompt can switch it off",
+        "The constitution catches bad outputs reliably, but only on the most recent model release"
+      ],
+      "correct": [0],
+      "explanation": "The constitution is used during training to shape how Claude responds to ambiguous or sensitive requests, but it does not necessarily catch bad outputs, so runtime checks are still yours to build. It is not an inference-time filter that a system prompt toggles, and it knows nothing of a partner's domain.",
+      "mnemonic": "Constitution steers the driver; it is not the brakes on the car."
+    },
+    {
+      "subject": "d5s1",
+      "concept": "constitution-shapes-not-catches",
+      "type": "single",
+      "stem": "How is Claude's constitution used, and what follows for the architect's control design?",
+      "options": [
+        "It is enforced as a runtime filter on every response, so output screening becomes redundant",
+        "It is loaded into each system prompt, so editing the prompt changes the priority order",
+        "It generates training examples and ranks candidate responses, so runtime checks remain yours",
+        "It defines each partner's domain rules in advance, so deployment policy is already covered"
+      ],
+      "correct": [2],
+      "explanation": "The constitution is used in training to generate examples and rank candidate responses. That shapes behaviour before deployment but is not a runtime filter, so screening, authorization and review remain the architect's job. Treating it as a runtime filter is the trap, because it never inspects a live response.",
+      "mnemonic": "Trained to rank, not stationed to check: runtime guards are on you."
+    },
+    {
+      "subject": "d5s1",
+      "concept": "layer-owners",
+      "type": "multi",
+      "stem": "In the four-layer safety view (trained behaviour, system prompt, runtime screening, authorisation), which TWO statements about ownership and coverage are correct? Select TWO.",
+      "options": [
+        "Anthropic owns runtime screening, since its classifiers run on every request by default",
+        "Anthropic owns trained behaviour, while the architect owns prompt, screening and authorisation",
+        "The system prompt layer is owned by Anthropic, as it forms part of trained behaviour",
+        "Authorisation does not cover content quality or fairness, which other controls must address",
+        "Authorisation covers content quality and fairness because it checks every caller's action"
+      ],
+      "correct": [1, 3],
+      "explanation": "Only trained behaviour is Anthropic's; the system prompt, runtime screening and authorisation are all architect-owned. Authorisation decides whether a side-effecting action is permitted for this caller, but it says nothing about content quality or fairness. Runtime screening is a layer you build, not an Anthropic default.",
+      "mnemonic": "Anthropic owns one layer, you own three; authorisation guards actions, not fairness."
+    },
+    {
+      "subject": "d5s1",
+      "concept": "prompt-screening-drift",
+      "type": "single",
+      "stem": "Six months after launch, the system prompt was edited to allow a new topic, but the screening rules were never updated, so the two layers now contradict each other. Which risk of the layered design does this show?",
+      "options": [
+        "Trained behaviour has overridden the system prompt, so the classifier must be retrained",
+        "Authorisation has failed open, so screening is compensating for missing access checks",
+        "System prompt and screening logic drift independently when they are not governed together",
+        "Runtime screening is model-based, so it cannot be versioned or tested like other layers"
+      ],
+      "correct": [2],
+      "explanation": "Four layers mean four places to design, version and test, and the system prompt and screening logic drift independently unless they are governed together. Nothing here involves an authorisation failure, and screening can be versioned and tested like any other layer.",
+      "mnemonic": "Four layers, four versions: govern prompt and screen together or they drift apart."
+    },
+    {
+      "subject": "d5s2",
+      "concept": "output-check-type",
+      "type": "single",
+      "stem": "Responses must never contain an internal account-number field, and they must also comply with a nuanced tone policy. Which output-screening design fits each requirement?",
+      "options": [
+        "A judge model for the forbidden field and a deterministic validator for the tone policy",
+        "A deterministic validator for the forbidden field and a judge model for the tone policy",
+        "A judge model for both, since output screening always needs language understanding",
+        "A deterministic validator for both, since output checks must be auditable and replayable"
+      ],
+      "correct": [1],
+      "explanation": "A known forbidden field is something a validator catches with certainty, while tone or policy compliance needs language understanding, so a judge model scores it. Requiring auditable, replayable decisions is the rule for tool-call authorization, not for every output check.",
+      "mnemonic": "Known string? Validator. Needs nuance? Judge."
+    },
+    {
+      "subject": "d5s2",
+      "concept": "output-check-type",
+      "type": "multi",
+      "stem": "Which TWO pairings of output-screening need and check type are well matched? Select TWO.",
+      "options": [
+        "Detecting a known forbidden string: a judge model scoring the response",
+        "Assessing policy compliance in free text: a regex blocklist on the reply",
+        "Detecting a schema violation in the response: a deterministic validator",
+        "Checking a response for toxicity: a length and format check on the reply",
+        "Scoring a response for toxicity: a judge model that understands language"
+      ],
+      "correct": [2, 4],
+      "explanation": "Schema violations, known strings and forbidden fields are certain catches for a deterministic validator. Toxicity and policy compliance need language understanding, so a judge model scores them. A regex or a length check cannot judge nuanced compliance, and a judge is unnecessary for an exact string.",
+      "mnemonic": "Schema to the validator, toxicity to the judge."
+    },
+    {
+      "subject": "d5s2",
+      "concept": "choose-fail-direction",
+      "type": "single",
+      "stem": "An architect is setting the failure behaviour of an operator-built output screener for a payments assistant, where a wrong pass would cause harm. What is the recommended decision?",
+      "options": [
+        "Fail open, so customers are not blocked while the screener recovers under load",
+        "Leave it to the surrounding code, which handles errors consistently across services",
+        "Fail closed, and decide it explicitly, since a wrong pass here causes real harm",
+        "Fail open but log the error, since logging makes an unscreened pass acceptable"
+      ],
+      "correct": [2],
+      "explanation": "Control errors should fail closed for decisions where a wrong pass causes harm, and the direction must be chosen explicitly. Leaving it to surrounding code usually means falling back to the unprotected path. Logging an unscreened pass records the gap but does not close it.",
+      "mnemonic": "Harm if wrong? Shut the door when the guard faints."
+    },
+    {
+      "subject": "d5s2",
+      "concept": "choose-fail-direction",
+      "type": "single",
+      "stem": "Why should a guardrail's behaviour under failure be decided explicitly, in the same way retries and circuit breakers are designed around model calls?",
+      "options": [
+        "A failing dependency should degrade deliberately rather than inherit whatever keeps requests flowing",
+        "Anthropic's built-in safety controls can fail open, so the architect must cover them",
+        "Circuit breakers on model calls also shield the screening service from its own errors",
+        "Failing closed always adds less latency than failing open under heavy production load"
+      ],
+      "correct": [0],
+      "explanation": "A guardrail is a dependency that can time out or error, and if no choice is made the surrounding code usually lets requests through. Deciding the direction deliberately follows the same reasoning as circuit breakers. Anthropic's built-in controls are not operator-configurable and do not fail open.",
+      "mnemonic": "Guardrails are dependencies too: choose how they break, or code chooses for you."
+    },
+    {
+      "subject": "d5s2",
+      "concept": "control-point-spec",
+      "type": "multi",
+      "stem": "A guarded request path is more to build and test than a single filter. Which THREE elements must be specified for each of its control points? Select THREE.",
+      "options": [
+        "Its check type, model-based or deterministic",
+        "A confidence score the model reports for itself",
+        "Its fail direction when the control errors",
+        "A separate system prompt for that control point",
+        "A log line recording blocked or failed gates"
+      ],
+      "correct": [0, 2, 4],
+      "explanation": "Each of the three control points has a check type, a fail direction and a log line, which is why the path is materially more to build than one filter. Confidence scores belong to human-review routing, and control points do not each need their own system prompt.",
+      "mnemonic": "Every gate: Type, Tilt, Trail (check type, fail direction, log line)."
+    },
+    {
+      "subject": "d5s2",
+      "concept": "refusal-category-null",
+      "type": "single",
+      "stem": "A refusal handler reads stop_details on a response with stop_reason \"refusal\". On one refusal, the category and the explanation are both null. What does this indicate, and how should it be handled?",
+      "options": [
+        "The model lacks stop_details support, so the same request should be retried unchanged",
+        "The streaming classifier failed open, so the response can be treated as safe to return",
+        "The category list has changed, so the handler should fall back to the cyber category",
+        "The refusal maps to no named category, so it should go through generic refusal handling"
+      ],
+      "correct": [3],
+      "explanation": "Both fields are null when a refusal does not map to a named category, so the handler falls back to generic handling. An unsupported model would omit the object, not null its fields, and resending on the refused context brings further refusals. Verify current behaviour against platform.claude.com at publish time.",
+      "mnemonic": "Null category means no named class: route it to the generic refusal path."
+    },
+    {
+      "subject": "d5s2",
+      "concept": "refusal-category-null",
+      "type": "single",
+      "stem": "A developer hardcodes the refusal categories currently returned in stop_details (cyber, bio, frontier_llm, reasoning_extraction) as a fixed enum. What is the best guidance?",
+      "options": [
+        "Keep the enum, since the category set is fixed by the Messages API contract",
+        "Verify the category set against the stop-reasons documentation at publish time, not hardcode it",
+        "Replace the enum with one refusal path, since categories carry no routing value",
+        "Map every unknown category to bio, the most restrictive class, so it fails safe"
+      ],
+      "correct": [1],
+      "explanation": "The category set is enumerated in the stop-reasons documentation and may change, so re-check it at publish time rather than hardcoding it. Categories do carry routing value: different refusal classes should be routed differently rather than collapsed into one path.",
+      "mnemonic": "Refusal categories move: read the docs at publish time, never freeze the enum."
+    },
+    {
+      "subject": "d5s2",
+      "concept": "vulnerability-walk",
+      "type": "single",
+      "stem": "An architect is running a system vulnerability assessment for a RAG assistant with tools. Which approach is prescribed?",
+      "options": [
+        "Red-team the user prompt only, since that is where adversaries interact with the system",
+        "Review the model's published safety evaluations, since training covers broad attack classes",
+        "Audit the output filter, since it is the last point before a response reaches the user",
+        "Walk the request and data paths together, checking each entry point for an attack and its control"
+      ],
+      "correct": [3],
+      "explanation": "The assessment walks the request and data paths together. At each entry point it asks what an adversary could do and which control stands in the way, looking for places with a plausible attack and no control. Testing only the user prompt misses retrieved content, tool outputs and logs.",
+      "mnemonic": "Walk every door on the path; any door with no guard is a finding."
+    },
+    {
+      "subject": "d5s2",
+      "concept": "vulnerability-walk",
+      "type": "multi",
+      "stem": "During a system vulnerability assessment, which THREE are entry points to examine along the request and data paths? Select THREE.",
+      "options": [
+        "The model provider's training data",
+        "Retrieved content entering the context",
+        "Tool outputs returned to the model",
+        "The published constitution document",
+        "The logs the system writes"
+      ],
+      "correct": [1, 2, 4],
+      "explanation": "The named entry points are user input, retrieved content, tool outputs, the model's own output and the logs. The provider's training data and the constitution sit upstream in a layer Anthropic owns, so they are not entry points in your request and data paths.",
+      "mnemonic": "Inputs, retrievals, tool returns, outputs, logs: five doors to walk."
+    },
+    {
+      "subject": "d5s2",
+      "concept": "risk-categories",
+      "type": "single",
+      "stem": "An agent is manipulated into calling a side-effecting tool outside policy. Which risk category is this, and which control exists to stop it?",
+      "options": [
+        "Tool and action abuse, stopped by the action-authorization control",
+        "Direct prompt injection, stopped by output screening of generated text",
+        "Data exposure, stopped by minimizing fields in logs and the context",
+        "Token-budget exhaustion, stopped by length checks on the input"
+      ],
+      "correct": [0],
+      "explanation": "Inducing the model to call a side-effecting tool outside policy is tool and action abuse, the failure the action-authorization control exists to stop. Output screening judges text, not actions, so it cannot stop a tool that has already run.",
+      "mnemonic": "Abused tool? Authorization is the lock on the action."
+    },
+    {
+      "subject": "d5s2",
+      "concept": "screening-cost",
+      "type": "single",
+      "stem": "A team adds a judge model to screen every output turn. What cost effect should the architect plan for?",
+      "options": [
+        "A negligible increase, since judge models reuse the cached prompt prefix",
+        "A one-time setup cost, since screening runs only when a request is flagged",
+        "Roughly double the model cost for each screened turn, plus added latency",
+        "Lower total cost, since screening reduces refusals and retries downstream"
+      ],
+      "correct": [2],
+      "explanation": "Each screening point adds a call or rule evaluation to every request, and a judge model on output roughly doubles the model cost for that turn while adding latency. It runs on every turn it screens, not only on flagged requests, so it is a recurring cost.",
+      "mnemonic": "A judge on every reply means two model bills per turn."
+    },
+    {
+      "subject": "d5s4",
+      "concept": "decision-log-vs-observability",
+      "type": "single",
+      "stem": "A team already runs production observability that tells them whether the system is healthy. They now need decision logging for fairness and explainability. What changes?",
+      "options": [
+        "Nothing changes, since health dashboards already explain individual decisions to regulators",
+        "A separate instrumentation stack is needed, because fairness signals cannot share traces",
+        "Only aggregate metrics are kept longer, since individual decisions cannot be reconstructed",
+        "Same instrumentation, but different retention and query path, to explain why one decision happened"
+      ],
+      "correct": [3],
+      "explanation": "Decision logging applies the same instrumentation to a different question: why a specific decision happened rather than whether the system is healthy. The retention and query path differ. A separate stack is unnecessary, and aggregates alone cannot reconstruct a single decision.",
+      "mnemonic": "Same wires, new question: health asks 'is it OK?', decisions ask 'why this?'"
+    },
+    {
+      "subject": "d5s4",
+      "concept": "decision-log-vs-observability",
+      "type": "multi",
+      "stem": "Which TWO statements about the cost and complexity of decision-level logging are correct? Select TWO.",
+      "options": [
+        "Its cost stays fixed once the log schema is defined, regardless of request volume",
+        "Storage and query cost grows with traffic rather than staying fixed",
+        "One audit-log slice serves users, regulators and the build team without changes",
+        "Retention can stay at platform defaults, since decision logs are out of compliance scope",
+        "The retention policy must itself be governed, since decision data is held longer for a purpose"
+      ],
+      "correct": [1, 4],
+      "explanation": "Capturing decision-level logs on every request adds storage and a query path whose cost grows with traffic. Because decision data is held longer for a specific purpose, its retention policy must be governed. Each audience needs a different slice of the record, and the log is in scope for the compliance register.",
+      "mnemonic": "Decision logs scale with traffic and need their own retention rules."
+    },
+    {
+      "subject": "d5s5",
+      "concept": "log-vs-routing-rule",
+      "type": "single",
+      "stem": "A team says its decision log already makes high-stakes automated decisions safe, because every one can be explained afterwards. What is missing?",
+      "options": [
+        "A longer retention period so explanations stay available to regulators",
+        "A routing rule that stops wrong decisions before they take effect",
+        "A sampled review of logged decisions, which guards each individual outcome",
+        "Re-instrumentation of the system, since logs cannot feed a reviewer view"
+      ],
+      "correct": [1],
+      "explanation": "A log explains decisions after the fact, but it does not decide which decisions a person should weigh in on before they take effect. A routing rule does that. Sampled review monitors the system rather than guarding individual outcomes, and the existing log can feed the reviewer view without re-instrumenting.",
+      "mnemonic": "The log explains the crash; the routing rule stops the car first."
+    },
+    {
+      "subject": "d5s5",
+      "concept": "log-vs-routing-rule",
+      "type": "single",
+      "stem": "When designing the reviewer's view for routed decisions, how should the architect relate it to the decision log already in place?",
+      "options": [
+        "Replace the log, since reviewer screens need their own separate instrumentation",
+        "Ignore the log, since reviewers should judge only the model's final output",
+        "Treat the log as raw material and decide what to surface from it and when",
+        "Rely on the log alone, since any logged decision can be explained afterwards"
+      ],
+      "correct": [2],
+      "explanation": "The decision log is the raw material for the reviewer view, so the work is deciding what to surface and when, not instrumenting again from the start. Showing only the output fails reviewers, who also need the inputs and the flag reason.",
+      "mnemonic": "Don't rewire: mine the log you already have for the reviewer's screen."
+    },
+    {
+      "subject": "d5s5",
+      "concept": "autonomy-checkpoints",
+      "type": "single",
+      "stem": "Anthropic's research on agent autonomy (verify the current framing at publish time) found that sign-off on every action adds friction without meaningful safety gain. What does it favour instead?",
+      "options": [
+        "A person who monitors and steps in, reviewing plans and exceptions",
+        "Approval on every step, with faster approve buttons to cut reviewer latency",
+        "Full autonomy with no human role, since sign-off adds friction without a safety gain",
+        "Sampled post-action audit of every step, replacing all pre-action checkpoints"
+      ],
+      "correct": [0],
+      "explanation": "The research favours a person monitoring what happens and stepping in when needed, with per-step approvals reduced and review moved to higher-value checkpoints such as plan review or exception handling. That does not remove the human, and the exact design still depends on the workflow's risk.",
+      "mnemonic": "Watch and step in; review the plan and the exceptions, not every click."
+    },
+    {
+      "subject": "d5s6",
+      "concept": "owner-mapping",
+      "type": "single",
+      "stem": "In the mapping of compliance obligations to controls and owners, who owns the control that makes decisions reconstructable on demand?",
+      "options": [
+        "The security lead, who owns the HIPAA control",
+        "The data owner, who owns the residency data-flow record",
+        "The platform owner, who owns the authorized route",
+        "The architect, who owns the retained, queryable decision log"
+      ],
+      "correct": [3],
+      "explanation": "The cross-framework transparency obligation is met by the decision log from the fairness work, retained and queryable, and the architect owns it. The security lead owns HIPAA, the platform owner owns FedRAMP and the data owner owns residency.",
+      "mnemonic": "Who built the decision log owns its proof: the architect."
+    }
+  ]
+}

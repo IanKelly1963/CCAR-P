@@ -1,0 +1,8 @@
+# Course materials: not redistributed
+Exam Guide.pdf
+*.docx
+source/notes_txt/
+
+# Local tool output
+.playwright-mcp/
+__pycache__/

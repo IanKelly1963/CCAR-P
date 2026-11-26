@@ -1,0 +1,2233 @@
+{
+ "domain": 1,
+ "subjects": [
+  {
+   "id": "d1s1",
+   "title": "The four properties architects design around",
+   "learn": [
+    "Next-token prediction: strong on common patterns (summarize, reformat, explain); weak on precision for names, dates, citations and statistics. Mitigate with citations, uncertainty signaling, generator-verifier loops and tool calls.",
+    "Knowledge: reliable for common, recent, consistent topics; unreliable for rare, niche, contested or fast-changing ones. Make an external source of truth (search, RAG, tools, MCP) authoritative.",
+    "Working memory is the active context window, a hard edge. Mitigate with progressive context loading, chunking, front-loading critical information and summarizing across turns.",
+    "Steerability: short, concrete, verifiable instructions work; abstract instructions, long reasoning chains and precise arithmetic drift. Use structured outputs, code execution and restated goals.",
+    "Context errors: oversized prompt gives 400 invalid_request_error; oversized body gives 413 request_too_large; a fitting prompt whose generation hits the ceiling gives model_context_window_exceeded.",
+    "Design consequences: non-determinism, context as a finite resource, confidence is not validity, knowledge and capability boundaries."
+   ],
+   "traps": [
+    "Demo equals determinism: a clean demo proves nothing; the same input can yield different outputs, so certify with evals rather than one observation.",
+    "Fluent means correct: wrong answers arrive in the same assured tone as right ones, so verification and human-in-the-loop placement are architecture choices.",
+    "Conflating the two limit errors: a rejected oversized request (400/413) is different from a generation truncated at the window ceiling.",
+    "Trusting parametric knowledge: for fresh or authoritative facts, bring the data into context yourself rather than relying on training data.",
+    "Model as calculator: high-stakes numerical accuracy belongs to deterministic computation or tool execution, not the model."
+   ],
+   "questions": [
+    {
+     "id": "d1s1q01",
+     "concept": "nexttoken-precision",
+     "type": "single",
+     "stem": "Which category of output is most at risk of looking accurate while being wrong, because Claude generates text by predicting likely continuations?",
+     "options": [
+      "Specific names, dates, citations and statistics",
+      "Explanations of common programming patterns",
+      "Reformatting an existing table into a new layout",
+      "Summaries of widely documented, well-established concepts"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Next-token prediction is strong on common patterns but risk concentrates on precision for specifics such as names, dates, citations and statistics. Summarizing and reformatting well-established material is where the property helps.",
+     "mnemonic": "Patterns are cheap, specifics are risky: names, dates, cites, stats."
+    },
+    {
+     "id": "d1s1q02",
+     "concept": "nexttoken-precision",
+     "type": "single",
+     "stem": "A claims assistant must pull the policy start date and claim amount from each document. Which design response best addresses the next-token-prediction limitation?",
+     "options": [
+      "Raise the model tier so extraction errors become negligible",
+      "Verify extracted values against the source of truth with code-based checks",
+      "Ask the model to double-check its own extraction in the same prompt",
+      "Lengthen the system prompt with more extraction examples"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Extraction of authoritative values needs verification against the source; generator-verifier loops, code-based evals and tool calls compensate. Self-checking in the same prompt keeps the same fluent-but-unchecked failure mode.",
+     "mnemonic": "Precise values get verified against the source, never taken on trust."
+    },
+    {
+     "id": "d1s1q17",
+     "concept": "properties-fail-silently",
+     "type": "single",
+     "stem": "A team ships a system without designing around the four model properties. When one of those properties causes a problem in production, how is the gap most likely to come to light?",
+     "options": [
+      "The API returns an error that names the property involved",
+      "It drifts quietly and is found by an audit or a user",
+      "Monitoring raises an alert as soon as outputs start to vary",
+      "Pre-launch testing fails on the first batch of clean inputs"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "The properties do not announce themselves: a system that ignores them throws no error, it drifts quietly, and the resulting variable outputs are found in an audit or by an angry user rather than by the system itself. Clean inputs in demos and early testing are exactly where the gap tends not to show, which is why the cost lands after launch.",
+     "mnemonic": "No error, no alarm: ignored properties drift quietly until an audit or a user finds them."
+    },
+    {
+     "id": "d1s1q04",
+     "concept": "demo-not-determinism",
+     "type": "single",
+     "stem": "An architect asks why evaluation frameworks are needed if a prototype already behaves well in front of stakeholders. Which answer reflects the right reasoning?",
+     "options": [
+      "Evaluations are only needed when fine-tuning a model",
+      "Evaluations replace the need for human review in production",
+      "Evaluations mainly measure token cost rather than behavior",
+      "Behavior observed once cannot be certified for a non-deterministic system"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Because outputs vary across runs, you cannot certify behavior you only observed once; evals exist for exactly this reason. They do not replace human review and are not specific to fine-tuning.",
+     "mnemonic": "Seen once is not certified; non-determinism demands evals."
+    },
+    {
+     "id": "d1s1q05",
+     "concept": "context-limit-errors",
+     "type": "single",
+     "stem": "A client sends a request whose raw body exceeds the API's byte limit. Which response should the architect expect?",
+     "options": [
+      "A 413 request_too_large error before any generation",
+      "A truncated output with model_context_window_exceeded",
+      "A 400 invalid_request_error saying the prompt is too long",
+      "A 429 rate limit error asking for exponential backoff"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "An oversized raw body returns 413 request_too_large, rejected before generation. A 400 invalid_request_error is the token-limit case, and the stop reason is for generation that hits the ceiling.",
+     "mnemonic": "Too many tokens is 400; too many bytes is 413."
+    },
+    {
+     "id": "d1s1q06",
+     "concept": "context-limit-errors",
+     "type": "single",
+     "stem": "A request is accepted, but the response stops early with a model_context_window_exceeded stop reason and truncated output. What happened?",
+     "options": [
+      "The raw request body exceeded the API byte limit",
+      "The prompt fit, but generation ran into the window ceiling",
+      "The API throttled the request because of a rate limit",
+      "The prompt was rejected before generation as too many tokens"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "This stop reason describes a prompt that fit but whose generation hit the window ceiling and stopped early. Oversized requests are rejected up front with 400 or 413 and never generate at all.",
+     "mnemonic": "Fits going in, hits the ceiling coming out: truncated, not rejected."
+    },
+    {
+     "id": "d1s1q07",
+     "concept": "knowledge-external-truth",
+     "type": "single",
+     "stem": "A legal-research tool must answer questions about a regulation amended last month. Which mitigation fits the knowledge property best?",
+     "options": [
+      "Rely on parametric knowledge and add an uncertainty disclaimer",
+      "Ask the model to cite years from memory for each claim",
+      "Use retrieval or tools so the current source is authoritative",
+      "Fine-tune on older regulation text to improve recall"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "For rare, contested or frequently changing topics, make an external system the source of truth through search, RAG, tools or MCP. Memory-based citing leaves the model supplying stale knowledge in a confident tone.",
+     "mnemonic": "Fast-changing facts: let the source answer, not the model's memory."
+    },
+    {
+     "id": "d1s1q08",
+     "concept": "knowledge-external-truth",
+     "type": "single",
+     "stem": "Which statement best describes how Claude behaves when asked about a rare or fast-changing topic outside its reliable knowledge?",
+     "options": [
+      "It refuses to answer and returns a context-window stop reason",
+      "It automatically queries an external source to refresh itself",
+      "It signals low confidence before answering in most cases",
+      "It may give stale or incomplete information in its usual confident tone"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "The limitation is that stale or incomplete information can be presented with the same confidence as established facts. The model does not reliably flag the gap or refresh itself.",
+     "mnemonic": "Stale facts arrive in the same confident voice as fresh ones."
+    },
+    {
+     "id": "d1s1q09",
+     "concept": "working-memory-mitigation",
+     "type": "multi",
+     "stem": "A support assistant's conversations are growing long and critical instructions are being lost. Which TWO working-memory mitigations apply? Select TWO.",
+     "options": [
+      "Restate every instruction in capital letters each turn",
+      "Switch to a higher temperature for variety",
+      "Remove the system prompt to save tokens",
+      "Front-load the critical information in context",
+      "Summarize across turns as context grows"
+     ],
+     "correct": [
+      3,
+      4
+     ],
+     "explanation": "Working-memory mitigations include progressive context loading, chunking, front-loading critical information and summarizing across turns. Removing the system prompt or changing sampling does not manage what stays in scope.",
+     "mnemonic": "Summarize as you go, front-load what matters."
+    },
+    {
+     "id": "d1s1q10",
+     "concept": "confidence-not-validity",
+     "type": "single",
+     "stem": "Why are human-in-the-loop placement and verification described as architectural choices rather than afterthoughts?",
+     "options": [
+      "Claude's wrong answers look as fluent and assured as right ones",
+      "Regulators require review for every model call regardless of risk",
+      "Human review is cheaper than writing automated evaluations",
+      "Claude cannot produce output without an approving human present"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Confidence is not validity: a wrong answer arrives in the same assured tone as a correct one, so detection must be designed in. The other options overstate requirements or invent cost claims.",
+     "mnemonic": "Fluency fools; design the check in, do not bolt it on."
+    },
+    {
+     "id": "d1s1q11",
+     "concept": "steerability-limits",
+     "type": "multi",
+     "stem": "Which TWO task types does the steerability property flag as places where Claude can drift from intent? Select TWO.",
+     "options": [
+      "Abstract or ambiguous instructions",
+      "Tasks with explicit length limits and clear roles",
+      "Short instructions with a defined output format",
+      "Tasks requiring precise numerical or logical computation",
+      "Summarizing a document that fits in context"
+     ],
+     "correct": [
+      0,
+      3
+     ],
+     "explanation": "Abstract or ambiguous instructions, long reasoning chains, and precise numerical or logical computation are the limits; short, concrete, verifiable instructions are the capability. For high-stakes numbers, deterministic computation or tool execution owns the answer.",
+     "mnemonic": "Vague in, drift out; arithmetic belongs to code."
+    },
+    {
+     "id": "d1s1q12",
+     "concept": "steerability-limits",
+     "type": "single",
+     "stem": "A finance workflow needs exact totals across thousands of invoices, and the model sometimes follows the letter of an instruction but misses its intent. What is the best design response?",
+     "options": [
+      "Ask the model to average its answers over several runs",
+      "Let deterministic computation or tool execution own the totals",
+      "Move the totals into the system prompt as examples",
+      "Rely on a longer chain of reasoning in a single call"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "For high-stakes numerical accuracy, deterministic computation or tool execution should own the answer, and restated goals help when intent and wording diverge. Long reasoning chains are a named steerability weak spot.",
+     "mnemonic": "Money math goes to code, not to chain-of-thought."
+    },
+    {
+     "id": "d1s1q13",
+     "concept": "oversized-request-400",
+     "type": "single",
+     "stem": "A team sends one prompt whose token count exceeds the model's limit, although the raw request body is well under the byte limit. What should they expect?",
+     "options": [
+      "A 413 request_too_large error, because the request is too large to send",
+      "A 400 invalid_request_error saying the prompt is too long, before generation",
+      "A response that stops early with a model_context_window_exceeded stop reason",
+      "A truncated response in which the oldest turns are silently dropped first"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "A prompt over the model's token limit is an oversized request, rejected before generation with a 400 invalid_request_error saying the prompt is too long. A 413 request_too_large applies when the raw body exceeds the byte limit, and model_context_window_exceeded applies when the prompt fits but generation runs into the window ceiling.",
+     "mnemonic": "Too many tokens: 400. Too many bytes: 413. Fits but runs out: stop reason."
+    },
+    {
+     "id": "d1s1q14",
+     "concept": "oversized-request-400",
+     "type": "multi",
+     "stem": "An architect wants to avoid hitting the context-window edge in production rather than learning about it from errors. Which TWO practices fit? Select TWO.",
+     "options": [
+      "Retry any 400 prompt-too-long error with exponential backoff",
+      "Check the usage field returned on every response",
+      "Raise the byte limit so that 413 errors stop occurring",
+      "Call the token-counting API before sending large requests",
+      "Wait for a model_context_window_exceeded reason, then trim"
+     ],
+     "correct": [
+      1,
+      3
+     ],
+     "explanation": "To stay clear of the limit, check the usage field on every response and use the token-counting API before sending. Retrying an oversized request with backoff fails the same way every time, because the request itself is too large; backoff is for transient errors.",
+     "mnemonic": "Count before you send; read usage when it lands."
+    },
+    {
+     "id": "d1s1q15",
+     "concept": "restate-goal-with-instruction",
+     "type": "single",
+     "stem": "A prompt tells Claude to keep every shift handover note under 80 words. The notes now meet the limit but sometimes drop the one allergy warning the next nurse needs. Which change best addresses this steerability risk?",
+     "options": [
+      "Raise the limit to 200 words so the model has room for every detail",
+      "Move the word limit into a hook so the model cannot exceed it",
+      "Restate the goal beside the limit: the note must let the next shift act safely",
+      "Add extended thinking so the model reasons longer about each note"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "The model followed the letter of the length instruction and missed its intent. When intent and literal instruction might diverge, restate the goal explicitly alongside the instruction. Enforcing the limit with a hook would make the letter even stricter, and a bigger limit still does not say what must never be dropped.",
+     "mnemonic": "Letter without intent? Say the goal out loud beside the rule."
+    },
+    {
+     "id": "d1s1q16",
+     "concept": "restate-goal-with-instruction",
+     "type": "multi",
+     "stem": "Which TWO mitigations does the steerability property call for? Select TWO.",
+     "options": [
+      "Restate the goal explicitly whenever intent and the literal instruction could diverge",
+      "Rely on longer reasoning chains so the model checks its own arithmetic",
+      "Prefer abstract, open-ended instructions so the model can infer the intent",
+      "Use system prompts, structured outputs and code execution where logic must be precise",
+      "Route factual lookups of names and dates through retrieval or web search"
+     ],
+     "correct": [
+      0,
+      3
+     ],
+     "explanation": "Steerability is mitigated with system prompts, structured outputs and code execution for logical precision, and by restating the goal alongside an instruction when intent and letter might diverge. Long reasoning chains and abstract instructions are listed as steerability limitations, and routing lookups through retrieval mitigates the knowledge and next-token properties.",
+     "mnemonic": "Steer with structure and say why: system prompt, schema, code, plus the goal."
+    }
+   ]
+  },
+  {
+   "id": "d1s2",
+   "title": "Three layers and seven primitives",
+   "learn": [
+    "Three layers: entry points (Claude.ai, Claude Code, custom app), build-time interfaces (direct API, SDKs, MCP, Agent SDK), delivery routes (Anthropic directly, Bedrock, Vertex AI, Foundry).",
+    "Each layer answers a different question for a different stakeholder: user and work, engineering team and integration, cloud commitments and compliance posture. A choice in one rarely dictates the others.",
+    "Seven primitives and jobs: Tools act, MCP connects, Subagents isolate or parallelise, Hooks guarantee, Skills package a procedure, Agent Teams coordinate peers, Dynamic Workflows compose at runtime.",
+    "Hooks are deterministic code firing on defined events to enforce a rule the model cannot skip.",
+    "Patterns are assemblies of primitives: a workflow is steps wired in your code, an agent is the model choosing its own tool sequence, multi-agent is an orchestrator delegating to subagents.",
+    "Use the fewest primitives necessary; without a shared vocabulary teams cannot communicate, because they do not agree on what the parts are."
+   ],
+   "traps": [
+    "Collapsing the layers: the same model sits under every entry point, but the entry point is the wrapper; choose it for the user and the work.",
+    "Choosing the entry point before naming the user: an avoidable and common architecture error.",
+    "Heavier than needed: a team of agents where a single tool call would suffice costs latency, tokens and operational surface every request.",
+    "Hooks versus prompts: a rule that must never be skipped needs a hook, not an instruction the model may ignore.",
+    "Undefined vocabulary: if the team does not agree on what the parts are, it cannot communicate; name the primitive or pattern meant before debating the design."
+   ],
+   "questions": [
+    {
+     "id": "d1s2q01",
+     "concept": "three-layers-definition",
+     "type": "single",
+     "stem": "Which set correctly lists examples of build-time interfaces, the layer an engineer programs against?",
+     "options": [
+      "Claude.ai, Claude Code and a custom application built on the API",
+      "Tools, Hooks, Skills and Subagents as the seven primitives",
+      "The direct API, the SDKs, MCP and the Agent SDK",
+      "Anthropic directly, AWS Bedrock, GCP Vertex AI and Microsoft Foundry"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Build-time interfaces are how an engineer programs against Claude: the direct API, SDKs, MCP and the Agent SDK. Claude.ai and Claude Code are entry points, and Bedrock or Vertex AI are delivery routes.",
+     "mnemonic": "Entry = who touches it; Build = how code talks; Route = where traffic lands."
+    },
+    {
+     "id": "d1s2q02",
+     "concept": "three-layers-definition",
+     "type": "single",
+     "stem": "A partner insists on running all Claude traffic through its existing AWS commitments for compliance reasons. Which layer is this decision, and who drives it?",
+     "options": [
+      "Build-time interface, chosen for the engineering team",
+      "Primitive, chosen by the orchestrating agent",
+      "Entry point, chosen for the end user and the work",
+      "Delivery route, chosen for cloud commitments and compliance"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Delivery routes determine whose infrastructure the request runs on and are chosen for cloud commitments and compliance posture. Entry points suit users and work; build-time interfaces suit the engineering team.",
+     "mnemonic": "Routes follow the cloud contract and the compliance officer."
+    },
+    {
+     "id": "d1s2q15",
+     "concept": "three-layers-independence",
+     "type": "single",
+     "stem": "A design document fixes the entry point in its opening section and only identifies who the users are three sections later. Which architecture error does this show?",
+     "options": [
+      "Choosing the delivery route before confirming the partner's cloud commitments",
+      "Choosing the build-time interface before the engineering team is consulted",
+      "Picking the entry point before naming the user, a layer-collapse error",
+      "Choosing the model tier before the latency budget has been agreed"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "An entry point is chosen for the user and the work, so choosing it before the user is named is a common and avoidable error, usually traceable to collapsing the three layers into one concept. The delivery route and build-time interface are separate decisions for other stakeholders and are not what went wrong here.",
+     "mnemonic": "Name the user first; the entry point follows the user and the work."
+    },
+    {
+     "id": "d1s2q04",
+     "concept": "primitive-jobs",
+     "type": "single",
+     "stem": "A compliance rule says no refund over a set value may be issued without approval, and the model must not be able to skip it. Which primitive fits best?",
+     "options": [
+      "Subagents, to isolate the refund step in its own context",
+      "Hooks, to enforce the rule in deterministic code on events",
+      "Skills, to package the refund procedure as a versioned unit",
+      "MCP, to expose the refund service to several clients"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Hooks are deterministic code firing on defined events to enforce a rule the model cannot skip. A Skill packages a procedure but does not guarantee compliance, and MCP only connects tools.",
+     "mnemonic": "Hooks guarantee: code the model cannot talk its way past."
+    },
+    {
+     "id": "d1s2q05",
+     "concept": "primitive-jobs",
+     "type": "single",
+     "stem": "Match the primitive to its one-line job: which statement about Skills is correct?",
+     "options": [
+      "A separate context for running a scoped sub-task in parallel",
+      "A rule enforced on events that the model cannot skip",
+      "A versioned, reusable unit packaging a repeatable procedure",
+      "A protocol exposing tools to multiple Claude clients"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Skills package a repeatable procedure as a versioned, reusable unit of instructions plus optional scripts. The protocol is MCP, the isolated context is a Subagent, and the unskippable rule is a Hook.",
+     "mnemonic": "Skill equals a procedure in a box, versioned and reusable."
+    },
+    {
+     "id": "d1s2q06",
+     "concept": "primitive-jobs",
+     "type": "single",
+     "stem": "Several different Claude clients inside an enterprise need to reach the same set of internal tools. Which primitive's job is this?",
+     "options": [
+      "Dynamic Workflows, which compose the clients at runtime",
+      "Tools, because each client defines its own functions",
+      "Hooks, because they fire on shared events",
+      "MCP, a protocol exposing tools to multiple clients"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "MCP connects: it is a protocol for exposing tools so multiple Claude clients can reach them. A Tool alone is a function the model can call from your code, without the cross-client sharing.",
+     "mnemonic": "Tools act; MCP connects many clients to the same tools."
+    },
+    {
+     "id": "d1s2q07",
+     "concept": "fewest-primitives",
+     "type": "single",
+     "stem": "A team proposes an Agent Team to look up one order status for each chat message. Which principle does this violate?",
+     "options": [
+      "Use the fewest primitives necessary to meet the requirement",
+      "Place every checkpoint before the first model call",
+      "Always pin the model version in configuration",
+      "Prefer Skills over tools for all lookups"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Reaching for a heavier primitive than the job requires costs latency, tokens and operational surface every request, and a single tool call would suffice. Each primitive added is another part to build, observe and govern.",
+     "mnemonic": "One tool call beats a team; fewest parts that do the job."
+    },
+    {
+     "id": "d1s2q16",
+     "concept": "agent-vocabulary",
+     "type": "single",
+     "stem": "An architecture team starts debating patterns without first agreeing what tools, subagents, hooks and the other primitives mean. What risk does this create?",
+     "options": [
+      "Members talk past each other, not agreeing what the parts are",
+      "Higher token cost on every request the finished system serves",
+      "Slower approval of the delivery route by the partner's compliance team",
+      "Weaker eval coverage, because eval sets cannot be labelled consistently"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Without a shared vocabulary, teams cannot communicate effectively because they do not agree on what the parts are. Naming the primitives once makes later patterns combinations of parts everyone recognizes. Extra token cost comes from reaching for heavier primitives than needed, not from missing vocabulary.",
+     "mnemonic": "No shared names, no shared design: agree what the parts are first."
+    },
+    {
+     "id": "d1s2q09",
+     "concept": "agent-vocabulary",
+     "type": "multi",
+     "stem": "Which TWO statements correctly describe patterns as assemblies of the seven primitives? Select TWO.",
+     "options": [
+      "A workflow is steps wired together in your own code",
+      "A multi-agent system is a single call with extended thinking",
+      "A workflow means the model decides every step at runtime",
+      "An agent is the model choosing its own sequence of tool calls",
+      "An agent is always an orchestrator delegating to peers"
+     ],
+     "correct": [
+      0,
+      3
+     ],
+     "explanation": "A workflow wires steps in your code, often using tools, while an agent is the model choosing its own tool-call sequence. A multi-agent system is an orchestrator delegating to subagents, not a single call.",
+     "mnemonic": "Workflow: your code picks the path. Agent: the model picks it."
+    },
+    {
+     "id": "d1s2q10",
+     "concept": "three-layers-independence",
+     "type": "multi",
+     "stem": "Which TWO statements about the three layers are correct? Select TWO.",
+     "options": [
+      "A choice in one layer rarely dictates the others",
+      "Every deployment involves all three layers",
+      "Build-time interface is chosen for compliance posture",
+      "Delivery route decides which end user reaches Claude",
+      "The three layers are alternatives; pick exactly one"
+     ],
+     "correct": [
+      0,
+      1
+     ],
+     "explanation": "The layers are not alternatives: every deployment involves all three, and each is a separate decision for a different stakeholder. Confusing them is the most common source of muddled architecture conversations.",
+     "mnemonic": "Three layers, three questions, three stakeholders; all always present."
+    },
+    {
+     "id": "d1s2q17",
+     "concept": "primitive-jobs-parallel",
+     "type": "single",
+     "stem": "A parent agent wants each of several independent research questions handled away from its own context, so the intermediate notes do not crowd it. Which primitive carries that job?",
+     "options": [
+      "Hooks, firing deterministic code on each research event",
+      "Skills, packaging the research method as a versioned unit",
+      "MCP, exposing the research tools to multiple Claude clients",
+      "Subagents, each taking a scoped sub-task in a separate context"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Subagents hand a scoped sub-task to a separate context so the work runs in isolation, or in parallel where useful, without filling the parent's context. A Skill packages a procedure but does not give it its own context, and MCP only connects tools to clients.",
+     "mnemonic": "Keep the parent's context clean: hand the chore to a subagent."
+    },
+    {
+     "id": "d1s2q12",
+     "concept": "primitive-jobs-dynamic",
+     "type": "single",
+     "stem": "A platform assembles the steps of each job at runtime based on the request, rather than fixing them in advance. Which primitive describes this?",
+     "options": [
+      "Skills, packaging a repeatable procedure",
+      "MCP, exposing tools to many clients",
+      "Agent Teams, coordinating peers on a goal",
+      "Dynamic Workflows, composing steps at runtime"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Dynamic Workflows compose the steps of a workflow at runtime. Agent Teams are coordinated peers each owning part of a larger goal, a different job.",
+     "mnemonic": "Peers coordinate; workflows compose at runtime."
+    },
+    {
+     "id": "d1s2q13",
+     "concept": "subagents-vs-agent-teams",
+     "type": "single",
+     "stem": "A program runs three long-lived agents that each own one part of a product launch (pricing, legal review, messaging) and coordinate as equals toward a single goal. Which primitive describes this?",
+     "options": [
+      "Subagents, each handed a scoped sub-task in a separate context",
+      "Agent Teams, coordinated peers each owning part of a larger goal",
+      "Dynamic Workflows, which assemble the steps at runtime instead",
+      "Skills, versioned units that each package a repeatable procedure"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Agent Teams are multiple agents working as coordinated peers, each owning part of a larger goal. Subagents are scoped sub-tasks handed to a separate context for isolation or parallelism; they return results to a parent rather than owning part of the goal as peers.",
+     "mnemonic": "Subagents take a ticket; teammates own a territory."
+    },
+    {
+     "id": "d1s2q14",
+     "concept": "subagents-vs-agent-teams",
+     "type": "single",
+     "stem": "A parent agent must review 30 independent log files, each in a clean context, and simply combine the findings returned. A colleague proposes an Agent Team. What is the better fit?",
+     "options": [
+      "An Agent Team, since thirty files need peers that coordinate as equals",
+      "Hooks, since each file review must fire deterministically on an event",
+      "MCP, since every file reviewer needs to reach the same set of tools",
+      "Subagents, since the parent hands out scoped sub-tasks and combines results"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Handing scoped sub-tasks to separate contexts to run in isolation or in parallel is the subagent job. Agent Teams are for peers each owning part of a goal, and reaching for a heavier primitive than the job requires costs latency, tokens and operational surface on every request.",
+     "mnemonic": "Fan-out of isolated chores: subagents. Peer ownership: teams."
+    }
+   ]
+  },
+  {
+   "id": "d1s3",
+   "title": "Decomposition and delegation",
+   "learn": [
+    "Decompose before choosing a pattern: every solution has three owners, assigned early: Claude (language understanding, summarization, planning, drafting, tool-mediated action), existing systems (rule engines, databases of record), humans (judgment, exceptions, approvals).",
+    "Delegation lens: justify each assignment by reversibility, stakes and accountability. Assignments are AI-appropriate, human-retained, or collaborative (Claude drafts, a person decides).",
+    "Existing systems own what the partner already paid to make reliable: order-status service, policy engine, rules table, database of record. Claude calls them through tools or MCP rather than replacing them.",
+    "The framing shift: ask where the four properties argue for Claude over the system that already does this right, not where Claude can help.",
+    "Routing deterministic lookups to Claude means paying model rates for work a database query or rules table does for a fraction of the cost; across thousands of requests it adds up fast.",
+    "Skipping decomposition forces Claude into work another system does more cheaply, or into work without the context a human would give a colleague. Over-assigning costs more, runs slower and makes errors untraceable; a deterministic rule fails predictably, a model variably."
+   ],
+   "traps": [
+    "Where can Claude help: the wrong question; the right one asks where the four properties favour Claude over the existing reliable system.",
+    "Rules disguised as language tasks: a decision the partner already defines in a rule engine or rules table stays with that system, not the model.",
+    "Model as source of truth: it cannot tell when its information went stale and will not flag the gap, so authoritative answers drift quietly with no error.",
+    "Claude owning the decision: judgment calls, exceptions and approvals belong to humans; in collaborative work Claude drafts and a person decides.",
+    "Logic moved into the model: a deterministic rule fails predictably and debuggably; the model fails variably, and its errors become hard to observe and trace."
+   ],
+   "questions": [
+    {
+     "id": "d1s3q01",
+     "concept": "three-owners",
+     "type": "single",
+     "stem": "Which assignment correctly places work among the three owners of an AI solution?",
+     "options": [
+      "Existing systems own reliable rules; humans own judgment and approvals",
+      "Humans handle summarization and routine drafting at volume",
+      "Claude holds the rules table and the database of record",
+      "Existing systems own language understanding of free-text input"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Existing systems do what the partner has already paid to make reliable (rule engine, database of record); humans take judgment, exceptions and approvals; Claude takes language-heavy work. Over-assigning everything to Claude makes the process costlier, slower and harder.",
+     "mnemonic": "Claude language, systems rules, humans judgment."
+    },
+    {
+     "id": "d1s3q02",
+     "concept": "three-owners",
+     "type": "single",
+     "stem": "An architect's first instinct is to place every step of a request in the 'what Claude does' bucket. What is the most likely consequence?",
+     "options": [
+      "The process needs fewer evaluations because one component owns it",
+      "The process becomes more expensive, slower and harder to debug",
+      "The process becomes fully auditable through model turn traces",
+      "The process becomes faster because fewer integrations are needed"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Over-assigning tasks to Claude almost always makes the solution more expensive, slower and harder, because deterministic lookups are sent to the model and errors lose traceability. Fewer integrations may look cleaner in a demo but does not remove these costs.",
+     "mnemonic": "Everything-to-Claude means pricier, slower, murkier."
+    },
+    {
+     "id": "d1s3q03",
+     "concept": "delegation-lens",
+     "type": "single",
+     "stem": "Which trio of questions does the delegation lens use to justify what Claude is trusted to own?",
+     "options": [
+      "Latency, throughput and cost per call",
+      "Predictability, observability and error cost",
+      "Reversibility, stakes and accountability",
+      "Recall, precision and coverage"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Delegation is justified through reversibility (can a wrong call be undone), stakes (what a wrong call costs) and accountability (who must answer for it). The predictability and observability factors belong to pattern selection.",
+     "mnemonic": "RSA of delegation: Reversibility, Stakes, Accountability."
+    },
+    {
+     "id": "d1s3q15",
+     "concept": "existing-systems-own-rules",
+     "type": "single",
+     "stem": "A partner's eligibility decisions are already made by a rules table it maintains. In a new Claude workflow that reads free-text applications, who should own the eligibility decision?",
+     "options": [
+      "Claude, inferring eligibility from the wording of each application",
+      "The existing rules table, with Claude passing it the extracted details",
+      "A human reviewer, checking every application before any decision",
+      "A fine-tuned model trained to replace the rules table over time"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Existing systems own anything the partner has already paid to make reliable, such as a rules table or policy engine; Claude reads the application and calls or feeds that system rather than replacing it. Handing a defined rule to the model adds a knowledge limitation and makes errors harder to trace, and a defined rule does not need a human on every case.",
+     "mnemonic": "Already reliable? Leave it with the system: Claude reads, the rules table decides."
+    },
+    {
+     "id": "d1s3q16",
+     "concept": "model-unaware-of-staleness",
+     "type": "single",
+     "stem": "Why is it risky to let the model act as the source of truth for a reference table that the business updates often?",
+     "options": [
+      "Reference tables of that kind never fit inside the context window",
+      "The model refuses to answer lookups about tabular reference data",
+      "It cannot tell its information is stale, and will not flag it",
+      "Frequent updates force the model version to be re-pinned weekly"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "The model has no reliable way to know when its information is out of date, and it will not flag the gap, so once it replaces the partner's actual system, answers drift quietly with no error thrown and no warning raised. The data should come from the system that holds it, through a tool or MCP.",
+     "mnemonic": "The model never knows it is out of date, and never tells you."
+    },
+    {
+     "id": "d1s3q17",
+     "concept": "human-owner-role",
+     "type": "multi",
+     "stem": "When a request is decomposed across Claude, existing systems and humans, which TWO kinds of work belong in the 'what humans do' bucket? Select TWO.",
+     "options": [
+      "High-volume summarization of incoming free-text customer requests",
+      "Approvals, such as signing off a high-value action",
+      "Lookups against the partner's database of record for each case",
+      "Judgment calls and exceptions where being right beats being fast",
+      "Drafting routine replies for a person to review afterwards"
+     ],
+     "correct": [
+      1,
+      3
+     ],
+     "explanation": "Humans own the judgment calls, the exception paths, the approvals and the moments where being right matters more than being fast. Summarization and drafting are Claude's language work (collaborative when a person then decides), and lookups against a database of record belong to existing systems.",
+     "mnemonic": "Humans keep the calls that count: judgment, exceptions, approvals, right over fast."
+    },
+    {
+     "id": "d1s3q07",
+     "concept": "framing-shift",
+     "type": "single",
+     "stem": "Which question best captures the right framing for deciding where Claude belongs when decomposing a request?",
+     "options": [
+      "Which steps would be cheapest for us to prototype in a demo this month?",
+      "Where do the four properties favour Claude over the existing reliable system?",
+      "Which steps can Claude perform if we prompt it carefully?",
+      "How can we use Claude across as many steps as possible in the build?"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Decomposition should ask where the four properties favour Claude over the existing reliable system, not simply where Claude can help. The 'where can Claude help' framing leads to over-assignment.",
+     "mnemonic": "Not 'where can Claude help' but 'where does Claude beat the system'."
+    },
+    {
+     "id": "d1s3q08",
+     "concept": "framing-shift",
+     "type": "single",
+     "stem": "A team lists every task Claude is capable of performing and assigns all of them to Claude. Which flaw in their method does this show?",
+     "options": [
+      "They did not choose a delivery route before decomposing",
+      "They skipped the model tier decision before assigning tasks",
+      "They asked what Claude can do rather than where it beats incumbents",
+      "They added too many human approval gates to the process"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Capability alone is the wrong test. The right question compares the four properties against the existing system already doing the job reliably.",
+     "mnemonic": "Can-do is not should-do; compare against the incumbent."
+    },
+    {
+     "id": "d1s3q18",
+     "concept": "deterministic-lookup-cost",
+     "type": "single",
+     "stem": "A design sends every product-code lookup to Claude, even though a database query returns the same answer. What cost consequence should the architect expect?",
+     "options": [
+      "Paying model rates for work a query does far more cheaply",
+      "Lookups overflow the context window once the product catalogue grows",
+      "Prompt caching stops working for every other request type served",
+      "Costs fall, because a single component replaces several integrations"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Every lookup a simple deterministic system could handle goes to the model instead, so you pay for the model to do work a database query or rules table could do for a fraction of the cost, and across thousands of requests that adds up fast. Fewer integrations can look cleaner, but it does not make the process cheaper.",
+     "mnemonic": "Don't pay model prices for a database answer; thousands of lookups add up fast."
+    },
+    {
+     "id": "d1s3q19",
+     "concept": "model-unaware-of-staleness",
+     "type": "multi",
+     "stem": "A team lets Claude answer from what it learned in training instead of querying the partner's system of record. Which TWO describe the resulting risk? Select TWO.",
+     "options": [
+      "It has no reliable way to know its information is out of date",
+      "The API rejects each request with a 400 invalid_request_error message",
+      "Costs fall sharply, while latency rises on every single request",
+      "Answers can drift quietly, with no error thrown and no warning raised",
+      "The model refuses to answer once its training data falls out of date"
+     ],
+     "correct": [
+      0,
+      3
+     ],
+     "explanation": "When the model becomes the source of truth instead of the partner's actual system, it has no reliable way to know when its information is out of date and will not flag the gap, so answers drift quietly with no error and no warning. It neither refuses nor raises an API error, which is exactly why the drift goes unnoticed.",
+     "mnemonic": "Stale and silent: it can't tell its age, throws no error, raises no warning."
+    },
+    {
+     "id": "d1s3q20",
+     "concept": "deterministic-rule-in-model",
+     "type": "single",
+     "stem": "A team moves a validation rule out of a lookup table and into a prompt. Why do errors become harder to diagnose?",
+     "options": [
+      "Models cannot return numbers in any reliably structured format",
+      "Lookup tables run faster, so their errors surface sooner in testing",
+      "Model outputs are logged in more detail, burying the errors in noise",
+      "The rule failed predictably; the model fails variably and resists observation"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "When logic moves out of a table-driven system into the model, errors stop being traceable: a deterministic rule fails in a predictable, debuggable way, while a model doing the same job produces variable outputs that are much harder to observe and diagnose. Speed and logging volume are not the issue.",
+     "mnemonic": "Tables fail the same way twice; models fail differently each time."
+    },
+    {
+     "id": "d1s3q21",
+     "concept": "existing-systems-own-rules",
+     "type": "single",
+     "stem": "A partner's database of record already returns each customer's account tier reliably. An engineer proposes having Claude infer the tier from the customer's emails instead, to save an integration. What is the best response?",
+     "options": [
+      "Agree, provided the clean test cases all pass in development",
+      "Keep the database as the owner and let Claude use its result",
+      "Agree, but pin the model version so that the inference is stable",
+      "Move the inference into a Skill so the result becomes deterministic"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Anything the partner has already paid to make reliable, such as a database of record, stays the owner; Claude calls it and uses the result. Over-assigning that work to Claude makes the process more expensive, slower and harder to debug. Passing clean development cases says nothing about the inputs production will raise, and a Skill packages a procedure without making it deterministic.",
+     "mnemonic": "If the system already gets it right, Claude asks the system, not the emails."
+    },
+    {
+     "id": "d1s3q13",
+     "concept": "delegation-map",
+     "type": "single",
+     "stem": "Decomposing a partner request produces a delegation map. Which three categories does it assign each part of the request to?",
+     "options": [
+      "AI-appropriate, human-retained, and collaborative work where Claude drafts and a person decides",
+      "Augmented calls, workflows and agents, chosen by how predictable each step is",
+      "Entry points, build-time interfaces and delivery routes, each chosen by a stakeholder",
+      "Low, medium and high stakes, assigned from the model's confidence score on each step"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "The delegation map sorts each part into AI-appropriate work, human-retained work, or collaborative work where Claude drafts and a person decides, justified by reversibility, stakes and accountability. Augmented call, workflow and agent are the patterns chosen afterwards, once ownership is settled.",
+     "mnemonic": "The map says: Claude's, human's, or draft-then-decide."
+    },
+    {
+     "id": "d1s3q14",
+     "concept": "delegation-map",
+     "type": "single",
+     "stem": "Which AI Fluency competency is an architect exercising when deciding, part by part, whether Claude should own a piece of work, judged on reversibility, stakes and accountability?",
+     "options": [
+      "Discernment",
+      "Diligence",
+      "Delegation",
+      "Description"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Delegation, the first of the four AI Fluency competencies, is deciding what Claude is trusted to own, producing the delegation map. Discernment judges whether outputs are acceptable, and Diligence maintains human accountability checkpoints.",
+     "mnemonic": "Delegation decides who does it; Discernment judges what came back."
+    },
+    {
+     "id": "d1s3q22",
+     "concept": "decompose-first",
+     "type": "single",
+     "stem": "A design review for a new partner request opens with a debate about whether to build a workflow or an agent. What should the architect do first?",
+     "options": [
+      "Pick the model tier the design will run on",
+      "Choose the entry point users will reach it through",
+      "Split the work among Claude, existing systems and humans",
+      "Prototype an agent and measure how well it performs"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Decomposition is the move that comes before architecture: before choosing a pattern, split the work into what Claude handles, what existing systems handle and what humans handle, and assign those owners early. The split shows whether each task belongs with Claude at all, which is what the pattern then has to carry. Prototyping an agent first skips that step.",
+     "mnemonic": "Owners before patterns: split Claude, systems, humans, then pick workflow or agent."
+    },
+    {
+     "id": "d1s3q23",
+     "concept": "skip-decomposition",
+     "type": "multi",
+     "stem": "A team jumps straight to an agent design without decomposing the request first. Which TWO consequences should the architect expect? Select TWO.",
+     "options": [
+      "Claude does work another system would do at lower cost",
+      "The model tier gets locked in before any evals are written",
+      "Human approval gates multiply across every step of the flow",
+      "Claude operates without context a human would give a colleague",
+      "The entry point must be rebuilt for every new user channel"
+     ],
+     "correct": [
+      0,
+      3
+     ],
+     "explanation": "Designs that skip decomposition end up forcing Claude into work another system would do at lower cost, or asking it to operate without the context a human would have given a colleague; where that context is missing, the model improvises. Locked-in tiers, extra approval gates and rebuilt entry points are not consequences of skipping the split.",
+     "mnemonic": "Skip the split: Claude overpays for system work and works blind, without a colleague's context."
+    },
+    {
+     "id": "d1s3q24",
+     "concept": "decompose-first",
+     "type": "single",
+     "stem": "Why does splitting the work among Claude, existing systems and humans come before choosing a pattern or architecture?",
+     "options": [
+      "Patterns can only be chosen once the model tier is pinned",
+      "The split shows which tasks belong with Claude at all",
+      "Humans must sign off on the pattern before any split",
+      "Existing systems pick the pattern through their own APIs"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "The split is driven by how the model behaves on each piece of the work, which tells you whether a task belongs with Claude or somewhere else in the stack. Only once each owner is assigned do you know what the pattern has to carry, so decomposition precedes architecture rather than following a pattern or tier choice.",
+     "mnemonic": "Decide who owns each piece first; the pattern only wraps Claude's share."
+    }
+   ]
+  },
+  {
+   "id": "d1s4",
+   "title": "Pattern selection",
+   "learn": [
+    "Three patterns: augmented LLM (one bounded call, optionally with tools or retrieval), workflow (steps orchestrated in your code), agent (model chooses its own steps; control flow lives in the model).",
+    "Four workflow sub-patterns: chaining (sequential stages), routing (classifier picks a path), parallelization (concurrent independent calls, aggregated or voted), evaluator-optimizer (generate, evaluate, revise until criterion or retry limit).",
+    "Five factors in sequence: predictability, error cost, observability, latency budget, cost. The first factor that rules out a pattern decides. Choose the simplest pattern that meets tolerance; escalate only when measurement shows it falling short.",
+    "Agent constraints are not optional: constrained tool entry points, per-turn budgets, explicit permissions, stopping criteria. Agent autonomy is your liability surface.",
+    "Before fine-tuning: optimize the prompt, add tools or retrieval, move to evaluator-optimizer, only then fine-tune. Justified for very high volume, critical latency, or consistent format when prompting fails. Fine-tuning availability is limited.",
+    "Skills-based packaging suits repeated, distributed, versioned procedures. Apply the delegation lens to the pattern itself: grant an agent autonomy only when the stakes and reversibility of its actions justify it."
+   ],
+   "traps": [
+    "Agent for flexibility: choosing an agent because the task feels open-ended, when the steps could have been written in code.",
+    "Agent equals expensive: cost is driven by context accumulation and call count, so a poorly designed workflow can cost more than a well-designed agent.",
+    "Broad tool permissions: an agent can do anything its tools allow, including combinations nobody tested; keep the tool entry point as narrow as the task allows.",
+    "Fine-tuning as a quick fix: it locks you to a fixed model version; try prompt, tools or retrieval, then evaluator-optimizer first.",
+    "Mutually exclusive patterns: most production workflows combine several; start simple and escalate on evidence."
+   ],
+   "questions": [
+    {
+     "id": "d1s4q01",
+     "concept": "three-patterns-definition",
+     "type": "single",
+     "stem": "What makes a system an agent rather than a workflow?",
+     "options": [
+      "It calls Claude at several steps in sequence",
+      "It was built with the Agent SDK instead of the direct API",
+      "The model chooses its own sequence of steps toward a goal",
+      "It uses more than one tool in the same request"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "In an agent the control flow lives inside the model; the path is not written in advance anywhere you can inspect. In a workflow the control flow lives in your code, even when several steps call Claude.",
+     "mnemonic": "Workflow: your code holds the map. Agent: the model draws it."
+    },
+    {
+     "id": "d1s4q02",
+     "concept": "three-patterns-definition",
+     "type": "single",
+     "stem": "A single model call is given retrieval and a tool, and the control flow never branches on what the model decides. Which pattern is this?",
+     "options": [
+      "Routing workflow, a classifier choosing the path",
+      "Agent, the model choosing its own steps",
+      "Evaluator-optimizer, a draft and grade loop",
+      "Augmented LLM, one bounded call with helpers"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "An augmented LLM is one bounded job in one pass, optionally with tool use, retrieval or extended thinking. It is not an agent because the model does not choose a branching sequence of steps.",
+     "mnemonic": "One call plus helpers is still one call: augmented, not agent."
+    },
+    {
+     "id": "d1s4q28",
+     "concept": "workflow-subpatterns",
+     "type": "single",
+     "stem": "Each chapter of a long technical manual is reviewed in its own simultaneous model call, and the findings are combined into one report. Which workflow sub-pattern is this?",
+     "options": [
+      "Chaining",
+      "Routing",
+      "Parallelization",
+      "Evaluator-optimizer"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Independent sub-tasks run concurrently and their results are aggregated, which is parallelization; distinct sections of a long document fit because no section's review depends on another's output. Chaining would feed each call's output into the next.",
+     "mnemonic": "No dependencies between pieces? Run them side by side: parallelization."
+    },
+    {
+     "id": "d1s4q29",
+     "concept": "workflow-subpatterns",
+     "type": "single",
+     "stem": "Generated code is run against a test suite; failures are fed back and the code is revised until the tests pass or a retry limit is reached. Which workflow sub-pattern is this?",
+     "options": [
+      "Evaluator-optimizer",
+      "Parallelization",
+      "Chaining",
+      "Routing"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Generate, evaluate and revise until a quality criterion is met or a retry limit is reached is the evaluator-optimizer; it earns its place when quality is verifiable but a single attempt is not reliable enough. Chaining passes output forward once, with no loop back.",
+     "mnemonic": "Write, test, fix, repeat until green or out of retries."
+    },
+    {
+     "id": "d1s4q30",
+     "concept": "workflow-subpatterns",
+     "type": "single",
+     "stem": "An intake service receives a mix of invoices, signed agreements and identity scans, and a classifier sends each kind to a different handler. Which workflow sub-pattern is this?",
+     "options": [
+      "Parallelization",
+      "Chaining",
+      "Evaluator-optimizer",
+      "Routing"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "A classifier, often Claude itself, decides the downstream path because inputs vary in kind and each kind needs different handling. Parallelization would run independent calls concurrently rather than choosing one path per input.",
+     "mnemonic": "Different kinds, different doors: a classifier routes each input."
+    },
+    {
+     "id": "d1s4q06",
+     "concept": "five-factor-framework",
+     "type": "single",
+     "stem": "In the five-factor framework, how should the architect apply the factors when choosing a pattern?",
+     "options": [
+      "Score all five factors equally and choose the highest total",
+      "Apply them only after the agent has already been prototyped",
+      "Start with cost and set the remaining four factors aside",
+      "Walk them in sequence; the first factor that rules out a pattern decides"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "The five factors (predictability, error cost, observability, latency budget, cost) are walked in order, and the first factor that rules out a pattern is the deciding one.",
+     "mnemonic": "Walk the five in order; the first veto wins."
+    },
+    {
+     "id": "d1s4q07",
+     "concept": "agent-when-justified",
+     "type": "single",
+     "stem": "When is an agent the right pattern?",
+     "options": [
+      "When the steps genuinely cannot be determined in advance and unexpected output is recoverable",
+      "When the task feels open-ended and the team wants flexibility",
+      "When the audit team wants every decision logged as a model turn",
+      "When the latency budget is tight and cost per request must be minimal"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Agents suit work whose path cannot be enumerated in advance and whose cost of an unexpected output is acceptable and recoverable. Feeling uncertain about structure is not the same as steps being unknowable.",
+     "mnemonic": "Unknowable path plus recoverable errors earns an agent."
+    },
+    {
+     "id": "d1s4q31",
+     "concept": "agent-when-justified",
+     "type": "single",
+     "stem": "A team can write down every step of a process in advance but wants an agent because the work 'feels open-ended'. What should the architect recommend?",
+     "options": [
+      "An agent with tight tool permissions to keep it on the known path",
+      "A workflow, since steps that can be written in code need no agent",
+      "A multi-agent fan-out, so each step has its own clean context",
+      "Fine-tuning first, so the model learns the steps before any build"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Agents are often chosen because a task feels open-ended rather than because it requires one; feeling uncertain about structure is different from steps that genuinely cannot be determined in advance. If the steps could be written in code, a workflow avoids non-deterministic control flow, and an agent would mean paying for flexibility you won't use in tokens, latency and audit gaps.",
+     "mnemonic": "Feels open-ended isn't open-ended: if you can code the steps, build a workflow."
+    },
+    {
+     "id": "d1s4q09",
+     "concept": "agent-constraints",
+     "type": "multi",
+     "stem": "Which THREE are constraints a production agent is typically bound by? Select THREE.",
+     "options": [
+      "Explicit permissions on what each tool is allowed to do",
+      "Constrained tool entry points limiting what the agent can reach",
+      "A fixed fine-tuned model that skips evaluation entirely",
+      "Per-turn budgets together with explicit stopping criteria",
+      "Unlimited tool permissions so the goal is never blocked"
+     ],
+     "correct": [
+      0,
+      1,
+      3
+     ],
+     "explanation": "In production, agents are bound by constrained tool entry points, per-turn budgets, explicit permissions and stopping criteria; these are not optional. Unlimited permissions widen the liability surface.",
+     "mnemonic": "Narrow tools, capped turns, stated permissions, clear stop."
+    },
+    {
+     "id": "d1s4q10",
+     "concept": "prompt-before-finetune",
+     "type": "single",
+     "stem": "Prompting feels unreliable on a classification task. What is the recommended order of escalation?",
+     "options": [
+      "Add retrieval, fine-tune, then move to an evaluator-optimizer",
+      "Fine-tune first, then optimize the prompt, then add retrieval",
+      "Optimize the prompt, add tools or retrieval, try evaluator-optimizer, then fine-tune",
+      "Switch to an agent, then fine-tune, then optimize the prompt"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Most reliability problems are prompt problems; work through prompt optimization, tool use or retrieval, then a stronger pattern such as evaluator-optimizer, and only then fine-tuning. Fine-tuning locks you to a fixed model version.",
+     "mnemonic": "Prompt, tools, loop, then tune: fine-tuning comes last."
+    },
+    {
+     "id": "d1s4q11",
+     "concept": "prompt-before-finetune",
+     "type": "multi",
+     "stem": "Which TWO situations justify considering fine-tuning? Select TWO.",
+     "options": [
+      "The team is unsure which pattern best fits the work",
+      "The team wants to avoid pinning a model version altogether",
+      "Latency is critical and a smaller specialised model would beat a prompted one",
+      "The task runs at very high volume and inference cost is the constraint",
+      "A prompt has not yet been written for the task at hand"
+     ],
+     "correct": [
+      2,
+      3
+     ],
+     "explanation": "Fine-tuning is justified for very high volume where inference cost dominates, critical latency where a smaller model wins, or a consistent format that prompting cannot deliver. Outside those cases it narrows options.",
+     "mnemonic": "Tune only for volume, latency or stubborn format."
+    },
+    {
+     "id": "d1s4q32",
+     "concept": "pattern-delegation-lens",
+     "type": "single",
+     "stem": "When the delegation lens is applied to the choice of pattern itself, what decides whether an autonomous agent is appropriate?",
+     "options": [
+      "Whether the task feels open-ended to the team at design time",
+      "Whether the latency budget is generous enough for open-ended runs",
+      "Whether the stakes and reversibility of its actions justify that autonomy",
+      "Whether the Agent SDK is available on the chosen delivery route"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Applying the delegation lens to the pattern asks whether it grants Claude appropriate or excessive decision authority for the risk profile: an agent that can act autonomously is right only when the stakes and reversibility of its actions justify the autonomy it is given. A task that merely feels open-ended is a common wrong reason to choose an agent.",
+     "mnemonic": "Autonomy must be earned: stakes and reversibility decide how much the agent gets."
+    },
+    {
+     "id": "d1s4q13",
+     "concept": "skills-packaging",
+     "type": "single",
+     "stem": "The same claims-review procedure must run across several teams and products, be versioned, and be governed as one unit. Which packaging option fits?",
+     "options": [
+      "A Skills-based architecture packaging the procedure and scripts",
+      "Fine-tuning a separate model for each team",
+      "A prompt-only solution with instructions copied per team",
+      "Direct tool use with functions embedded in each application"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Reach for a Skill when the same procedure runs repeatedly, is distributed across teams or products, or must be versioned and governed. Prompt-only copies and per-app tool code cannot be governed as a single unit.",
+     "mnemonic": "Repeat, distribute, version: package it as a Skill."
+    },
+    {
+     "id": "d1s4q14",
+     "concept": "predictability-autonomy-axes",
+     "type": "single",
+     "stem": "Use cases are plotted on two axes: how predictable the path is and how much autonomy the model is granted. Where does a workflow sit?",
+     "options": [
+      "High predictability and low autonomy, executing one bounded task once",
+      "High autonomy and low predictability, where the next move depends on the last",
+      "The middle band: a predictable overall shape with contained model judgment per step",
+      "Low predictability and low autonomy, since your code fixes every branch"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Workflows occupy the middle band: the overall shape is predictable, but each step may involve contained model judgment. High predictability and low autonomy is the augmented LLM quadrant, and high autonomy with low predictability is the agent corner.",
+     "mnemonic": "Augmented: control corner. Workflow: middle band. Agent: freedom corner."
+    },
+    {
+     "id": "d1s4q33",
+     "concept": "chaining-subpattern",
+     "type": "single",
+     "stem": "The first call transcribes a recorded meeting, the second extracts the decisions from that transcript, and the third formats them into a status update. Which workflow sub-pattern is this?",
+     "options": [
+      "Chaining",
+      "Routing",
+      "Parallelization",
+      "Evaluator-optimizer"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Chaining is sequential: each stage produces a defined output that the next stage consumes, so the task decomposes into stages with clear handoffs. Parallelization runs independent calls at once, and routing sends different kinds of input down different paths.",
+     "mnemonic": "Chain links: each stage eats the last stage's output."
+    },
+    {
+     "id": "d1s4q16",
+     "concept": "simplest-pattern-first",
+     "type": "single",
+     "stem": "A team designing a support workflow wants to adopt routing, parallelization and evaluator-optimizer together from day one 'to be safe'. What is the recommended approach?",
+     "options": [
+      "Combine all three now, since production workflows usually mix several patterns",
+      "Choose the simplest pattern meeting error tolerance and observability; escalate on measured shortfall",
+      "Start with an agent, then extract sub-patterns once the traces reveal the paths",
+      "Use evaluator-optimizer everywhere, since a second check always raises quality"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Sub-patterns can be combined, but the right choice is usually the simplest one that meets the task's error tolerance and observability requirements, revisited with production data and escalated only when measurement shows it falling short. That most workflows mix patterns does not justify adding them all up front.",
+     "mnemonic": "Start simple, measure, then climb: escalate on evidence, not anxiety."
+    },
+    {
+     "id": "d1s4q17",
+     "concept": "simplest-pattern-first",
+     "type": "multi",
+     "stem": "Which TWO statements about workflow sub-patterns are correct? Select TWO.",
+     "options": [
+      "Each workflow must commit to exactly one sub-pattern to stay observable",
+      "They are not mutually exclusive; production workflows often combine several",
+      "Evaluator-optimizer should be the default because it guarantees quality",
+      "Parallelization fits best when each stage consumes the previous stage's output",
+      "Escalate to a heavier pattern only when measurement shows the simpler one falls short"
+     ],
+     "correct": [
+      1,
+      4
+     ],
+     "explanation": "The four sub-patterns are not mutually exclusive and are often combined, and you escalate only when measurement shows the simpler pattern falling short. Stages consuming the previous output describe chaining, not parallelization, which suits independent sub-tasks.",
+     "mnemonic": "Mix patterns freely, but upgrade only on data."
+    },
+    {
+     "id": "d1s4q18",
+     "concept": "five-factor-ratings",
+     "type": "single",
+     "stem": "In the five-factor comparison of patterns, why does an agent rate worst on observability?",
+     "options": [
+      "A single call is easy to log but stays opaque about what happened inside",
+      "Its steps log like ordinary code, so standard tooling records too much noise",
+      "Agents cannot emit token counts or stop reasons in their responses",
+      "Its trajectory reads like a transcript that most tooling cannot alert on"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "An agent's trajectory reads like a transcript, and most current observability tooling is not built to alert on it. A single call that is easy to log but opaque inside describes the augmented LLM, and steps logging like code is why workflows rate best.",
+     "mnemonic": "Agent logs read like a novel; dashboards can't alert on plot twists."
+    },
+    {
+     "id": "d1s4q19",
+     "concept": "five-factor-ratings",
+     "type": "single",
+     "stem": "A user-facing feature has a strict response deadline. When weighing an agent against the latency-budget factor, how should its runtime be budgeted?",
+     "options": [
+      "Plan for the median run, since most agent trajectories finish quickly",
+      "Budget for the worst case, since agent runtime is open-ended",
+      "Treat it like a workflow: predictable and additive in duration",
+      "Assume single-call latency, adding time only for extended thinking"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Agent runtime is open-ended, so the latency budget must cover the worst case, not the median. Predictable, additive duration describes a workflow, and single-call latency describes the augmented LLM.",
+     "mnemonic": "Agents have no finish line you can promise: budget the worst lap."
+    },
+    {
+     "id": "d1s4q20",
+     "concept": "five-factor-ratings",
+     "type": "multi",
+     "stem": "In the five-factor comparison, which TWO pairings of pattern, factor and rating are correct? Select TWO.",
+     "options": [
+      "Agent on predictability: low, because the trajectory is fixed in advance",
+      "Workflow on error cost: low, because deterministic guards sit between steps",
+      "Workflow on observability: high, because steps produce a model transcript",
+      "Augmented LLM on error cost: low, because step-level guards wrap the call",
+      "Augmented LLM on cost: low, because it uses the fewest tokens per request"
+     ],
+     "correct": [
+      1,
+      4
+     ],
+     "explanation": "Workflows rate low on error cost because deterministic guards sit between steps, and the augmented LLM rates low on cost because it uses the fewest tokens per request. The augmented LLM rates medium on error cost precisely because it has no step-level guards, and workflows log as code, not as a transcript.",
+     "mnemonic": "Guards between steps cut error cost; one call cuts token cost."
+    },
+    {
+     "id": "d1s4q21",
+     "concept": "agent-cost-by-design",
+     "type": "single",
+     "stem": "A reviewer rejects an agent design solely because 'agents always cost more than workflows'. What is the most accurate response?",
+     "options": [
+      "Correct: agents carry a fixed premium per request regardless of design",
+      "Incorrect: workflows always cost more, because every step calls the model",
+      "Cost tracks accumulated context and call count; design matters more than the label",
+      "Correct: only augmented calls should be used wherever cost is a factor"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Agents do not automatically cost more than workflows; what drives cost is how much context accumulates and how many model calls are made. Design matters more than the pattern label, so the claim is wrong in both directions, not reversed.",
+     "mnemonic": "Price the context and the calls, not the pattern's name tag."
+    },
+    {
+     "id": "d1s4q22",
+     "concept": "agent-cost-by-design",
+     "type": "single",
+     "stem": "A workflow re-sends its full accumulated history to the model at each of twelve steps and costs more per request than a tightly bounded agent doing the same job. What does this illustrate?",
+     "options": [
+      "A poorly designed workflow can cost more than a well-designed agent",
+      "Workflows are inherently more expensive, so the agent should be the default",
+      "The agent must be hiding tokens, since agents always cost the most",
+      "Cost is set by the model tier alone, not by context or call count"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Cost is driven by context accumulation and the number of calls, so a poorly designed workflow can cost more than a well-designed agent. That does not make agents the default; it means design, not the label, sets the bill.",
+     "mnemonic": "Bloated workflow, lean agent: the bill follows the design."
+    },
+    {
+     "id": "d1s4q23",
+     "concept": "workflow-vs-agent-failure",
+     "type": "single",
+     "stem": "Why is an agent failure typically harder to spot and diagnose than a workflow failure?",
+     "options": [
+      "Workflows fail at a code step; agents fail on a model decision mid-sequence",
+      "Agents throw no errors at all, while workflows always raise exceptions",
+      "Workflows hide failures inside a single call that cannot be logged",
+      "Agents fail only when a tool is unavailable, which logs rarely show"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "A workflow fails when a step in your code fails, which standard debugging catches. An agent fails when the model makes a bad decision somewhere in a sequence of turns, which is harder to spot and which standard tools do not catch the same way.",
+     "mnemonic": "Workflow breaks at a line of code; agent breaks at a line of thought."
+    },
+    {
+     "id": "d1s4q24",
+     "concept": "finetune-limits",
+     "type": "single",
+     "stem": "Prompting has not made a high-volume extractor follow a consistent output format, and the partner asks for fine-tuning on Claude. What should the architect do before recommending it?",
+     "options": [
+      "Proceed directly, since fine-tuning is broadly available on every delivery route",
+      "Switch delivery routes, since fine-tuning is guaranteed on all cloud providers",
+      "Confirm current fine-tuning access with the Anthropic account team, since availability varies",
+      "Skip the request, since a consistent format is never a valid fine-tuning reason"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Fine-tuning Claude is not broadly available; access is limited and varies by model and delivery route, so verify current options with the Anthropic account team first. A consistent format that prompting has not fixed is one of the situations where fine-tuning can be justified.",
+     "mnemonic": "Fine-tuning: last rung, limited access; ask the account team first."
+    },
+    {
+     "id": "d1s4q25",
+     "concept": "finetune-limits",
+     "type": "single",
+     "stem": "Outside the narrow situations that justify it, what is the main downside of fine-tuning?",
+     "options": [
+      "It locks you to a fixed model version and narrows your options",
+      "It always raises per-request inference cost above prompting",
+      "It removes the need for an eval set after deployment",
+      "It prevents any use of tools or retrieval at inference time"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Fine-tuning locks you to a fixed model version and narrows your options without much to show for it, so treat it as the last step of a deliberate progression. Lower inference cost at very high volume is actually one of the reasons it can be justified.",
+     "mnemonic": "Fine-tune and you freeze the version."
+    },
+    {
+     "id": "d1s4q34",
+     "concept": "control-flow-location",
+     "type": "single",
+     "stem": "Why do non-deterministic failures concentrate in the agent pattern in production?",
+     "options": [
+      "Agents cannot call tools reliably once a conversation runs long",
+      "Agents always run on the largest and least predictable model tier",
+      "Agent runs cannot be logged at all by current observability tooling",
+      "The trajectory is the control flow, leaving no code boundary for guards"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "In an agent the model's trajectory is the control flow, so there is no code boundary where a deterministic guard can sit, and that is where non-deterministic failures concentrate. Agent trajectories can be logged, but they read like transcripts that most current tooling is not built to alert on.",
+     "mnemonic": "No code between the steps means nowhere to put a guard."
+    },
+    {
+     "id": "d1s4q35",
+     "concept": "control-flow-location",
+     "type": "single",
+     "stem": "Operations must be able to reconstruct which step made each decision in a process whose steps are known in advance. Which pattern fits, and why?",
+     "options": [
+      "An agent, because its trajectory reads like a readable transcript",
+      "A workflow, because control flow in code can be logged and tested",
+      "An augmented call, because one call is easy to log and inspect",
+      "Multi-agent, because every subagent keeps its own separate log"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "A workflow keeps control flow in your code, so you can log it, test it and reason about it like any other software; it fits when error cost is real, observability matters and the steps can be determined in advance. An agent's trajectory reads like a transcript that most tooling cannot alert on, and a single augmented call is easy to log but opaque inside.",
+     "mnemonic": "Need to replay every decision? Keep the control flow in code."
+    }
+   ]
+  },
+  {
+   "id": "d1s5",
+   "title": "Multi-agent systems and reference architectures",
+   "learn": [
+    "Orchestrator owns the goal: decomposes, delegates, synthesizes, and never does sub-task work. Subagents own scoped sub-tasks in their own context. Design decomposition, result structure and conflict resolution explicitly.",
+    "Fan-out: split a large item into independent units, one subagent per unit, parallel where independent, then synthesize. Gains clean contexts and concurrency but multiplies token spend.",
+    "Recoverable: subagent failures (retry, re-route, flag). Often unrecoverable: orchestrator loses goal or synthesis state (checkpoint it). Shared trace ID across agents; coverage check at synthesis so results equal units dispatched.",
+    "HITL gate before any irreversible or high-stakes action a subagent would take; sample lower-stakes actions. Placement is part of orchestration design.",
+    "Start from the five reference architectures before inventing your own (teams already learned what breaks); adapt them, they are references, not blueprints: agent, RAG, document pipeline with evaluator-optimizer, routing/triage, coding agent. Failures: unbounded autonomy, retrieval for live state, no exception path, no escalation, no review gate.",
+    "Use one pattern unless two parts break differently; separate eval sets per architecture. Live state needs a call to the system that owns it; a better embedding model or shorter refresh will not fix it."
+   ],
+   "traps": [
+    "Counting only returned results: a confident summary can sit over dropped units; reconcile results returned against units dispatched.",
+    "Silent subagent failure: a malformed or empty result is recoverable only if each result is validated and the unit retried, re-routed or recorded as a gap.",
+    "Retrieval for live state: fix it by calling the system that owns the live state; a better embedding model or shorter refresh interval will not.",
+    "One eval set for a composed system: each reference architecture carries its own eval contract, and a healthy top level can mask a failing component.",
+    "Second pattern by indecision: add one only when parts break differently, not because the problem is undecided; composing two roughly doubles the surface to maintain, so when in doubt pick one."
+   ],
+   "questions": [
+    {
+     "id": "d1s5q01",
+     "concept": "orchestrator-role",
+     "type": "single",
+     "stem": "What is the orchestrator's job in a multi-agent system?",
+     "options": [
+      "Cache subagent outputs and replay them on later requests",
+      "Own the goal: decompose, delegate and synthesize results",
+      "Run only the lowest-risk sub-tasks and hand the rest to a human",
+      "Perform each sub-task itself and use subagents for validation"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "The orchestrator owns the goal, decomposes the work, delegates and synthesizes; it does not do the sub-task work itself. Subagents run scoped sub-tasks in their own contexts.",
+     "mnemonic": "Orchestrator splits, sends, stitches; never does the piece."
+    },
+    {
+     "id": "d1s5q19",
+     "concept": "fanout-pattern",
+     "type": "multi",
+     "stem": "An orchestrator splits a work item too large for one context into independent units, with one subagent per unit. Which TWO benefits does this fan-out shape deliver? Select TWO.",
+     "options": [
+      "Each subagent works in a clean context sized to its unit",
+      "Total token spend falls compared with a single agent",
+      "Independent units run concurrently instead of one after another",
+      "The orchestrator no longer needs a synthesis step at the end",
+      "Silent unit failures become impossible, so coverage needs no check"
+     ],
+     "correct": [
+      0,
+      2
+     ],
+     "explanation": "Fan-out's win is twofold: each subagent works in a clean context sized to its unit, and independent units run concurrently. It multiplies token spend rather than reducing it, the orchestrator still synthesizes, and a dropped unit can still hide unless coverage is checked.",
+     "mnemonic": "Fan-out pays twice: clean context per unit, and units running side by side."
+    },
+    {
+     "id": "d1s5q03",
+     "concept": "recoverable-vs-unrecoverable",
+     "type": "single",
+     "stem": "Which failure is described as usually recoverable, and which as often unrecoverable?",
+     "options": [
+      "Both are recoverable because outputs are idempotent",
+      "Both are unrecoverable unless the run restarts from scratch",
+      "Orchestrator failure is recoverable; subagent failure is unrecoverable",
+      "Subagent failure is recoverable; orchestrator losing state is often unrecoverable"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "A failed subagent unit can be retried, re-routed or dropped with the gap flagged while other work proceeds. If the orchestrator loses its goal or synthesis state, the whole run fails, so protect and checkpoint its state.",
+     "mnemonic": "Lose a worker, retry; lose the boss, restart."
+    },
+    {
+     "id": "d1s5q20",
+     "concept": "coverage-check",
+     "type": "single",
+     "stem": "Which multi-agent failure is the most dangerous, and what guards against it?",
+     "options": [
+      "A slow subagent delaying the run; give the orchestrator a bigger window",
+      "Conflicting subagent results; restart the whole run from the beginning",
+      "A dropped unit hidden under confident synthesis; reconcile coverage at synthesis",
+      "High token spend across subagents; cache every subagent's output"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "The dangerous failure is the silent one: a subagent drops a unit and the orchestrator synthesizes a confident, complete-looking answer over incomplete work. Validate coverage rather than assume it, reconciling results against the units submitted. Conflicting results are recoverable at synthesis with a resolution rule or human escalation, not by restarting.",
+     "mnemonic": "Count what came back against what went out before trusting the summary."
+    },
+    {
+     "id": "d1s5q21",
+     "concept": "coverage-check",
+     "type": "multi",
+     "stem": "Which TWO practices stop a fan-out from presenting incomplete work as complete? Select TWO.",
+     "options": [
+      "Have the orchestrator redo any failed unit's work directly itself",
+      "Validate each result and record any failed unit as a gap",
+      "Share one context window across all subagents to keep state",
+      "Refresh the retrieval index more often during each run",
+      "Reconcile results returned against the units that were dispatched"
+     ],
+     "correct": [
+      1,
+      4
+     ],
+     "explanation": "Validate each result at the subagent boundary, retrying or re-routing failed units and recording any gap, and reconcile coverage at synthesis so results returned equal units dispatched. The orchestrator never does sub-task work itself, and a shared context would throw away the clean-context benefit of fan-out.",
+     "mnemonic": "Check every unit, count every unit: validate at the boundary, reconcile at synthesis."
+    },
+    {
+     "id": "d1s5q06",
+     "concept": "shared-trace-id",
+     "type": "single",
+     "stem": "Traces fragment across an orchestrator and its subagents, so a single run cannot be reconstructed. What is the design response?",
+     "options": [
+      "Log only the orchestrator's final answer",
+      "Propagate a shared trace identifier across all agents",
+      "Move the orchestrator to a smaller model tier",
+      "Reduce the number of subagents to one"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Fragmented traces are a cross-cutting observability failure; a shared trace identifier makes one run reconstructable end to end. Logging only the final answer discards the information needed.",
+     "mnemonic": "One run, one trace ID, every agent."
+    },
+    {
+     "id": "d1s5q07",
+     "concept": "hitl-checkpoint",
+     "type": "single",
+     "stem": "Where should a human-in-the-loop gate sit in a multi-agent system?",
+     "options": [
+      "Before every single subagent call, regardless of the stakes",
+      "Only when two subagents return conflicting results to synthesis",
+      "Before any irreversible or high-stakes action a subagent takes alone",
+      "After the final synthesis step only, once the output is complete"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Gate placement is set by risk and reversibility: before irreversible or high-stakes actions, with lower-stakes actions sampled rather than each gated. Conflicts may also escalate to a human but that is not the placement rule.",
+     "mnemonic": "Gate the irreversible; sample the rest."
+    },
+    {
+     "id": "d1s5q22",
+     "concept": "rag-live-state",
+     "type": "single",
+     "stem": "An assistant's answers about account balances change after each index refresh and sometimes contradict the database. What is the correct fix?",
+     "options": [
+      "Call the system that owns the balances through a tool",
+      "Switch to a better embedding model for the balance documents",
+      "Shorten the refresh interval so the index stays current",
+      "Raise the similarity threshold on retrieved balance chunks"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Stale chunks, results that shift with each refresh and answers that contradict the database are the symptoms of retrieval applied to live state. A better embedding model or a shorter refresh interval will not fix it; call the system that owns the live state directly instead of retrieving a cached version of it.",
+     "mnemonic": "Shifting with every refresh? Stop indexing live state and call its owner."
+    },
+    {
+     "id": "d1s5q09",
+     "concept": "rag-live-state",
+     "type": "single",
+     "stem": "Which statement captures the retrieval principle for reference architectures?",
+     "options": [
+      "Retrieval is for stable knowledge; tool use is for live state",
+      "Retrieval and tool use are interchangeable if refreshed often",
+      "Retrieval is for live state; tool use is for stable knowledge",
+      "Retrieval should replace tool use whenever similarity exceeds a threshold"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Retrieval suits things true yesterday and tomorrow (FAQs, policies, manuals); tool use suits state whose current value is owned by a system and changes independently of the index.",
+     "mnemonic": "RAG for what stays; tools for what changes."
+    },
+    {
+     "id": "d1s5q10",
+     "concept": "architecture-failure-modes",
+     "type": "single",
+     "stem": "A document processing pipeline sends low-confidence extractions through the same flow as clean documents. Which failure from the reference architectures is this?",
+     "options": [
+      "Treating the whole job as a conversation, not a pipeline",
+      "No exception path or human gate for low-confidence extractions",
+      "Retrieval applied to live state instead of a tool call",
+      "Unbounded autonomy with state-changing tools and no review"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Document pipelines with an evaluator-optimizer go wrong when there is no exception path: low-confidence extractions need a human review gate or queue rather than flowing downstream.",
+     "mnemonic": "Low confidence gets a human lane, not the main road."
+    },
+    {
+     "id": "d1s5q11",
+     "concept": "architecture-failure-modes",
+     "type": "multi",
+     "stem": "Which TWO are named failure modes for the coding agent and customer-service routing reference architectures? Select TWO.",
+     "options": [
+      "Letting the agent edit and commit without a human review gate",
+      "Using retrieval for live order status instead of calling the API",
+      "Gating a sampled share of low-risk edits with human review",
+      "Using a vector index over a stable document corpus of manuals",
+      "Keeping classification and handling as two separate routed steps"
+     ],
+     "correct": [
+      0,
+      1
+     ],
+     "explanation": "The coding agent goes wrong with no review gate before edit and commit; triage goes wrong by using retrieval for live order status and having no human escalation path. The other options describe sound practice.",
+     "mnemonic": "Coder needs a gate; triage needs the API, not the index."
+    },
+    {
+     "id": "d1s5q12",
+     "concept": "one-vs-several-patterns",
+     "type": "single",
+     "stem": "When is it justified to combine a second reference architecture with the first?",
+     "options": [
+      "When the eval set for the first pattern is too small",
+      "When stakeholders want a more impressive architecture diagram",
+      "When two parts of the problem break in different ways worth managing separately",
+      "When the team has not yet decided what problem it is solving"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Draw on a second pattern when the parts break differently; otherwise adapt one pattern, since combining roughly doubles the surface area to maintain. Reaching for a second pattern out of indecision just defers a design decision.",
+     "mnemonic": "Add a pattern only for a different failure; else pick one."
+    },
+    {
+     "id": "d1s5q23",
+     "concept": "one-vs-several-patterns",
+     "type": "single",
+     "stem": "A system combines a RAG layer for documentation questions with a document extraction pipeline, and the team evaluates it with one end-to-end eval set. What is the main risk?",
+     "options": [
+      "Running the eval set costs more tokens than the system itself",
+      "The retrieval index stops refreshing while evals are running",
+      "Extraction becomes non-deterministic once retrieval is added",
+      "A healthy overall score can hide a failure in one component"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Each reference architecture carries its own eval contract, so a composed system needs separate eval sets per architecture rather than one for the whole. A system that looks healthy at the top level can be masking failures in one of its components.",
+     "mnemonic": "Compose the system, split the evals."
+    },
+    {
+     "id": "d1s5q14",
+     "concept": "multi-agent-failure-responses",
+     "type": "single",
+     "stem": "Two subagents return conflicting findings on the same contract clause. What design response fits this failure?",
+     "options": [
+      "Keep whichever result arrived first, since later results are usually retries",
+      "Restart the whole run from scratch so both subagents produce fresh results",
+      "Let the orchestrator redo the clause review itself to break the tie",
+      "Give the orchestrator an explicit conflict-resolution rule, or escalate to a human"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Conflicting results land at the synthesis step and are recoverable: give the orchestrator an explicit conflict-resolution rule or escalate the conflict to a human. The orchestrator owns delegation and synthesis and never does the sub-task work itself.",
+     "mnemonic": "Conflict at synthesis? Rule it, or refer it to a human."
+    },
+    {
+     "id": "d1s5q15",
+     "concept": "multi-agent-failure-responses",
+     "type": "multi",
+     "stem": "Subagent failures are usually recoverable and orchestrator failures usually are not. Which TWO design choices follow from this asymmetry? Select TWO.",
+     "options": [
+      "Have the orchestrator do sub-task work itself to avoid failures",
+      "Make subagent work idempotent so failed units can be retried",
+      "Fail the whole run whenever any one subagent returns empty",
+      "Give every subagent the full goal and the synthesis state",
+      "Checkpoint orchestrator progress so a failed run can resume"
+     ],
+     "correct": [
+      1,
+      4
+     ],
+     "explanation": "Design for the asymmetry: make subagent work idempotent and retryable, and protect orchestrator state by checkpointing so a failed run can resume rather than restart. Failing the whole run on one empty result turns a recoverable failure into an unrecoverable one.",
+     "mnemonic": "Subagents: retry freely. Orchestrator: checkpoint fiercely."
+    },
+    {
+     "id": "d1s5q16",
+     "concept": "multi-agent-failure-responses",
+     "type": "single",
+     "stem": "One subagent in a 40-unit fan-out returns a malformed result. What is the recommended handling?",
+     "options": [
+      "Fail the entire run, since any malformed result invalidates the synthesis",
+      "Validate the result, retry or re-route the unit, and record any remaining gap",
+      "Accept the result as returned, since synthesis will smooth over it",
+      "Escalate the full run to a human before any other unit proceeds"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "A malformed or empty result is a recoverable failure at the subagent boundary: validate each result, retry or re-route the failed unit, and record the gap rather than failing the run. Accepting it silently is how a confident summary ends up built over incomplete work.",
+     "mnemonic": "Bad unit back? Validate, retry, and write down the hole."
+    },
+    {
+     "id": "d1s5q17",
+     "concept": "coding-agent-two-phase",
+     "type": "single",
+     "stem": "Which shape does a well-built coding-agent reference architecture take?",
+     "options": [
+      "A single agent loop that explores, edits and commits in one open conversation",
+      "A fixed workflow for both phases, since codebase exploration can be scripted",
+      "Agentic investigation of the codebase, then deterministic parse, plan, propose, test and review steps",
+      "Retrieval over the repository first, then one augmented call that writes the patch"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "The work splits in two: agentic investigation, because the path through an unfamiliar codebase cannot be written in advance, then deterministic edit steps of parse, plan, propose, test and review. Treating the whole thing as one conversation rather than a structured pipeline is a named failure mode.",
+     "mnemonic": "Explore like an agent, edit like a pipeline."
+    },
+    {
+     "id": "d1s5q18",
+     "concept": "coding-agent-two-phase",
+     "type": "multi",
+     "stem": "A team reviews a coding agent and a ticket-triage system against the reference architectures. Which TWO practices are named failure modes? Select TWO.",
+     "options": [
+      "Not tracking regression rates against an eval set per language or framework",
+      "Splitting the work into agentic investigation and deterministic edit steps",
+      "Routing high-consequence actions to a separate human approval layer",
+      "Deploying an agent variant before the simpler routed workflow is measured",
+      "Calling a transactional API for live state such as order status"
+     ],
+     "correct": [
+      0,
+      3
+     ],
+     "explanation": "Coding agents go wrong when regression rates are not tracked against an eval set for each language or framework, and triage systems go wrong when an agent variant ships before the simpler routed workflow is properly measured. The other three options describe what good looks like.",
+     "mnemonic": "Track regressions per language; measure the router before buying the agent."
+    },
+    {
+     "id": "d1s5q24",
+     "concept": "reference-arch-start",
+     "type": "single",
+     "stem": "A team plans to design a bespoke architecture from scratch for a recurring class of problem, such as triaging support tickets. What is the best advice?",
+     "options": [
+      "Implement the closest reference architecture exactly as drawn",
+      "Combine all five reference architectures to cover every case",
+      "Design from scratch, since every partner workload is unique",
+      "Start from the reference architecture that fits, then adapt it"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Reach for the tested reference architectures before inventing your own: they are documented because other teams already learned what breaks in each. They are references, not blueprints, so take the shape that fits and adapt it to the workload. Workloads being unique is a reason to adapt a pattern, not to implement one as drawn or to start from nothing.",
+     "mnemonic": "Borrow the proven shape, then tailor it: reference, not blueprint, never blank page."
+    },
+    {
+     "id": "d1s5q25",
+     "concept": "reference-arch-start",
+     "type": "single",
+     "stem": "What makes the documented reference architectures worth starting from rather than inventing a new design?",
+     "options": [
+      "Other teams have already learned what breaks in each one",
+      "They are certified designs that need no further adaptation",
+      "They remove the need for separate per-architecture eval sets",
+      "They guarantee the lowest token cost for any given workload"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "The reference architectures are documented because other teams have already learned what breaks in each, which is why each comes with a characteristic failure mode. They still have to be adapted to the workload, and each one carries its own eval contract, so they neither skip adaptation nor remove per-architecture eval sets.",
+     "mnemonic": "Reference architectures are scar tissue: someone else already found what breaks."
+    },
+    {
+     "id": "d1s5q26",
+     "concept": "one-vs-several-patterns",
+     "type": "single",
+     "stem": "A team is still unsure what its system will need to handle, so it proposes composing two reference architectures to cover both possibilities. What should the architect recommend?",
+     "options": [
+      "Compose both now and drop the weaker one after launch",
+      "Compose both, but share one end-to-end eval set to save cost",
+      "Adapt a single architecture; composing roughly doubles upkeep",
+      "Add a third architecture so that every possibility is covered"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "When you are still uncertain what the system will need to handle, pick one and adapt it: composing two reference architectures roughly doubles the surface area you must maintain, and reaching for a second pattern out of indecision defers a design decision. Combine only when parts of the problem break differently, and then give each architecture its own eval set.",
+     "mnemonic": "In doubt, pick one: two architectures, twice the surface to maintain."
+    }
+   ]
+  },
+  {
+   "id": "d1s6",
+   "title": "Feasibility, sizing and business value",
+   "learn": [
+    "Scoping sequence: business requirement, capability list, architecture sketch (who owns each), boundary conditions, then the SOW containing those boundary conditions. Feasibility is a verdict plus the constraints that make it true.",
+    "Sizing inputs: call volume (from the business owner), token budget per request (input plus output, modelled as a distribution), model tier, plus sensitivity analysis. Input and output tokens are priced at different rates; caching needs cache_control, with write cost and a 5-minute default TTL.",
+    "Average token counts underestimate cost when a tail of long requests dominates; design to p95 latency, not the median. Batch API suits asynchronous SLAs but check BAA coverage for regulated data.",
+    "Verdicts: feasible as scoped (state assumptions); feasible with constraints (constraints are part of the architecture: document each and its failure mode, or production violations make it infeasible); not feasible (name the disqualifying constraint and any scope reduction that changes it).",
+    "ROI mapping: baseline measured in a business unit, post state in the same unit including human review cost, subtract run cost from sizing, state payback and sensitivity. Five pillars: efficiency, transformation, productivity, solution cost, performance SLAs.",
+    "Run every capability through all four AI properties; asking only 'can Claude do this' is a capability check. Working memory is most overlooked: small, clean development inputs rarely hit the window, production inputs do (chunk, load progressively, or pipeline)."
+   ],
+   "traps": [
+    "Capability before constraints: issuing a verdict before gathering volume, input size and latency requirements, or building before the cost model; a projection over the ceiling changes the architecture before code, not after the first bill.",
+    "Average instead of distribution: a tail of long requests consumes a disproportionate share of spend, so averages can understate cost by two or three times.",
+    "Full automation assumed: if the design needs a human review gate, labour is reduced, not eliminated.",
+    "Estimated baseline: a baseline from intuition collapses when finance asks for the source; use the business owner's operational data.",
+    "POC bill as production model: low-volume demos reveal nothing about cost, latency under load, reliability or failure modes."
+   ],
+   "questions": [
+    {
+     "id": "d1s6q01",
+     "concept": "scoping-sequence",
+     "type": "single",
+     "stem": "Which is the correct order of the scoping discovery sequence?",
+     "options": [
+      "Requirement, capability list, architecture sketch, boundary conditions, SOW",
+      "Architecture sketch, capability list, requirement, boundary conditions, SOW",
+      "Requirement, boundary conditions, capability list, architecture sketch, SOW",
+      "Capability list, SOW, architecture sketch, requirement, boundary conditions"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Scoping runs from business requirement to capability list, then architecture sketch assigning owners, then boundary conditions, then the SOW that contains them. Skipping a step produces a commitment that will not survive the next conversation with the business owner.",
+     "mnemonic": "Need, list, sketch, bounds, SOW."
+    },
+    {
+     "id": "d1s6q24",
+     "concept": "scoping-sequence",
+     "type": "single",
+     "stem": "An architecture handles typed forms reliably but not handwritten ones. Where should that limit be recorded?",
+     "options": [
+      "In the post-launch retrospective report",
+      "In the model deprecation runbook",
+      "In the system prompt, as an instruction",
+      "In the SOW, as a boundary condition"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Boundary conditions state when the architecture works and when it does not, and the SOW contains them so the development team and the business owner both know what is out of scope. Telling the model in a prompt does not record the limit for the people committing to the scope.",
+     "mnemonic": "Works for some inputs, not others? Write the boundary into the SOW."
+    },
+    {
+     "id": "d1s6q03",
+     "concept": "sizing-inputs",
+     "type": "single",
+     "stem": "Which three inputs form the basis of the monthly cost estimate before any code is written?",
+     "options": [
+      "Number of subagents, hook count and retry limit",
+      "Team size, sprint length and delivery route",
+      "Call volume, token budget per request, and model tier",
+      "Dataset size, embedding dimensions and chunk overlap"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Call volume, token budget per request (input plus expected output) and model tier drive the estimate, with sensitivity analysis on top. The other options are not sizing inputs.",
+     "mnemonic": "Volume times tokens times tier gives the bill."
+    },
+    {
+     "id": "d1s6q04",
+     "concept": "token-distribution-tail",
+     "type": "single",
+     "stem": "A cost model used the average document's token count. After launch, the longest documents consumed most of the token spend. What was the modelling error?",
+     "options": [
+      "Applying output token rates to the input tokens",
+      "Choosing the wrong delivery route for the traffic",
+      "Ignoring the Batch API discount in the model",
+      "Assuming a uniform distribution instead of modelling the tail"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Token distributions are often skewed: a tail of long requests consumes a disproportionate share, so average-based models can underestimate cost by two or three times. Model the distribution, not just the average.",
+     "mnemonic": "Mean hides the tail; the tail eats the budget."
+    },
+    {
+     "id": "d1s6q05",
+     "concept": "token-distribution-tail",
+     "type": "single",
+     "stem": "Why is p95 a better latency design target than the median?",
+     "options": [
+      "SLA breaches are usually caused by the slowest requests at the high end",
+      "p95 measures output length in tokens rather than elapsed time",
+      "The median is always below the SLA, so it needs no monitoring",
+      "Only the slowest 5% of requests can ever exceed the median"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "P95 is the value below which 95% of requests complete, and SLA breaches typically come from the slower tail. The median reflects the middle of the pack and hides those breaches.",
+     "mnemonic": "Breaches live in the tail; design to p95."
+    },
+    {
+     "id": "d1s6q06",
+     "concept": "feasibility-verdicts",
+     "type": "single",
+     "stem": "A design works only if document length stays under a threshold and the retrieval index is refreshed on a defined schedule. Which verdict is this, and what must be done?",
+     "options": [
+      "Feasible as scoped; state the assumptions only",
+      "Feasible with constraints; document each constraint and its failure mode",
+      "Feasible as scoped; add a hook to enforce the refresh schedule",
+      "Not feasible; end the engagement at this point"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "A design that works only under enforced conditions is feasible with constraints, and each constraint must be documented with its failure mode. An undocumented constraint becomes an infeasible system when violated in production.",
+     "mnemonic": "Works if, so write the ifs down."
+    },
+    {
+     "id": "d1s6q07",
+     "concept": "feasibility-verdicts",
+     "type": "single",
+     "stem": "At least one capability faces a property limitation that cannot be compensated within scope and budget. What should the verdict document?",
+     "options": [
+      "A list of tools the team might try at a later stage",
+      "The expected payback period under optimistic volume assumptions",
+      "The disqualifying constraint, and any scope reduction that changes the verdict",
+      "Only that the model tier selected was too small"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "A not-feasible verdict is a correct assessment that saves a more expensive failure later. State which constraint disqualifies and why, and name a scope reduction that would change it so the business owner can choose.",
+     "mnemonic": "Not feasible: name the blocker, offer the smaller scope."
+    },
+    {
+     "id": "d1s6q08",
+     "concept": "four-properties-feasibility",
+     "type": "multi",
+     "stem": "Match feasibility questions to properties: which TWO are correct pairings? Select TWO.",
+     "options": [
+      "Knowledge: does the task require choosing a delivery route?",
+      "Working memory: is the output schema valid JSON?",
+      "Next token prediction: does the task depend on the latency p95?",
+      "Steerability: are the instructions specific, concrete and verifiable?",
+      "Working memory: do the inputs fit the context window in aggregate?"
+     ],
+     "correct": [
+      3,
+      4
+     ],
+     "explanation": "Working memory asks whether inputs fit the window; steerability asks whether instructions are specific and verifiable. Knowledge asks whether information is rare, contested or recent, and next-token prediction asks about precision on specific values.",
+     "mnemonic": "Memory asks fit; steerability asks specific; knowledge asks fresh; tokens ask precision."
+    },
+    {
+     "id": "d1s6q09",
+     "concept": "roi-mapping",
+     "type": "single",
+     "stem": "Which sequence correctly describes the four-step ROI mapping?",
+     "options": [
+      "Choose the pillars, set the performance SLA, subtract only build cost, then skip sensitivity analysis",
+      "Take run cost from the average token cost, subtract the baseline, then quote total revenue as the value of the system",
+      "Estimate the baseline from intuition, assume full automation, ignore the run cost, quote one optimistic payback period",
+      "Name the baseline in a business unit, predict the post state in that unit, subtract run cost, state payback with sensitivity"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "Baseline in a business unit from the owner's operational data, post state in the same unit including human review, subtract the sizing run cost, then state payback with sensitivity. The other options contain the named ROI errors.",
+     "mnemonic": "Baseline, after, minus run cost, payback with sensitivity."
+    },
+    {
+     "id": "d1s6q10",
+     "concept": "roi-errors",
+     "type": "single",
+     "stem": "A value case assumed claims review labour disappears entirely, yet the design includes a human review gate for low-confidence outputs. What happens after launch?",
+     "options": [
+      "Actual analyst hours fall less than the business case promised",
+      "The baseline is recalculated automatically by the finance team",
+      "Run cost drops well below the sizing model's estimate",
+      "The token distribution shifts toward the average request length"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "With a human review gate, labour is reduced but not eliminated. Modelling it as eliminated overstates value and surfaces in the first operational period when analyst hours fail to fall as promised.",
+     "mnemonic": "Review gate means reduced labour, not zero labour."
+    },
+    {
+     "id": "d1s6q11",
+     "concept": "roi-errors",
+     "type": "multi",
+     "stem": "Which TWO are among the most common ROI map errors? Select TWO.",
+     "options": [
+      "Using the sizing distribution for the run cost",
+      "Stating payback with a sensitivity analysis",
+      "Taking run cost from an average rather than the distribution",
+      "Measuring both states in the same business unit",
+      "Estimating the baseline instead of measuring it"
+     ],
+     "correct": [
+      2,
+      4
+     ],
+     "explanation": "Estimated baselines and average-based run costs both overstate net value, the latter concentrating in heavy-tailed workflows. The other options describe correct practice.",
+     "mnemonic": "Measured baseline, distributed cost: never guessed, never averaged."
+    },
+    {
+     "id": "d1s6q12",
+     "concept": "five-value-pillars",
+     "type": "single",
+     "stem": "Which list names the five value pillars used to frame an ROI claim?",
+     "options": [
+      "Baseline, projection, run cost, payback, sensitivity",
+      "Efficiency, transformation, productivity, solution cost, performance SLAs",
+      "Accuracy, safety, latency, scale, compliance",
+      "Entry point, interface, route, primitive, pattern"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Efficiency (same work faster or cheaper), transformation (previously infeasible work), productivity (more output from same people), solution cost, and performance SLAs. Each ROI claim should map to the pillar it advances.",
+     "mnemonic": "E-T-P-C-S: efficiency, transformation, productivity, cost, SLAs."
+    },
+    {
+     "id": "d1s6q25",
+     "concept": "constraints-before-verdict",
+     "type": "single",
+     "stem": "A prototype works well and the business owner is eager to proceed. Why should the architect hold off on confirming feasibility?",
+     "options": [
+      "Feasibility means little until volume and SLA constraints are applied at scale",
+      "The model version must be pinned before any verdict can be issued",
+      "A delivery route must be chosen before feasibility can be assessed",
+      "The ROI payback period must be calculated before feasibility is judged"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "'Technically feasible' is meaningless unless the constraints are applied at the expected scale; confirming feasibility from a working demo before gathering volume and SLA constraints is the trap. ROI mapping follows the feasibility verdict rather than preceding it.",
+     "mnemonic": "A working demo isn't a verdict: apply the constraints at scale first."
+    },
+    {
+     "id": "d1s6q26",
+     "concept": "constraints-before-verdict",
+     "type": "multi",
+     "stem": "Which TWO constraints must be applied at the expected scale before a use case is confirmed as feasible? Select TWO.",
+     "options": [
+      "Call volume",
+      "Team size",
+      "SLA latency requirement",
+      "Preferred delivery route",
+      "Demo pass rate"
+     ],
+     "correct": [
+      0,
+      2
+     ],
+     "explanation": "Confirming feasibility before gathering the volume and SLA constraints feels efficient, but 'technically feasible' is meaningless until those constraints are applied at the expected scale. A working demo shows capability, not feasibility; team size and the preferred delivery route are not the constraints the verdict rests on.",
+     "mnemonic": "Volume and SLA at real scale first; a working demo is not a verdict."
+    },
+    {
+     "id": "d1s6q15",
+     "concept": "feasible-as-scoped-assumptions",
+     "type": "single",
+     "stem": "A use case is judged feasible as scoped: every capability favors Claude, cost is under the ceiling and p95 is inside the SLA. What must the verdict document?",
+     "options": [
+      "Nothing further, since no compensating control changes the architecture",
+      "Each failure mode for every constraint the design could violate",
+      "Its assumptions, since changed assumptions can make it feasible with constraints",
+      "The scope reduction that would make the verdict not feasible"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "A feasible-as-scoped verdict should state its assumptions clearly, because it becomes feasible with constraints when those assumptions change. Documenting each constraint's failure mode belongs to the feasible-with-constraints verdict, and naming a scope reduction belongs to not feasible.",
+     "mnemonic": "Feasible as scoped stands on assumptions: write them down before they shift."
+    },
+    {
+     "id": "d1s6q27",
+     "concept": "feasible-as-scoped-assumptions",
+     "type": "single",
+     "stem": "A design was judged feasible as scoped on the stated assumption that every input arrives in English. The business now wants to add three more languages. How should the verdict be viewed?",
+     "options": [
+      "It still holds, because feasibility was approved at project sign-off",
+      "It becomes not feasible automatically, so the project must stop",
+      "It must be reassessed, since a stated assumption no longer holds",
+      "It is unaffected, because input language is an implementation detail"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "A feasible-as-scoped verdict states its assumptions because it changes when they change; the new requirement becomes a documented constraint with its failure mode. Sign-off does not freeze the verdict, a changed assumption does not stop the project automatically, and input language is a scoping assumption, not an implementation detail.",
+     "mnemonic": "Assumption breaks, verdict reopens: reassess and document the new constraint."
+    },
+    {
+     "id": "d1s6q17",
+     "concept": "working-memory-overlooked",
+     "type": "single",
+     "stem": "Which of the four AI properties is most often overlooked in a feasibility assessment, and why?",
+     "options": [
+      "Working memory, since small, clean development inputs rarely hit the window",
+      "Knowledge, since domain gaps only appear after the model is updated",
+      "Steerability, since instructions always look concrete during scoping",
+      "Next token prediction, since extraction errors are visible in demos"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "Working memory is the most overlooked property because it rarely shows up during development on small, clean inputs, yet it surfaces in production. Skipping any property risks missing a constraint that changes the design.",
+     "mnemonic": "Memory hides in small demos: working memory bites only at production size."
+    },
+    {
+     "id": "d1s6q18",
+     "concept": "working-memory-overlooked",
+     "type": "single",
+     "stem": "A multi-document review tool passed every development test on short sample files. In production, requests combining dozens of long documents begin to fail. Which feasibility check was most likely skipped, and what compensates?",
+     "options": [
+      "The knowledge check; fine-tune the model on the document corpus",
+      "The steerability check; add more few-shot examples to the prompt",
+      "The next token check; raise the sampling temperature for variety",
+      "The working memory check; chunking, progressive loading or a pipeline"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "When inputs in aggregate exceed the context window, the working memory property applies, compensated by chunking, progressive context loading, summarization across turns or a pipeline architecture. Knowledge and steerability address different limits and would not fix an input that does not fit.",
+     "mnemonic": "Too much to hold? Chunk it, stage it, pipeline it."
+    },
+    {
+     "id": "d1s6q28",
+     "concept": "sizing-volume-and-sensitivity",
+     "type": "single",
+     "stem": "An architect is sizing an invoice-processing workflow before any code is written. Where should the call-volume figure come from?",
+     "options": [
+      "The request count observed in the POC sample dataset",
+      "The business owner, based on the business requirement",
+      "The developer's estimate, based on similar past projects",
+      "The documented rate limit per minute for the model tier"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "Call volume comes from the business requirement and the business owner, not from the developer's intuition or a sample dataset. A POC sample reflects demo traffic, not the production figure the cost model needs.",
+     "mnemonic": "Volume comes from the owner, not the sample or the developer's hunch."
+    },
+    {
+     "id": "d1s6q20",
+     "concept": "sizing-volume-and-sensitivity",
+     "type": "multi",
+     "stem": "A sizing model is complete except for step four, the sensitivity analysis. Which TWO questions does that step ask? Select TWO.",
+     "options": [
+      "Which model tier did the POC happen to use?",
+      "What happens to cost if call volume doubles?",
+      "How many engineers are needed to build the system?",
+      "What happens if the token distribution shifts toward the tail?",
+      "Which vendor has the lowest list price this quarter?"
+     ],
+     "correct": [
+      1,
+      3
+     ],
+     "explanation": "Sensitivity analysis asks how cost moves if volume doubles or the token distribution shifts toward the tail, revealing how fragile the model is and which assumptions to verify with the business owner. The POC's tier and staffing do not test the model's fragility.",
+     "mnemonic": "Double the volume, fatten the tail: sensitivity shows where the cost model snaps."
+    },
+    {
+     "id": "d1s6q21",
+     "concept": "roi-payback-period",
+     "type": "single",
+     "stem": "In the four-step ROI mapping, where should the one-off build cost be accounted for?",
+     "options": [
+      "Subtracted with run cost from the monthly operational gain",
+      "Folded into the baseline state as a cost of today's process",
+      "In the payback period, alongside accumulated gain and run cost",
+      "Excluded, since only recurring run cost affects the value case"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "Step three subtracts only the recurring run cost taken from the sizing model; build cost is handled separately in step four, where payback is the time for accumulated gain to cover build and run cost. Excluding build cost entirely would overstate the case.",
+     "mnemonic": "Run cost in step three, build cost in the payback: keep the bills apart."
+    },
+    {
+     "id": "d1s6q22",
+     "concept": "roi-payback-period",
+     "type": "single",
+     "stem": "A value statement reports a net monthly gain and a single payback period of seven months, with nothing further. What is the main weakness?",
+     "options": [
+      "It should report the payback period in tokens rather than months",
+      "It omits the latency p95, which belongs in the payback figure",
+      "It should use the POC bill as the run cost for accuracy",
+      "It lacks sensitivity on how payback shifts if volume or gain assumptions fail"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "A payback period should come with sensitivity showing how it moves if volume or gain-per-task assumptions are wrong; a single figure invites decisions on one optimistic scenario. Using the POC bill as run cost would repeat the demo-cost mistake.",
+     "mnemonic": "One payback number is a wish; payback plus sensitivity is a plan."
+    },
+    {
+     "id": "d1s6q29",
+     "concept": "caching-cost-model",
+     "type": "single",
+     "stem": "A sizing model assumes prompt caching will cut input cost for a long, stable system prompt, but requests arrive only about every 20 minutes. What should the architect expect?",
+     "options": [
+      "Little saving: the default 5-minute TTL expires between requests",
+      "Full savings, since caching applies automatically without request markers",
+      "Free cache reads, so input cost drops to almost nothing",
+      "Larger savings as traffic falls, since fewer writes are needed"
+     ],
+     "correct": [
+      0
+     ],
+     "explanation": "With the default 5-minute cache TTL, workloads whose requests arrive less often than the TTL will not realize consistent caching savings, and cache writes cost more per token than standard input, so the cost model must include the first-use write cost. Caching also needs explicit cache_control markers; it is not automatic.",
+     "mnemonic": "Cache lives five minutes: sparse traffic keeps paying for writes, never banking savings."
+    },
+    {
+     "id": "d1s6q30",
+     "concept": "cost-model-timing",
+     "type": "single",
+     "stem": "Sizing shows the projected monthly cost exceeds the budget ceiling. The prototype works, but no production code has been written yet. What should happen?",
+     "options": [
+      "Build as designed and optimise after the first billing cycle",
+      "Change the architecture now, such as tier, caching or Batch",
+      "Raise the budget ceiling to match the projected monthly cost",
+      "Ship as designed and rely on budget alerts to cap the spend"
+     ],
+     "correct": [
+      1
+     ],
+     "explanation": "If the cost projection exceeds the ceiling, the architecture needs to change before a line of code is written, using levers such as model tier, caching or Batch API where the SLA permits. Model costs before committing to an architecture, not after the first billing cycle; otherwise the architecture must be renegotiated after deployment.",
+     "mnemonic": "Over the ceiling on paper? Redesign on paper, not after the invoice."
+    },
+    {
+     "id": "d1s6q31",
+     "concept": "cost-model-timing",
+     "type": "single",
+     "stem": "At what point in a project should the cost and latency model be built?",
+     "options": [
+      "After the first billing cycle, using real production invoices",
+      "During the POC, by reading the demo's monthly bill directly",
+      "After launch, once p95 latency can be measured under load",
+      "Before the architecture is finalised and any code is written"
+     ],
+     "correct": [
+      3
+     ],
+     "explanation": "The cost and latency model is built before you finalize the architecture, from call volume, token budget per request and model tier, so cost can be checked against the budget ceiling before any code is written. A POC bill at low volume is only a sample, and waiting for production invoices means renegotiating the architecture after deployment.",
+     "mnemonic": "Numbers first, architecture second, code third, invoice never a surprise."
+    },
+    {
+     "id": "d1s6q32",
+     "concept": "constraints-load-bearing",
+     "type": "single",
+     "stem": "A design was approved as feasible with constraints, but the constraints were agreed verbally and never written into the design or SOW. What is the most likely outcome?",
+     "options": [
+      "Nothing changes, since the verdict itself was a positive one",
+      "Only the run cost rises, since constraints affect budget alone",
+      "It becomes an infeasible system once production violates one",
+      "The verdict reverts to feasible as scoped after the launch"
+     ],
+     "correct": [
+      2
+     ],
+     "explanation": "A feasible-with-constraints verdict that is not documented becomes an infeasible system when the constraints are violated in production. The constraints are part of the design and carry the same weight as the architecture they qualify, so each must be documented with its failure mode and carried into the SOW.",
+     "mnemonic": "Unwritten constraints are missing walls: the first production breach brings the design down."
+    }
+   ]
+  }
+ ]
+}

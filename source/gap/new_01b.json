@@ -1,0 +1,260 @@
+{
+  "gaps": [
+    {"subject": "d2s2", "area": "Progressive context breakdown modes", "source": "01.txt L397-407", "summary": "Progressive context breaks on long-range coherence, detail dropped in earlier turns, and harder caching, and the exact input at step N can no longer be rebuilt for debugging; the bank only tests where progressive earns its place.", "question_count": 2},
+    {"subject": "d2s2", "area": "Monolithic attention degradation before the limit", "source": "01.txt L396", "summary": "Attention quality can degrade on very long contexts well before the hard window limit, so fitting in the window does not close the risk.", "question_count": 1},
+    {"subject": "d3s1", "area": "SDK as default, raw HTTP as the exception", "source": "01.txt L606-613, L623", "summary": "The SDK is the default for most teams, and the only reason to drop to raw HTTP is a newly shipped API feature the SDK has not exposed yet.", "question_count": 2},
+    {"subject": "d3s1", "area": "Claude.ai zero-integration tradeoff", "source": "01.txt L579-582", "summary": "Claude.ai has zero build cost but zero integration: it cannot be embedded in another product or customized in what it exposes.", "question_count": 2},
+    {"subject": "d3s1", "area": "Claude for Work Team tier fit", "source": "01.txt L580-582", "summary": "The Team tier (admin controls, SSO/SAML, domain capture, no-training commitment) fits organizations that need those controls without Enterprise-only features; existing questions test only the Enterprise tier.", "question_count": 1},
+    {"subject": "d3s1", "area": "Cowork supervision tradeoff", "source": "01.txt L587-590", "summary": "Because Cowork acts directly on the user's machine, permission scoping and human review matter more than in a chat-only entry point.", "question_count": 1},
+    {"subject": "d3s5", "area": "Placement among shaping layers (CLAUDE.md vs Skills vs subagents)", "source": "01.txt L661-672", "summary": "CLAUDE.md holds persistent context for every task, Skills hold on-demand procedures that keep the main context lean, and subagents take bounded or restricted-tool work off the main thread; the bank tests only shaping versus governing.", "question_count": 2},
+    {"subject": "d3s1", "area": "Bedrock inference profiles", "source": "01.txt L694, L702", "summary": "On Bedrock, regional availability matters and inference profiles are the mechanism that solves cross-region routing.", "question_count": 1},
+    {"subject": "d3s1", "area": "Entry-point integration cost and lock-in", "source": "01.txt L705-708", "summary": "Every entry point carries real integration cost, so add one only when the use case spans it; outgrowing the wrong one is expensive because of the conventions and user habits built around it.", "question_count": 2},
+    {"subject": "d3s4", "area": "FedRAMP path to impact-level mapping", "source": "01.txt L724-726, L730", "summary": "C4G covers FedRAMP High civilian, Bedrock GovCloud covers FedRAMP High and DoD IL4/5, and Vertex Assured Workloads covers FedRAMP High and IL2 (scope to verify); the bank tests only that these three paths exist.", "question_count": 2}
+  ],
+  "questions": [
+    {
+      "subject": "d2s2",
+      "concept": "progressive-breakdown",
+      "type": "single",
+      "stem": "A support agent uses a progressive context strategy that carries forward only a rolling summary of recent turns. Engineers investigating a bad answer at turn 14 cannot rebuild what the model actually received. Which known weakness of progressive context is this?",
+      "options": [
+        "Cost and latency scale linearly with total input length on every single turn",
+        "The correct source document never enters the top-k retrieved results for the query",
+        "The exact input at a given step is no longer reconstructable, which complicates debugging",
+        "The output contract stops validating because the summary drops all formatting rules"
+      ],
+      "correct": [2],
+      "explanation": "In progressive context the carried-forward material changes every turn, so the exact input the model saw at step N cannot be rebuilt, which makes debugging harder. Linear growth in cost and latency is the monolithic failure, and top-k misses belong to retrieval.",
+      "mnemonic": "Progressive moves on; step N's input is gone."
+    },
+    {
+      "subject": "d2s2",
+      "concept": "progressive-breakdown",
+      "type": "multi",
+      "stem": "Which TWO tasks are poor fits for a purely progressive context strategy? Select TWO.",
+      "options": [
+        "An agent loop where each step depends mainly on the most recent state",
+        "A review whose verdict needs long-range coherence across the full history",
+        "A workflow decomposed into stages with narrow, well-defined handoffs",
+        "A decision that hinges on a detail dropped several turns earlier",
+        "Multi-turn iterative refinement of a single draft document"
+      ],
+      "correct": [1, 3],
+      "explanation": "Progressive context fails when a task needs long-range coherence across the whole history, or when a decision depends on detail dropped in an earlier turn. Agent loops driven by recent state, staged workflows and iterative refinement are where progressive context earns its place.",
+      "mnemonic": "Progressive forgets the far past: long-range or dropped detail breaks it."
+    },
+    {
+      "subject": "d2s2",
+      "concept": "monolithic-attention-degrade",
+      "type": "single",
+      "stem": "A team loads a 150-page contract set into one prompt. Token counts show it fits well inside the context window, so they mark the working-memory risk as closed. What does this overlook?",
+      "options": [
+        "The window limit applies only to output tokens, so inputs are never truncated",
+        "Attention quality can degrade on very long contexts well before the hard limit",
+        "Monolithic prompts cannot use prompt caching, so the prefix is rewritten each call",
+        "Contracts must be chunked into a retrieval index before the model can read them"
+      ],
+      "correct": [1],
+      "explanation": "Fitting under the hard limit does not guarantee quality, because attention can degrade on very long contexts before the limit is reached. Monolithic prompts with a stable prefix actually benefit from caching, so that distractor reverses the guidance.",
+      "mnemonic": "Fits in the window is not focused in the window."
+    },
+    {
+      "subject": "d3s1",
+      "concept": "sdk-default-raw-http",
+      "type": "single",
+      "stem": "A product team is embedding Claude in its TypeScript service and asks whether to call the HTTP API directly or use the official SDK. What is the recommended default, and what is the main exception?",
+      "options": [
+        "Use raw HTTP by default, since the SDK changes model behaviour relative to the direct API",
+        "Use the Agent SDK by default, since the client SDK cannot handle streaming or tool use",
+        "Use raw HTTP by default; switch to the SDK only once traffic justifies the wrapper overhead",
+        "Use the SDK by default; drop to raw HTTP only for a freshly shipped feature it lacks"
+      ],
+      "correct": [3],
+      "explanation": "The SDK is the same entry point as the API with language-native types, streaming and tool-use helpers, and it is the default for most teams. The only reason to drop to raw HTTP is an API feature the SDK has not exposed yet. Model behaviour does not differ between the two.",
+      "mnemonic": "SDK by default; HTTP only for the brand-new."
+    },
+    {
+      "subject": "d3s1",
+      "concept": "sdk-default-raw-http",
+      "type": "single",
+      "stem": "A team on the Python SDK needs a capability Anthropic shipped on the API yesterday, but the SDK has not exposed it yet. What is the appropriate move?",
+      "options": [
+        "Call that feature over raw HTTP until the SDK catches up, keeping the SDK elsewhere",
+        "Move the whole integration to the Agent SDK, which exposes new API features first",
+        "Wait for a CSP route such as Bedrock, which ships new features before the SDK does",
+        "Build an MCP server around the feature so every client can reach it on day one"
+      ],
+      "correct": [0],
+      "explanation": "SDK abstractions move at Anthropic's release cadence, so a raw API feature the SDK lacks means dropping back to HTTP for that feature. CSP routes tend to lag the first-party API, so waiting on Bedrock delays the feature further.",
+      "mnemonic": "SDK lags the API? Bridge the gap with HTTP."
+    },
+    {
+      "subject": "d3s1",
+      "concept": "claude-ai-zero-integration",
+      "type": "single",
+      "stem": "A software vendor wants Claude's chat experience inside its own customer portal, under its own branding and with control over which features users see. The sponsor proposes buying Claude.ai Enterprise seats. What is the core problem?",
+      "options": [
+        "Claude.ai Enterprise lacks SSO, so portal users could not sign in with their identity",
+        "Claude.ai runs a different model from the API, so answer quality would not match",
+        "Claude.ai cannot be embedded in another product or customized in what it exposes",
+        "Claude.ai requires a Bedrock or Vertex route before it can serve external customers"
+      ],
+      "correct": [2],
+      "explanation": "Claude.ai has zero build cost but also zero integration: you get the product Anthropic ships, and you cannot embed it or change what it exposes. Embedding Claude in a product calls for the API or SDK. Enterprise does include SSO, and the model is the same.",
+      "mnemonic": "Claude.ai: zero build, zero embed."
+    },
+    {
+      "subject": "d3s1",
+      "concept": "claude-ai-zero-integration",
+      "type": "single",
+      "stem": "Which statement captures the core tradeoff of Claude.ai as an entry point?",
+      "options": [
+        "Maximum control, but the partner's team owns retries, streaming and the UI",
+        "Reuse across clients, but added architectural complexity for a single client",
+        "A managed agent loop, but less fine-grained control over the orchestration",
+        "Zero build cost, but zero integration: you get the shipped product as it is"
+      ],
+      "correct": [3],
+      "explanation": "Claude.ai trades zero build cost for zero integration, because the product cannot be embedded or customized. Maximum control with full ownership describes the direct API, reuse versus complexity describes MCP, and the managed loop describes the Agent SDK.",
+      "mnemonic": "Nothing to build, nothing to bend."
+    },
+    {
+      "subject": "d3s1",
+      "concept": "claude-for-work-team-tier",
+      "type": "single",
+      "stem": "A 40-person consultancy wants staff on Claude.ai with SSO via SAML, domain capture, admin controls and a contractual commitment not to train on customer content. It has no need for SCIM, audit logs or a BAA. Which tier fits best?",
+      "options": [
+        "Max, the top consumer tier",
+        "Claude for Work, Team tier",
+        "Claude for Work, Enterprise tier",
+        "Pro, a consumer tier for individuals"
+      ],
+      "correct": [1],
+      "explanation": "The Team tier of Claude for Work adds admin controls, SSO and SAML, domain capture and a no-training commitment. Enterprise adds SCIM, configurable retention, audit logs, a Compliance API and a BAA option, none of which are needed here. Consumer tiers suit low-sensitivity work without governance controls.",
+      "mnemonic": "SSO plus no-training is Team; SCIM and audit is Enterprise."
+    },
+    {
+      "subject": "d3s1",
+      "concept": "cowork-supervision",
+      "type": "single",
+      "stem": "An operations team adopts Claude Cowork to reorganize shared files and automate routine tasks on their desktops. Compared with a chat-only entry point, what deserves more design attention?",
+      "options": [
+        "Prompt caching configuration, because Cowork resends every local file on each turn",
+        "Permission scoping and human review, because Cowork acts directly on the user's machine",
+        "MCP server design, because Cowork can reach local files only through a custom server",
+        "Agent SDK orchestration, because Cowork needs partner code to run its action loop"
+      ],
+      "correct": [1],
+      "explanation": "Cowork's tradeoff is real system actions versus supervision overhead. Because it works on the user's machine directly, permission scoping and human review matter more than they do in a chat-only entry point. It needs no custom MCP server or partner-written loop to reach local files.",
+      "mnemonic": "Cowork touches your machine: scope it, review it."
+    },
+    {
+      "subject": "d3s5",
+      "concept": "shaping-layer-placement",
+      "type": "single",
+      "stem": "A team's CLAUDE.md has grown to include full step-by-step procedures for releases, schema migrations and release notes, and every session starts with a bloated context. Where should those procedures live instead?",
+      "options": [
+        "In hooks, which fire on lifecycle events and load procedures into every session",
+        "In MCP servers, which make the procedures reusable from Claude.ai and other clients",
+        "In Skills, invoked on demand rather than loaded upfront, keeping the main context lean",
+        "In permission rules, which decide which procedure steps may run without prompting"
+      ],
+      "correct": [2],
+      "explanation": "CLAUDE.md loads at session start and suits persistent context every task needs. Repeatable workflows such as a release flow or a schema migration belong in Skills, which load only when invoked. Hooks and permissions are governing layers, not places to store procedures.",
+      "mnemonic": "Always-needed in CLAUDE.md; sometimes-needed in a Skill."
+    },
+    {
+      "subject": "d3s5",
+      "concept": "shaping-layer-placement",
+      "type": "multi",
+      "stem": "Which TWO pairings of content and Claude Code shaping layer are correct? Select TWO.",
+      "options": [
+        "Repo layout and coding standards every task needs: CLAUDE.md",
+        "A commit-push-PR flow used occasionally: CLAUDE.md, loaded at every start",
+        "A codebase exploration that would clutter the main thread: a subagent",
+        "A read-only code review with its own system prompt: a Skill in the main thread",
+        "Standing team conventions for every session: a subagent with restricted tools"
+      ],
+      "correct": [0, 2],
+      "explanation": "CLAUDE.md carries persistent context such as repo layout and standards. Subagents are isolated context helpers for bounded tasks, or work needing read-only tools or a different system prompt, such as exploration or code review. Occasional procedures belong in Skills, not in CLAUDE.md.",
+      "mnemonic": "Standing facts: CLAUDE.md. Side quests: subagent. Procedures: Skill."
+    },
+    {
+      "subject": "d3s1",
+      "concept": "bedrock-inference-profiles",
+      "type": "single",
+      "stem": "A partner on AWS Bedrock finds that the Claude model it needs is not available in every region its traffic comes from, and asks how Bedrock handles routing requests across regions. Which Bedrock concept addresses this?",
+      "options": [
+        "Model Garden access controls, which enable the model per project and region",
+        "Inference profiles, which solve the cross-region routing problem on Bedrock",
+        "Model deployments, which pin the model into the partner's own Azure region",
+        "The legacy InvokeModel path, which bypasses regional availability entirely"
+      ],
+      "correct": [1],
+      "explanation": "On Bedrock, regional availability matters and inference profiles solve cross-region routing. Model Garden access controls belong to Vertex and model deployments to Foundry. The architect needs to know these wrapper concepts exist even when the partner's engineers own the implementation.",
+      "mnemonic": "Bedrock crosses regions by profile."
+    },
+    {
+      "subject": "d3s1",
+      "concept": "entry-point-cost-risk",
+      "type": "multi",
+      "stem": "A partner's use case is an internal drafting assistant for analysts. The proposal adds Claude.ai, Claude Code and a custom API app 'to keep options open'. Which TWO statements reflect sound entry-point guidance? Select TWO.",
+      "options": [
+        "Several entry points up front keep options open at little added integration cost",
+        "Add another entry point only when the use case genuinely spans it",
+        "Migration cost is mostly rewritten code, since user habits transfer between entry points",
+        "Starting on the right entry point is cheaper than migrating off the wrong one later",
+        "MCP should be the default integration layer so entry points can be swapped freely"
+      ],
+      "correct": [1, 3],
+      "explanation": "Each entry point carries real integration cost, so pick more than one only when the use case spans them. Outgrowing the wrong entry point is expensive because of rewritten code and also the conventions and habits built around it, so starting on the right one is cheapest. Treating MCP as the default layer is a named mistake.",
+      "mnemonic": "One entry point per real need; start right, avoid the move."
+    },
+    {
+      "subject": "d3s1",
+      "concept": "entry-point-cost-risk",
+      "type": "single",
+      "stem": "A team built on an entry point that no longer fits its work and now plans to migrate. Beyond rewriting code, what makes outgrowing the wrong entry point expensive?",
+      "options": [
+        "Model behaviour differs between entry points, so every prompt must be retrained",
+        "Anthropic charges a migration fee when a workload moves between entry points",
+        "Delivery routes are fixed per entry point, so the cloud contract must be renegotiated",
+        "The conventions and user habits that have built up around the original entry point"
+      ],
+      "correct": [3],
+      "explanation": "Outgrowing the wrong entry point costs more than code: conventions and user habits form around it and have to be unwound. The same model sits under every entry point, so prompts are not retrained, and the layers are largely independent.",
+      "mnemonic": "Habits are the hidden migration bill."
+    },
+    {
+      "subject": "d3s4",
+      "concept": "fedramp-impact-levels",
+      "type": "single",
+      "stem": "A defense workload must run at DoD Impact Level 4/5. Subject to verifying current authorization scope with Anthropic, which authorized path fits?",
+      "options": [
+        "Vertex Assured Workloads, covering FedRAMP High and DoD IL4/5",
+        "Claude for Government, covering DoD IL4/5 for defense workloads",
+        "Bedrock GovCloud, covering FedRAMP High and DoD IL4/5",
+        "Claude Enterprise on the direct API with audit logs enabled"
+      ],
+      "correct": [2],
+      "explanation": "Bedrock GovCloud is the path listed for FedRAMP High and DoD IL4/5. Vertex Assured Workloads is listed for FedRAMP High and IL2, and Claude for Government for FedRAMP High civilian workloads. Authorization scope must be verified with Anthropic before committing.",
+      "mnemonic": "IL4/5 rides GovCloud; Vertex stops at IL2; C4G serves civilians."
+    },
+    {
+      "subject": "d3s4",
+      "concept": "fedramp-impact-levels",
+      "type": "multi",
+      "stem": "Which TWO pairings of authorized government path and coverage are correct, pending verification of current authorization scope? Select TWO.",
+      "options": [
+        "Claude for Government: FedRAMP High for civilian workloads",
+        "Vertex Assured Workloads: DoD IL4/5 for defense workloads",
+        "Claude for Government: DoD IL4/5 for defense workloads",
+        "Vertex Assured Workloads: FedRAMP High and DoD IL2",
+        "Claude Enterprise direct API: FedRAMP High with audit logs"
+      ],
+      "correct": [0, 3],
+      "explanation": "Claude for Government is listed for FedRAMP High civilian workloads, and Vertex Assured Workloads for FedRAMP High and IL2. IL4/5 belongs to Bedrock GovCloud, and Claude Enterprise on the direct API is not an authorized government path.",
+      "mnemonic": "C4G civilian, Vertex IL2, GovCloud IL4/5."
+    }
+  ]
+}
